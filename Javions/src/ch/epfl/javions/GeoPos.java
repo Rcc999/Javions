@@ -1,10 +1,10 @@
 package ch.epfl.javions;
 
 public record GeoPos(int longitudeT32, int latitudeT32) {
+
     public GeoPos {
-        if(!isValidLatitudeT32(latitudeT32)){
-            throw new IllegalArgumentException();
-        }
+
+        Preconditions.checkArgument(!isValidLatitudeT32(latitudeT32));
     }
 
     /**

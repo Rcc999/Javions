@@ -2,6 +2,7 @@ package ch.epfl.javions;
 
 //Check
 public class WebMercator {
+
     private WebMercator(){}
 
     /**
