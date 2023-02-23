@@ -2,6 +2,7 @@ package ch.epfl.javions;
 
 import java.util.Arrays;
 import java.util.HexFormat;
+import java.util.Objects;
 
 public final class ByteString {
 
@@ -9,24 +10,26 @@ public final class ByteString {
     private final byte[] bytes;
 
     public ByteString(byte[] bytes) {
-        this.bytes = bytes;
+        this.bytes = bytes.clone();
     }
 
     public static ByteString ofHexadecimalString(String hexString) {
 
         Preconditions.checkArgument(hexString.length() % 2 != 0);
 
-        //HexFormat hf = HexFormat.of().withUpperCase();
+        /*HexFormat hf = HexFormat.of().withUpperCase();
         //HexFormat hex = new HexFormat();
-        //byte[] bytes = hf.parseHex(hexString);
+        byte[] bytes = hf.parseHex(hexString);*/
+
         HexFormat hf = HexFormat.of().withUpperCase();
+        byte[] bytesBis;
+        try {
+            bytesBis = hf.parseHex(hexString);
+        } catch (IllegalArgumentException e) {
+            throw new NumberFormatException("Invalid hexadecimal string: " + hexString);
+        }
 
-        byte[] bytes = new byte[]{(byte) 0x01, (byte) 0xAB};
-        String string = hf.formatHex(bytes); // vaut "01AB"
-        byte[] bytes2 = hf.parseHex(string); // identique à bytes
-        System.out.println(Arrays.equals(bytes, bytes2)); // true
-
-        return new ByteString(bytes);
+        return new ByteString(bytesBis);
 
     }
 
@@ -36,9 +39,8 @@ public final class ByteString {
 
     public int byteAt(int index) {
 
-        if (index < 0 || index >= bytes.length) {
-            throw new IndexOutOfBoundsException();
-        }
+        Objects.checkIndex(index, bytes.length);
+
         return bytes[index] & 0xff;
     }
 
@@ -59,10 +61,11 @@ public final class ByteString {
     }
 
     public boolean equals(Object that0) {
-        if (that0 instanceof ByteString that && Arrays.equals(((ByteString) that0).bytes, that.bytes)) {
-            return true;
+        if (that0 instanceof ByteString that) {
+            return Arrays.equals(bytes, that.bytes);
+        } else {
+            return false;
         }
-        return false;
     }
 
     public int hashCode(){
@@ -70,7 +73,8 @@ public final class ByteString {
     }
 
     public String toString(){
-        return HexFormat.of().wi
+        HexFormat hef= HexFormat.of().withDelimiter("").withUpperCase();
+        return hef.formatHex(bytes);
     }
 
 }
