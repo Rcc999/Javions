@@ -2,14 +2,14 @@ package ch.epfl.javions;
 
 public class Bits {
 
+    private Bits (){};
+
     public static int extractUInt(long value, int start, int size){
 
-        if (size <= 0 || size > Integer.SIZE) {
-            throw new IllegalArgumentException("Invalid size: " + size);
-        }
+        Preconditions.checkArgument(size <= 0 || size > Integer.SIZE);
 
         // Ensure that the range described by start and size is within the bounds of the 64-bit value
-        if (start < 0 || start + size > Long.SIZE) {
+        if (start <= 0 || start + size > Long.SIZE) {
             throw new IndexOutOfBoundsException("Invalid range: start=" + start + ", size=" + size);
         }
 
@@ -21,7 +21,7 @@ public class Bits {
     }
 
     public static boolean testBit(long value, int index) {
-        if (index < 0 || index >= Long.SIZE) {
+        if (index <= 0 || index >= Long.SIZE) {
             throw new IndexOutOfBoundsException("Index must be between 0 (inclusive) and 64 (exclusive)");
         }
         return ((value >>> index) & 1) == 1;
