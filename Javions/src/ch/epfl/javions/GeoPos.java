@@ -3,8 +3,7 @@ package ch.epfl.javions;
 public record GeoPos(int longitudeT32, int latitudeT32) {
 
     public GeoPos {
-
-        Preconditions.checkArgument(!isValidLatitudeT32(latitudeT32));
+        Preconditions.checkArgument(isValidLatitudeT32(latitudeT32));
     }
 
     /**
@@ -13,7 +12,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return check if it is valid or not
      */
     public static boolean isValidLatitudeT32(int latitudeT32){
-        return latitudeT32 >= Math.scalb(-1, 30) && latitudeT32 <= Math.scalb(1, 30);
+        return latitudeT32 >= (int) Math.scalb(-1, 30) && latitudeT32 <= (int) Math.scalb(1, 30);
     }
 
     /**
@@ -21,7 +20,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return longitude in radian
      */
     public double longitude(){
-        return Units.convertTo(longitudeT32, Units.Angle.RADIAN);
+        return Units.convert(longitudeT32, Units.Angle.T32, Units.Angle.RADIAN);
     }
 
     /**
@@ -29,7 +28,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return latitude in radian
      */
     public double latitude() {
-        return Units.convertTo(latitudeT32, Units.Angle.RADIAN);
+        return Units.convert(latitudeT32, Units.Angle.T32, Units.Angle.RADIAN);
     }
 
     /**
@@ -39,6 +38,6 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
     // To check
     @Override
     public String toString() {
-        return Units.convertTo(longitudeT32, Units.Angle.DEGREE)+", "+ Units.convertTo(latitudeT32, Units.Angle.DEGREE);
+        return "("+Units.convert(longitudeT32,Units.Angle.T32 ,Units.Angle.DEGREE)+"\u00B0, "+ Units.convert(latitudeT32,Units.Angle.T32 ,Units.Angle.DEGREE)+"\u00B0)";
     }
 }

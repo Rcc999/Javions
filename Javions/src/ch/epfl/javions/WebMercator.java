@@ -13,7 +13,7 @@ public class WebMercator {
      */
     public static double x(int zoomLevel, double longitude){
         double longitudeEnRad = Units.convertTo(longitude, Units.Angle.RADIAN);
-        return Math.scalb(1, 8+zoomLevel) * (longitudeEnRad/2*Math.PI + 0.5);
+        return (double) Math.scalb(1, 8+zoomLevel) * (longitudeEnRad/(2*Math.PI) + 0.5);
     }
 
     /**

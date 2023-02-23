@@ -22,6 +22,11 @@ class GeoPosTest {
     }
 
     @Test
+    void geoPosIsValidLatitudeT32(){
+        assertFalse(GeoPos.isValidLatitudeT32((1 << 30) + 1));
+    }
+
+    @Test
     void geoPosWorksWithMinMaxLonLat() {
         var min = new GeoPos(Integer.MIN_VALUE, -(1 << 30));
         assertEquals(-180, Math.toDegrees(min.longitude()));

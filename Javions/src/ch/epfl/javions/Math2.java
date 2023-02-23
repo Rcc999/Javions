@@ -1,8 +1,6 @@
 package ch.epfl.javions;
 
-//should be a final class too ?
 public final class Math2 {
-
     /**
      * Constructor: private - non instantiable
      */
@@ -17,16 +15,11 @@ public final class Math2 {
      */
     public static int clamp(int min, int v, int max){
 
-        Preconditions.checkArgument(min > max);
+        Preconditions.checkArgument(!(min > max));
 
         if(v <= min){
             return min;
         }
-
-        if (v >= max){
-            return max;
-        }
-        // return v;
         return Math.min(v, max);
     }
 
