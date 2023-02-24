@@ -35,7 +35,6 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      *
      * @return a string message of value of longitude and latitude, each in degree
      */
-    // To check
     @Override
     public String toString() {
         return "("+Units.convert(longitudeT32,Units.Angle.T32 ,Units.Angle.DEGREE)+"\u00B0, "+ Units.convert(latitudeT32,Units.Angle.T32 ,Units.Angle.DEGREE)+"\u00B0)";
