@@ -9,55 +9,38 @@ public final class ByteString {
 
     private final byte[] bytes;
 
-    public ByteString(byte[] bytes) {
-        this.bytes = bytes.clone();
-    }
+    public ByteString(byte[] bytes) { this.bytes = bytes.clone();}
 
     public static ByteString ofHexadecimalString(String hexString) {
-
-        Preconditions.checkArgument(hexString.length() % 2 != 0);
-
-        /*HexFormat hf = HexFormat.of().withUpperCase();
-        //HexFormat hex = new HexFormat();
-        byte[] bytes = hf.parseHex(hexString);*/
-
+        Preconditions.checkArgument(hexString.length() % 2 == 0);
         HexFormat hf = HexFormat.of().withUpperCase();
         byte[] bytesBis;
         try {
             bytesBis = hf.parseHex(hexString);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException exc) {
             throw new NumberFormatException("Invalid hexadecimal string: " + hexString);
         }
-
         return new ByteString(bytesBis);
-
     }
 
-    public int size() {
-        return bytes.length;
-    }
+    public int size() { return bytes.length; }
 
     public int byteAt(int index) {
-
         Objects.checkIndex(index, bytes.length);
-
         return bytes[index] & 0xff;
     }
 
 
     public long bytesInRange(int fromIndex, int toIndex) {
-
-        if (fromIndex < 0 || toIndex > bytes.length || toIndex <= fromIndex) {
-            throw new IndexOutOfBoundsException();
+        Objects.checkFromToIndex(fromIndex, toIndex, bytes.length);
+        int numberBytes = Long.BYTES;
+        Preconditions.checkArgument(!(toIndex - fromIndex > numberBytes));
+        long finalOctet = 0;
+        for (int i = fromIndex; i < toIndex; i++) {
+            finalOctet <<= Long.BYTES;
+            finalOctet |= (bytes[i] & 0xFF);
         }
-
-        Preconditions.checkArgument(toIndex - fromIndex > 8);
-
-        long result = 0;
-        for (int i = toIndex - 1; i >= fromIndex; i--) {
-            result = (result << 8) | (bytes[i] & 0xff);
-        }
-        return result;
+        return finalOctet;
     }
 
     public boolean equals(Object that0) {
@@ -68,9 +51,7 @@ public final class ByteString {
         }
     }
 
-    public int hashCode(){
-        return Arrays.hashCode(bytes);
-    }
+    public int hashCode(){ return Arrays.hashCode(bytes);}
 
     public String toString(){
         HexFormat hef= HexFormat.of().withDelimiter("").withUpperCase();
