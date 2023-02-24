@@ -8,7 +8,7 @@ public class Bits {
 
     public static int extractUInt(long value, int start, int size){
 
-        Preconditions.checkArgument(size <= 0 || size > Integer.SIZE);
+        Preconditions.checkArgument(!(size <= 0 || size >= Integer.SIZE));
 
         // Ensure that the range described by start and size is within the bounds of the 64-bit value
         Objects.checkFromIndexSize(start, size, Long.SIZE);
