@@ -8,11 +8,13 @@ package ch.epfl.sigcheck;
 final class SignatureChecks_2 {
     private SignatureChecks_2() {}
 
+    /**
     void checkCrc24() throws Exception {
         v01 = new ch.epfl.javions.Crc24(v02);
         v02 = ch.epfl.javions.Crc24.GENERATOR;
         v02 = v01.crc(v03);
     }
+     */
 
     void checkAircraftDescription() throws Exception {
         v04 = new ch.epfl.javions.aircraft.AircraftDescription(v05);
@@ -76,12 +78,14 @@ final class SignatureChecks_2 {
         v12 = v14.wakeTurbulenceCategory();
     }
 
+    /**
     void checkAircraftDatabase() throws Exception {
         v15 = new ch.epfl.javions.aircraft.AircraftDatabase(v05);
         v14 = v15.get(v10);
     }
 
     ch.epfl.javions.Crc24 v01;
+     */
     int v02;
     byte[] v03;
     ch.epfl.javions.aircraft.AircraftDescription v04;
@@ -95,5 +99,5 @@ final class SignatureChecks_2 {
     ch.epfl.javions.aircraft.WakeTurbulenceCategory v12;
     ch.epfl.javions.aircraft.WakeTurbulenceCategory[] v13;
     ch.epfl.javions.aircraft.AircraftData v14;
-    ch.epfl.javions.aircraft.AircraftDatabase v15;
+    //ch.epfl.javions.aircraft.AircraftDatabase v15;
 }

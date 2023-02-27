@@ -6,7 +6,8 @@ import java.util.regex.Pattern;
 
 public record AircraftRegistration(String string) {
     public AircraftRegistration{
-        Pattern num = Pattern.compile(string);
-        Preconditions.checkArgument(num.matcher("[A-Z0-9 .?/_+-]+").matches());
+        Preconditions.checkArgument(!string.isEmpty());
+        Pattern num = Pattern.compile("[A-Z0-9 .?/_+-]+");
+        Preconditions.checkArgument(num.matcher(string).matches());
     }
 }

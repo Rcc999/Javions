@@ -5,9 +5,12 @@ import ch.epfl.javions.Preconditions;
 import java.util.regex.Pattern;
 
 public record IcaoAddress(String string) {
+
+    //Check. question about point 3.1.1 and verify if regex is correct
     public IcaoAddress{
-        Pattern num = Pattern.compile(string);
-        Preconditions.checkArgument(num.matcher("[0-9A-F]{6}").matches());
+        Preconditions.checkArgument(!string.isEmpty());
+        Pattern num = Pattern.compile("[0-9A-F]{6}");
+        Preconditions.checkArgument(num.matcher(string).matches());
     }
 
 }
