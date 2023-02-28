@@ -13,3 +13,4 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
         Objects.requireNonNull(model);
     }
 }
+

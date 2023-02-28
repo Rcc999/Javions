@@ -6,7 +6,7 @@ public class Bits {
     /**
      * Constructor: private - non instantiable
      */
-    private Bits (){}
+    private Bits(){}
 
     /**
      *
