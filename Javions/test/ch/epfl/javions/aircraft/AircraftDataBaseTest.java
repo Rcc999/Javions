@@ -27,7 +27,7 @@ public class AircraftDataBaseTest {
     @Test
     void FoundCorrectValueGet() throws IOException {
 
-        String d = Objects.requireNonNull(AircraftDatabase.class.getResource("/aircraft.zip")).getFile();
+        String d = getClass().getResource("/aircraft.zip").getFile();
         d = URLDecoder.decode(d, UTF_8);
 
         AircraftDatabase test = new AircraftDatabase(d);

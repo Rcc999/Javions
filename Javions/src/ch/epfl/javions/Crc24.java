@@ -7,7 +7,7 @@ public final class Crc24 {
     private static final int LENGTH_CRC24 = 24;
 
     /**
-     *
+     * Public Constructor of the class Crc24
      * @param generator: will be used to do the calculation of crc
      */
     public Crc24(int generator){
@@ -27,7 +27,12 @@ public final class Crc24 {
         return table;
     }
 
-
+    /**
+     *
+     * @param generator : uses for the calculation of the CRC24, it is the denominator of the division
+     * @param bytes : table of octet
+     * @return : the CRC24 of the table "bytes" given  using a bit by bit algorithm
+     */
     private static int crc_bitwise(int generator, byte[] bytes){
         int crc = 0;
         int[] table = {0, generator};
@@ -49,7 +54,11 @@ public final class Crc24 {
     }
 
 
-
+    /**
+     *
+     * @param bytes :  table of octet
+     * @return :  the given CRC24 of the given table using octet by octet algorithm
+     */
     public  int crc(byte[] bytes) {
         int crc = 0;
         for (byte o : bytes) {
