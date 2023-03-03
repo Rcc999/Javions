@@ -3,16 +3,22 @@ package ch.epfl.javions;
 public final class Crc24 {
 
     public static int GENERATOR = 0xFFF409;
-
-    private int[] table;
-
+    private final int[] table;
     private static final int LENGTH_CRC24 = 24;
 
-
+    /**
+     *
+     * @param generator: will be used to do the calculation of crc
+     */
     public Crc24(int generator){
         this.table = buildTable(generator);
     }
 
+    /**
+     *
+     * @param generator: will be used for the calculation of crc, using the bit by bit algorithm
+     * @return an int table of 256 entries that contain information upon using
+     */
     private static int[] buildTable(int generator){
         int [] table = new int[256];
         for (int i = 0; i < 256; i++){
