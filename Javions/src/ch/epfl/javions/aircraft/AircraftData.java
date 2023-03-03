@@ -12,5 +12,6 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
         Objects.requireNonNull(wakeTurbulenceCategory);
         Objects.requireNonNull(model);
     }
+
 }
 

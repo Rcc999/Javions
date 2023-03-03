@@ -15,7 +15,7 @@ public class AircraftDataTest {
     AircraftRegistration aircraftRegistration = new AircraftRegistration("HB-JDC");
     AircraftTypeDesignator aircraftTypeDesignator  = new AircraftTypeDesignator("A20N");
     String model  = null;
-    AircraftDescription aircraftDescription = new AircraftDescription("L2J");
+    AircraftDescription aircraftDescription = new AircraftDescription("L1P");
     WakeTurbulenceCategory wakeTurbulenceCategory = WakeTurbulenceCategory.of("L");
 
 }
