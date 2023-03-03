@@ -2,7 +2,6 @@ package ch.epfl.javions.aircraft;
 
 
 import java.io.*;
-import java.net.URLDecoder;
 import java.util.Objects;
 import java.util.zip.ZipFile;
 
@@ -46,9 +45,6 @@ public final class AircraftDatabase {
             }
 
             return null;
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }
