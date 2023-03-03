@@ -12,8 +12,8 @@ public class TestCrc24 {
     @Test
     void testCRC23(){
         Crc24 crc24 = new Crc24(Crc24.GENERATOR);
-        String mS = "8D392AE499107FB5C00439";
-        String cS = "035DB8";
+        String mS = "8D4B18F4231445F2DB63A0";
+        String cS = "DEEB82";
         int c = Integer.parseInt(cS, 16); // == 0x035DB8
 
         byte[] mAndC = HexFormat.of().parseHex(mS + cS);
