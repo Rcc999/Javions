@@ -14,17 +14,6 @@ public final class Crc24 {
     }
 
     private static int crc_bitwise(int generator, byte[] bytes){
-        /*int crc = 0;
-        int[] table = {0, generator};
-        for (byte b : bytes) {
-            for (int i = 0; i < Byte.SIZE ; i++) {
-                int bit = Bits.extractUInt(b, Byte.SIZE - 1 - i, 1);
-                int index = ((crc >> (LENGTH_CRC24 - 1)) ^ bit) & 0x1;
-                crc = ((crc << 1) | bit) ^ table[index];
-            }
-        }
-
-        return crc  & 0xFFFFFF;*/
 
         int crc = 0;
         int[] table = {0, generator};
