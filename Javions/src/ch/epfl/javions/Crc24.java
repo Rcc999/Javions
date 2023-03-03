@@ -13,7 +13,7 @@ public final class Crc24 {
         this.generator = generator & 0xFFFFFF;
     }
 
-    private static int crc_bitwise(int generator, byte [] bytes){
+    private static int crc_bitwise(int generator, byte[] bytes){
         /*int crc = 0;
         int[] table = {0, generator};
         for (byte b : bytes) {
@@ -25,7 +25,6 @@ public final class Crc24 {
         }
 
         return crc  & 0xFFFFFF;*/
-
 
         int crc = 0;
         int[] table = {0, generator};
@@ -47,8 +46,38 @@ public final class Crc24 {
         return crc & 0xFFFFFF;
     }
 
-
     public static int crc(byte[] bytes) {
+        // extract 8 bits plus fort de crc from 17 til 23 (not 32)
+        int crc = 0;
+
         return crc_bitwise(GENERATOR, bytes);
     }
+
+    private static int[] buildTable(int generator){
+        int [] table = new int[256];
+        for (int i = 0; i < 256; i++){
+            table[i] = crc_bitwise(generator, new byte[] {(byte) i});
+        }
+        return table;
+    }
+
+    public static void main(String[] args){
+
+        byte a = (byte) 0b100010101010100101001100001110;
+
+        int b = (a & 0xFFFFFF);
+
+        int d = Bits.extractUInt(a, 0, 24);
+
+        String c = Integer.toBinaryString(b); //111111111111111110001110
+
+        String e = Integer.toBinaryString(d); //111111111111111110001110
+
+        System.out.println(c);
+
+        System.out.println(e);
+
+
+    }
+
 }
