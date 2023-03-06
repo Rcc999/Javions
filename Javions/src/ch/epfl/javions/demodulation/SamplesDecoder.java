@@ -30,12 +30,10 @@ public final class SamplesDecoder {
 
         int samplesComputed = bytesRead / 2;
 
-        for (int i = 0; i < bytesRead; i += 2) {
-            for (int j = 0; j < bytesRead; j++) {
-                short samples = (short) ((buffer[i] & 0xFF) | ((buffer[i + 1] & 0xF) << 8));
-                samples -= 2048;
-                batch[j] = samples;
-            }
+        for (int i = 0, j = 0; i < bytesRead; i += 2, j++) {
+            short sample = (short) ((buffer[i] & 0xFF) | ((buffer[i + 1] & 0xF) << 8));
+            sample -= 2048;
+            batch[j] = sample;
         }
         return samplesComputed;
     }
