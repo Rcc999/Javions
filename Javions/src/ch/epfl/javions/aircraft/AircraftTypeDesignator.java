@@ -11,7 +11,12 @@ public record AircraftTypeDesignator(String string) {
      * @param string: type designator of the aircraft. The constructor checks if it is valid or not.
      */
     public AircraftTypeDesignator{
-        Pattern num = Pattern.compile("[A-Z0-9]{2,4}");
-        Preconditions.checkArgument(num.matcher(string).matches());
+        if(string.equals("")){
+            Preconditions.checkArgument(true);
+        }
+        else{
+            Pattern num = Pattern.compile("[A-Z0-9]{2,4}");
+            Preconditions.checkArgument(num.matcher(string).matches());
+        }
     }
 }

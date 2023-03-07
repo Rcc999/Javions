@@ -8,11 +8,16 @@ public record AircraftDescription(String string) {
 
     /**
      *
-     * @param string: the description of an aircraft. The constructor checks if it is valid or not.
+     * @param string the description of an aircraft. The constructor checks if it is valid or not.
      */
-    public AircraftDescription {
-        Pattern num = Pattern.compile("[HLPRSTV-][0123468][EJPT-]");
-        Preconditions.checkArgument(num.matcher(string).matches());
+    public AircraftDescription{
+        if(string.equals("")){
+            Preconditions.checkArgument(true);
+        }
+        else{
+            Pattern num = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
+            Preconditions.checkArgument(num.matcher(string).matches());
+        }
     }
 
 }
