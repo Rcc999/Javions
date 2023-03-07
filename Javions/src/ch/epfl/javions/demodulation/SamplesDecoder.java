@@ -13,7 +13,7 @@ public final class SamplesDecoder {
     private final byte[] buffer;
 
     public SamplesDecoder (InputStream stream, int batchSize){
-        Preconditions.checkArgument(!(batchSize <= 0));
+        Preconditions.checkArgument(batchSize > 0);
         if (stream == null){ throw new NullPointerException("Stream must not be null"); }
         this.stream =  stream;
         this.batchSize = batchSize;
@@ -23,13 +23,7 @@ public final class SamplesDecoder {
     public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
         int bytesRead = stream.readNBytes(buffer, 0, buffer.length);
-
-        if (bytesRead == -1) {
-            return 0;
-        }
-
         int samplesComputed = bytesRead / 2;
-
         for (int i = 0, j = 0; i < bytesRead; i += 2, j++) {
             short sample = (short) ((buffer[i] & 0xFF) | ((buffer[i + 1] & 0xF) << 8));
             sample -= 2048;
