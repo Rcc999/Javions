@@ -7,13 +7,13 @@ import java.io.InputStream;
 
 public final class PowerComputer {
 
-    private SamplesDecoder samplesDecoder;
+    private final SamplesDecoder samplesDecoder;
     private final InputStream stream;
     private final int batchSize;
-    private short [] samplesContained;
+    private final short [] samplesContained;
     // Tableau stockant les huit derniers échantillons produits par la radio
     //Ce tableau doit être circulaire
-    private int [] windowTable;
+    private final int [] windowTable;
 
 
     public PowerComputer (InputStream stream, int batchSize){
