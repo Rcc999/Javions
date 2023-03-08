@@ -21,8 +21,8 @@ public final class PowerComputer {
         Preconditions.checkArgument(batchSize > 0);
         this.stream = stream;
         this.batchSize = batchSize;
-        this.samplesDecoder = new SamplesDecoder(stream, batchSize);
-        this.samplesContained = new short[batchSize];
+        this.samplesDecoder = new SamplesDecoder(stream, batchSize*2);
+        this.samplesContained = new short[batchSize*2];
         this.windowTable = new int [Byte.SIZE];
     }
 
@@ -31,6 +31,7 @@ public final class PowerComputer {
         Preconditions.checkArgument(batch.length == batchSize);
         int d = 0;
         int numberSamples = samplesDecoder.readBatch(samplesContained);
+        System.out.println(numberSamples);
         for (int i = 0; i < numberSamples; i++) {
             windowTable[i % 8] = samplesContained[i];
             if(i % 2 == 1){
