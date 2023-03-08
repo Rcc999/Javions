@@ -29,10 +29,18 @@ public final class PowerComputer {
 
     public int readBatch(int [] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
-        int numberSamples = samplesDecoder.readBatch( samplesContained);
+        int d = 0;
+        int numberSamples = samplesDecoder.readBatch(samplesContained);
         for (int i = 0; i < numberSamples; i++) {
-
+            windowTable[i % 8] = samplesContained[i];
+            if(i % 2 == 1){
+                double f = Math.pow( windowTable[0] - windowTable[2] + windowTable[4] - windowTable[6], 2);
+                double g = Math.pow( windowTable[1] - windowTable[3] + windowTable[5] - windowTable[7], 2);
+                int P = (int) (f+g);
+                batch[d] = P;
+                ++d;
+            }
         }
-        return 0;
+        return batch.length/2;
     }
 }
