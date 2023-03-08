@@ -16,9 +16,10 @@ public class SamplesDecoderTest {
         DataInputStream stream = new DataInputStream(
                 new BufferedInputStream(
                         new FileInputStream(getClass().getResource("/samples.bin").getFile())));
-        SamplesDecoder decoder = new SamplesDecoder(stream, 10);
-        short[] batch = new short[10];
-        decoder.readBatch(batch);
+        SamplesDecoder decoder = new SamplesDecoder(stream, 16);
+        short[] batch = new short[16];
+        int a = decoder.readBatch(batch);
+        System.out.println("a = " + a);
         for(short var : batch){
             System.out.println(var);
         }
