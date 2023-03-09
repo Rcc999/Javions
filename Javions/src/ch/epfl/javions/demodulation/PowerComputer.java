@@ -31,7 +31,6 @@ public final class PowerComputer {
         Preconditions.checkArgument(batch.length == batchSize);
         int d = 0;
         int numberSamples = samplesDecoder.readBatch(samplesContained);
-        System.out.println(numberSamples);
         for (int i = 0; i < numberSamples; i++) {
             windowTable[i % 8] = samplesContained[i];
             if(i % 2 == 1){
@@ -42,6 +41,6 @@ public final class PowerComputer {
                 ++d;
             }
         }
-        return batch.length/2;
+        return numberSamples/2;
     }
 }

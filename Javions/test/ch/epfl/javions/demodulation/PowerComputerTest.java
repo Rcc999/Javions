@@ -20,7 +20,9 @@ public class PowerComputerTest {
         PowerComputer powerComputer = new PowerComputer(stream, 16);
         int[] a = new int[16];
 
-        powerComputer.readBatch(a);
+        int b = powerComputer.readBatch(a);
+
+        System.out.println("The number of elements in a is: " + b);
 
         for(int var: a){
             System.out.println(var);
