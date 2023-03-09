@@ -1,14 +1,17 @@
 package ch.epfl.javions.demodulation;
 
 import ch.epfl.javions.Preconditions;
+import com.sun.source.tree.UsesTree;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public final class PowerWindow {
 
-    private int windowSize;
+    private final int windowSize;
     private PowerComputer powerComputer;
+    int numberOfSamples;
+    private int [] window;
     private int [] firstLot;
     private int []  secondLot;
     private int actualWindowPosition;
@@ -17,11 +20,12 @@ public final class PowerWindow {
 
 
     public PowerWindow(InputStream stream, int windowSize) throws IOException{
-        Preconditions.checkArgument(windowSize > 0 || windowSize <= Math.pow(2, 16));
+        Preconditions.checkArgument(windowSize > 0 && windowSize <= Math.pow(2, 16));
         powerComputer = new PowerComputer(stream, (int)Math.pow(2, 16));
         this.windowSize = windowSize;
-        //this.firstLot = powerComputer.readBatch();
+        this.numberOfSamples = powerComputer.readBatch(firstLot);
         this.secondLot =  new int[(int)Math.pow(2,16)];
+        this.window = new int[windowSize];
         this.actualWindowPosition = 0;
         this.actualFirstLotIndex = 0;
         this.actualSecondLotIndex = 0;
@@ -33,7 +37,8 @@ public final class PowerWindow {
     public long position() { return actualWindowPosition - actualFirstLotIndex; }
 
     public boolean isFull() {
-        return firstLot.length == windowSize && secondLot.length == windowSize;
+
+        return windowSize == numberOfSamples;
     }
 
     //Doit-on retourner the actual position du premierLot et laisser la méthode advanceBY changer de tableau,
@@ -47,14 +52,13 @@ public final class PowerWindow {
 
 
     public void advance() throws IOException {
-        //Not sure about that possibility of using advanceBy in advance
-        //advanceBy(1);
-        actualWindowPosition++;
+        advanceBy(1);
     }
 
     public void advanceBy(int offset) throws IOException{
-        Preconditions.checkArgument(offset >= 0);
-
+        Preconditions.checkArgument(offset > 0);
+        actualFirstLotIndex += offset;
+        window = new int[actualFirstLotIndex];
     }
 
 
