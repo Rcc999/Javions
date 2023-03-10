@@ -1,10 +1,8 @@
 package ch.epfl.javions.demodulation;
 
 import ch.epfl.javions.Preconditions;
-import com.sun.source.tree.UsesTree;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public final class PowerWindow {
 
@@ -25,10 +23,11 @@ public final class PowerWindow {
      */
     public PowerWindow(InputStream stream, int windowSize) throws IOException{
         Preconditions.checkArgument(windowSize > 0 && windowSize <= (int) Math.pow(2, 16));
-        powerComputer = new PowerComputer(stream, (int)Math.pow(2, 16));
+        powerComputer = new PowerComputer(stream, (int) Math.pow(2, 16));
         this.windowSize = windowSize;
+        this.firstLot = new int[(int) Math.pow(2, 16)];
         this.numberOfSamples = powerComputer.readBatch(firstLot);
-        this.secondLot =  new int[(int)Math.pow(2,16)];
+        this.secondLot =  new int[(int) Math.pow(2, 16)];
         this.actualWindowPosition = 0;
         this.position = 0;
     }
@@ -50,7 +49,7 @@ public final class PowerWindow {
      * @return :  a boolean value to see if the window is actually full of samples or not
      */
     public boolean isFull() {
-        return windowSize <= numberOfSamples;
+        return position + windowSize <= numberOfSamples;
     }
 
     /**
@@ -65,7 +64,7 @@ public final class PowerWindow {
         } else {
             return secondLot[actualWindowPosition + i - firstLot.length];
         }
-        }
+    }
 
     /**
      * Advance the window of one sample
@@ -76,7 +75,6 @@ public final class PowerWindow {
         actualWindowPosition++;
         numberOfSamples--;
         if(actualWindowPosition + windowSize - 1 == firstLot.length){
-            powerComputer.readBatch(secondLot);
             numberOfSamples += powerComputer.readBatch(secondLot);
         }
         if(actualWindowPosition == firstLot.length) {
@@ -98,6 +96,7 @@ public final class PowerWindow {
             advance();
         }
     }
+
 }
 
 
