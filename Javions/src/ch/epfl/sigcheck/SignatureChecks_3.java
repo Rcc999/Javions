@@ -12,7 +12,7 @@ final class SignatureChecks_3 {
         v01 = new ch.epfl.javions.demodulation.SamplesDecoder(v02, v03);
         v03 = v01.readBatch(v04);
     }
-    /**
+
     void checkPowerComputer() throws Exception {
         v05 = new ch.epfl.javions.demodulation.PowerComputer(v02, v03);
         v03 = v05.readBatch(v06);
@@ -27,15 +27,15 @@ final class SignatureChecks_3 {
         v08 = v07.isFull();
         v09 = v07.position();
         v03 = v07.size();
-    }*/
+    }
 
     ch.epfl.javions.demodulation.SamplesDecoder v01;
     java.io.InputStream v02;
     int v03;
     short[] v04;
-    //ch.epfl.javions.demodulation.PowerComputer v05;
+    ch.epfl.javions.demodulation.PowerComputer v05;
     int[] v06;
-    //ch.epfl.javions.demodulation.PowerWindow v07;
+    ch.epfl.javions.demodulation.PowerWindow v07;
     boolean v08;
     long v09;
 }
