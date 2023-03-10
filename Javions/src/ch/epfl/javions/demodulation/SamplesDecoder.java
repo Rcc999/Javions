@@ -12,6 +12,11 @@ public final class SamplesDecoder {
     private final int batchSize;
     private final byte[] buffer;
 
+    /**
+     *Public constructor of SamplesDecoder
+     * @param stream : input stream
+     * @param batchSize : size of the batch to produce
+     */
     public SamplesDecoder (InputStream stream, int batchSize){
         Preconditions.checkArgument(batchSize > 0);
         if (stream == null){ throw new NullPointerException("Stream must not be null"); }
@@ -20,6 +25,12 @@ public final class SamplesDecoder {
         this.buffer = new byte[batchSize * 2];
     }
 
+    /**
+     *
+     * @param batch : table containing the converted samples
+     * @return :  the number of converted samples
+     * @throws IOException :  to close the flow
+     */
     public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
         int bytesRead = stream.readNBytes(buffer, 0, buffer.length);

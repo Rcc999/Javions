@@ -11,8 +11,6 @@ public final class PowerComputer {
     private final InputStream stream;
     private final int batchSize;
     private final short [] samplesContained;
-    // Tableau stockant les huit derniers échantillons produits par la radio
-    //Ce tableau doit être circulaire
     private final int [] windowTable;
 
 
