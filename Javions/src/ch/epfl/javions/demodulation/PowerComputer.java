@@ -14,6 +14,11 @@ public final class PowerComputer {
     private final int [] windowTable;
 
 
+    /**
+     *
+     * @param stream: the stream input of binary numbers
+     * @param batchSize: the size of portion that we are going to divide the stream into after the calculation
+     */
     public PowerComputer (InputStream stream, int batchSize){
         Preconditions.checkArgument(batchSize % Byte.SIZE == 0);
         Preconditions.checkArgument(batchSize > 0);
@@ -24,7 +29,12 @@ public final class PowerComputer {
         this.windowTable = new int [Byte.SIZE];
     }
 
-
+    /**
+     *
+     * @param batch: the table in which will be filled
+     * @return the number of samples whose power is calculated
+     * @throws IOException if inputs or outputs have problems
+     */
     public int readBatch(int [] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
         int d = 0;
