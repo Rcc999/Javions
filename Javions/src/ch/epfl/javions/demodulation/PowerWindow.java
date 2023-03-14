@@ -49,7 +49,7 @@ public final class PowerWindow {
      * @return :  a boolean value to see if the window is actually full of samples or not
      */
     public boolean isFull() {
-        return position + windowSize <= numberOfSamples;
+        return actualWindowPosition + windowSize <= numberOfSamples;
     }
 
     /**
