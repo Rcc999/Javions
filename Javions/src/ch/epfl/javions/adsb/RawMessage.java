@@ -32,20 +32,10 @@ public record RawMessage(long timeStampNs,ByteString bytes) {
 
     public static RawMessage of(long timeStampsNs, byte [] bytes){
         ByteString bytesBis = new ByteString(bytes);
-        if(crc24.crc(bytes) == 0){
-            return  new RawMessage(timeStampsNs, bytesBis);
-        } else {
-            return null;
-        }
+        return crc24.crc(bytes) == 0 ? new RawMessage(timeStampsNs, bytesBis) : null;
     }
 
-    public static int size(byte byte0){
-        if(downLinkFormat(byte0) == DF_VALUE){
-            return LENGTH;
-        } else {
-            return 0;
-        }
-    }
+    public static int size(byte byte0){return downLinkFormat(byte0) == DF_VALUE ? LENGTH : 0;}
 
     public static int typeCode(long payload){
         return Bits.extractUInt(payload,START_ME,SIZE_SIGNIFICANT_BIT);

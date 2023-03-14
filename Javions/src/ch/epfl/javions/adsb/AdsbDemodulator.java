@@ -1,5 +1,6 @@
 package ch.epfl.javions.adsb;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public final class AdsbDemodulator {
@@ -8,5 +9,7 @@ public final class AdsbDemodulator {
 
     }
 
-    Ra
+    RawMessage nextMessage() throws IOException{
+
+    }
 }
