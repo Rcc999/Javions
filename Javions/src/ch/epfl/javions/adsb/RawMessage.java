@@ -35,10 +35,9 @@ public record RawMessage(long timeStampNs,ByteString bytes) {
         return crc24.crc(bytes) == 0 ? new RawMessage(timeStampsNs, bytesBis) : null;
     }
 
-    public static int size(byte byte0){return downLinkFormat(byte0) == DF_VALUE ? LENGTH : 0;}
+    public static int size(byte byte0){ return downLinkFormat(byte0) == DF_VALUE ? LENGTH : 0; }
 
-    public static int typeCode(long payload){
-        return Bits.extractUInt(payload,START_ME,SIZE_SIGNIFICANT_BIT);
+    public static int typeCode(long payload){ return Bits.extractUInt(payload,START_ME,SIZE_SIGNIFICANT_BIT);
     }
 
     private static int downLinkFormat(int b){
