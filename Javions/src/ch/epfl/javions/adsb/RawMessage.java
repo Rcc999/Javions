@@ -11,8 +11,7 @@ import java.util.HexFormat;
 public record RawMessage(long timeStampNs,ByteString bytes) {
 
     public static final int LENGTH = 14;
-    private static Crc24 crc24;
-    private static IcaoAddress icaoAddress;
+    private static final Crc24 crc24 = new Crc24(Crc24.GENERATOR);
     private static final int DF_VALUE = 17;
     private static final int START_ME = 51;
     private static final int SIZE_SIGNIFICANT_BIT = 5;
@@ -40,17 +39,16 @@ public record RawMessage(long timeStampNs,ByteString bytes) {
     public static int typeCode(long payload){ return Bits.extractUInt(payload,START_ME,SIZE_SIGNIFICANT_BIT);
     }
 
-    private static int downLinkFormat(int b){
-        return Bits.extractUInt(b, START_DF, SIZE_SIGNIFICANT_BIT) ;
+    private static int downLinkFormat(int b){ // switch back to private later
+        return Bits.extractUInt(b,START_DF,SIZE_SIGNIFICANT_BIT) ;
     }
 
     public int downLinkFormat(){
         return downLinkFormat(bytes.byteAt(0));
     }
 
-
     public IcaoAddress icaoAddress(){
-        return new IcaoAddress(HexFormat.of().withUpperCase().toHexDigits(bytes.bytesInRange(ICAO_START, ICAO_LAST) ,  ICAO_DIGIT_EXTRACT));
+        return new IcaoAddress(HexFormat.of().withUpperCase().toHexDigits(bytes.bytesInRange(ICAO_START, ICAO_LAST), ICAO_DIGIT_EXTRACT));
     }
 
     public long payload(){
