@@ -49,7 +49,7 @@ public final class PowerWindow {
      * @return :  a boolean value to see if the window is actually full of samples or not
      */
     public boolean isFull() {
-        return actualWindowPosition + windowSize <= numberOfSamples;
+        return this.position + windowSize <= numberOfSamples;
     }
 
     /**
@@ -71,9 +71,9 @@ public final class PowerWindow {
      * @throws IOException : to close the flow when it ends
      */
     public void advance() throws IOException {
-        position++;
+        this.position++;
         actualWindowPosition++;
-        numberOfSamples--;
+        //numberOfSamples--;
         if(actualWindowPosition + windowSize - 1 == firstLot.length){
             numberOfSamples += powerComputer.readBatch(secondLot);
         }
