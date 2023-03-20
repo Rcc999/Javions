@@ -94,6 +94,7 @@ public final class PowerWindow {
         Preconditions.checkArgument(offset >= 0);
         for (int i = 0; i < offset; i++) {
             advance();
+
         }
     }
 
