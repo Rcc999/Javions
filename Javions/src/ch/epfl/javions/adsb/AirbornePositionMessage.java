@@ -24,16 +24,21 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    private static double Q1(RawMessage rawMessage){
+    private static double altitudeCalculator(RawMessage rawMessage){
         int alt =  Bits.extractUInt(rawMessage.payload(), 36, 12);
-        int q = Bits.extractUInt(alt , 4, 1);
-        if(q == 1){
-            return (double) -1000 + removeBit(alt) * 25;
-       }
-        return 0;
+        if(determineParity(rawMessage) == 1){
+            return (double) -1000 + removeBitForQ1(alt) * 25;
+       } else {
+
+          return 0;
+        }
     }
 
-    private static int removeBit(int num) {
+    private static int determineParity(RawMessage rawMessage){
+        return Bits.extractUInt(Bits.extractUInt(rawMessage.payload(), 36, 12) , 4, 1);
+    }
+
+    private static int removeBitForQ1(int num) {
         int mask = (1 << 4) - 1;
         return (char) ((num & ((~mask) << 1)) >>> 1) | (num & mask);
     }
