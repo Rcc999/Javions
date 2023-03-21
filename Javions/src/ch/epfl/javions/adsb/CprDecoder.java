@@ -39,12 +39,16 @@ public class CprDecoder {
         double latitude1 = (1 / ZONE_LATITUDE1) * (index_zone_lat1 + y1_normalized);
 
         //Calculate ZONE_LONGITUDE
-        double B = 1 - Math.cos(2 * Math.PI * 1 / ZONE_LATITUDE0) / Math.pow(Math.cos(Units.convertFrom(latitude0, Units.Angle.TURN)), 2);
-        double A = Math.acos(B);
+        double B = (1 - Math.cos(2 * Math.PI * 1 / ZONE_LATITUDE0)) / Math.pow(Math.cos(Units.convert(latitude0,Units.Angle.TURN ,Units.Angle.DEGREE)), 2);
+        double A = Math.acos(1 - B);
 
         if (Math.abs(B) < 1) {
             ZONE_LONGITUDE0 = 1;
-        } else {
+        }
+        if (Double.isNaN(A)){
+            ZONE_LONGITUDE0 = 1;
+        }
+        else {
             ZONE_LONGITUDE0 = Math.floor((2 * Math.PI) / A);
         }
         ZONE_LONGITUDE1 = ZONE_LONGITUDE0 - 1;
@@ -65,11 +69,12 @@ public class CprDecoder {
                 index_zone_long1 = index_zone_long0;
             }
             longitude0 = (1 / ZONE_LONGITUDE0) * (index_zone_long0 + x0_normalized);
+            System.out.println(longitude0);
             longitude1 = (1 / ZONE_LONGITUDE1) * (index_zone_long1 + x0_normalized);
         }
 
         if (latitude0 > 0.5) { //recentrer 0
-            latitude0 = latitude0 - 1;
+            latitude0 = 1- latitude0;
         }
 
         int latitude0_T32 = (int) Units.convert(latitude0, Units.Angle.TURN, Units.Angle.T32);
@@ -85,5 +90,10 @@ public class CprDecoder {
             else return new GeoPos(longitude0_T32, latitude0_T32);
 
         }
+    }
+
+    public static void main(String[] args){
+        GeoPos geoPos = decodePosition(111600, 94445, 108865, 77558, 0);
+        System.out.println(geoPos);
     }
 }
