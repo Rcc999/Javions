@@ -28,7 +28,9 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
 
 
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
-        return new AircraftIdentificationMessage(aircraftIdentificationMessage.timeStampNs(), aircraftIdentificationMessage.icaoAddress(), categoryOfAircraft(rawMessage), callSignOfAircraft(rawMessage));
+        CallSign callSign1 = callSignOfAircraft(rawMessage);
+        System.out.println(callSign1);
+        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), categoryOfAircraft(rawMessage), callSignOfAircraft(rawMessage));
 
     }
         private static int categoryOfAircraft (RawMessage rawMessage){
@@ -42,7 +44,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         private static CallSign callSignOfAircraft (RawMessage rawMessage){
             StringBuilder stringBuilder = new StringBuilder(8);
             int cI;
-            for (int i = 0; i < 49; i += 6) {
+            for (int i = 0; i < 43; i += 6) {
                 cI = Bits.extractUInt(rawMessage.payload(), 42 - i, 6);
                 if(string.charAt(cI) == string.charAt(32) && stringBuilder.isEmpty()){
                     continue;
