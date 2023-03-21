@@ -7,8 +7,6 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity,
                                       double x, double y) implements Message{
 
-    private static AirbornePositionMessage airbornePositionMessage;
-
     public AirbornePositionMessage {
         if (icaoAddress == null) { throw new NullPointerException("");}
         Preconditions.checkArgument(timeStampNs < 0 || (parity == 0 || parity == 1) || (x >= 0 && x < 1) || (y >= 0 && y < 1));
@@ -26,16 +24,16 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    private double Q1(RawMessage rawMessage){
+    private static double Q1(RawMessage rawMessage){
         int alt =  Bits.extractUInt(rawMessage.payload(), 36, 12);
-        double q1 = Bits.extractUInt((long) this.altitude , 4, 1);
-        if(q1 == parity){
-            return (double) removeBit(alt);
+        int q = Bits.extractUInt(alt , 4, 1);
+        if(q == 1){
+            return (double) -1000 + removeBit(alt) * 25;
        }
         return 0;
     }
 
-    private int removeBit(int num) {
+    private static int removeBit(int num) {
         int mask = (1 << 4) - 1;
         return (char) ((num & ((~mask) << 1)) >>> 1) | (num & mask);
     }
