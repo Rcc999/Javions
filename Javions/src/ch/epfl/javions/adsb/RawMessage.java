@@ -22,8 +22,6 @@ public record RawMessage(long timeStampNs,ByteString bytes) {
     private static final int ICAO_LAST = 4;
     private static final int ICAO_DIGIT_EXTRACT = 6;
 
-
-
     public RawMessage{
         Preconditions.checkArgument(timeStampNs >= 0 );
         Preconditions.checkArgument(bytes.size() == LENGTH);
