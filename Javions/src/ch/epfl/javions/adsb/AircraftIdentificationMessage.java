@@ -51,5 +51,6 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
             }
             if (stringBuilder.toString().contains("?")) {return null;}
             return new CallSign(stringBuilder.toString());
+
         }
     }
