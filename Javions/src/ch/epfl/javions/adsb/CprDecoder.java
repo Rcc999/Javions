@@ -69,10 +69,10 @@ public class CprDecoder {
                 index_zone_long1 = index_zone_long0;
             }
             longitude0 = (1 / ZONE_LONGITUDE0) * (index_zone_long0 + x0_normalized);
-            System.out.println(longitude0);
             longitude1 = (1 / ZONE_LONGITUDE1) * (index_zone_long1 + x0_normalized);
         }
 
+        //To CHECK
         if (latitude0 > 0.5) { //recentrer 0
             latitude0 = 1- latitude0;
         }
@@ -88,12 +88,11 @@ public class CprDecoder {
         } else {
             if (!GeoPos.isValidLatitudeT32(latitude0_T32)) return null;
             else return new GeoPos(longitude0_T32, latitude0_T32);
-
         }
     }
 
     public static void main(String[] args){
-        GeoPos geoPos = decodePosition(111600, 94445, 108865, 77558, 0);
+        GeoPos geoPos = decodePosition(111600, 94445, 108865, 77558, 1);
         System.out.println(geoPos);
     }
 }
