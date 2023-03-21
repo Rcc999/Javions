@@ -74,7 +74,7 @@ public final class Units {
 
     /**
      *
-     * @param value: type double, a value that will be converted from one to another unit
+     * @param value: type double, a value that will be converted from one to base unit
      * @param fromUnit: initial unit
      * @return value in fromUnit
      */
