@@ -83,6 +83,7 @@ public class CprDecoder {
         } else {
             if (!GeoPos.isValidLatitudeT32(latitude0_T32)) return null;
             else return new GeoPos(longitude0_T32, latitude0_T32);
+
         }
     }
 }
