@@ -18,10 +18,10 @@ public class CprDecoder {
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);
 
         //Normalize y0 and y1, x0 and x1
-        double y0_normalized = y0 * Math.pow(2, -17);
-        double y1_normalized = y1 * Math.pow(2, -17);
-        double x0_normalized = x0 * Math.pow(2, -17);
-        double x1_normalized = x1 * Math.pow(2, -17);
+        double y0_normalized = y0 * Math.scalb(1, -17);
+        double y1_normalized = y1 * Math.scalb(1, -17);
+        double x0_normalized = x0 * Math.scalb(1, -17);
+        double x1_normalized = x1 * Math.scalb(1, -17);
 
         //Calculate les numéros de zones de latitude
         double nb_zone_lat = Math.rint(y0_normalized * ZONE_LATITUDE1 - y1_normalized * ZONE_LATITUDE0);
@@ -42,9 +42,6 @@ public class CprDecoder {
         double B = (1 - Math.cos(2 * Math.PI * 1 / ZONE_LATITUDE0)) / Math.pow(Math.cos(Units.convert(latitude0,Units.Angle.TURN ,Units.Angle.DEGREE)), 2);
         double A = Math.acos(1 - B);
 
-        if (Math.abs(B) < 1) {
-            ZONE_LONGITUDE0 = 1;
-        }
         if (Double.isNaN(A)){
             ZONE_LONGITUDE0 = 1;
         }
@@ -77,10 +74,10 @@ public class CprDecoder {
             latitude0 = 1- latitude0;
         }
 
-        int latitude0_T32 = (int) Units.convert(latitude0, Units.Angle.TURN, Units.Angle.T32);
-        int latitude1_T32 = (int) Units.convert(latitude1, Units.Angle.TURN, Units.Angle.T32);
-        int longitude0_T32 = (int) Units.convert(longitude0, Units.Angle.TURN, Units.Angle.T32);
-        int longitude1_T32 = (int) Units.convert(longitude1, Units.Angle.TURN, Units.Angle.T32);
+        int latitude0_T32 = (int) Math.rint(Units.convert(latitude0, Units.Angle.TURN, Units.Angle.T32));
+        int latitude1_T32 = (int) Math.rint(Units.convert(latitude1, Units.Angle.TURN, Units.Angle.T32));
+        int longitude0_T32 = (int) Math.rint(Units.convert(longitude0, Units.Angle.TURN, Units.Angle.T32));
+        int longitude1_T32 = (int) Math.rint(Units.convert(longitude1, Units.Angle.TURN, Units.Angle.T32));
 
         if (mostRecent == 1) {
             if (!GeoPos.isValidLatitudeT32(latitude1_T32)) return null;
