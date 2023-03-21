@@ -1,9 +1,9 @@
-package ch.epfl.javions.adsb;
+package ch.epfl.javions.demodulation;
 
-import ch.epfl.javions.demodulation.AdsbDemodulator;
-import ch.epfl.javions.demodulation.PowerWindow;
+import ch.epfl.javions.adsb.RawMessage;
 
 import java.io.*;
+import java.util.Objects;
 
 public class AdsbDemodulatorTestPersonal {
     public static void main(String[] args) throws IOException {
@@ -20,8 +20,8 @@ public class AdsbDemodulatorTestPersonal {
             System.out.println(length);
         }
 
-/**
-        DataInputStream stream = new DataInputStream(
+
+        /*DataInputStream stream = new DataInputStream(
                 new BufferedInputStream(
                         new FileInputStream(AdsbDemodulatorTestPersonal.class.getResource("/samples_20230304_1442.bin").getFile())));
 
@@ -60,6 +60,12 @@ public class AdsbDemodulatorTestPersonal {
             }
             message[i] = (byte) a;
         }
+
+        for (int i = 0; i < 14; i++) {
+            System.out.println(message[i]);
+        }
+
+
 
         RawMessage rawMessage = RawMessage.of(8096200, message);
         System.out.println(rawMessage);

@@ -73,7 +73,6 @@ public final class PowerWindow {
     public void advance() throws IOException {
         this.position++;
         actualWindowPosition++;
-        //numberOfSamples--;
         if(actualWindowPosition + windowSize - 1 == firstLot.length){
             numberOfSamples += powerComputer.readBatch(secondLot);
         }
