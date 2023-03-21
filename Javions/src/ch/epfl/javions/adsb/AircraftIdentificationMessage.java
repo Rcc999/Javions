@@ -6,7 +6,8 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 
 public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAddress, int category, CallSign callSign) implements Message {
 
-    private static final String string = "?ABCDEFGHIJKLMNOPQRSTUVWXYZ???? ???????????????0123456789";
+    private static final String STRING = "?ABCDEFGHIJKLMNOPQRSTUVWXYZ?????\s???????????????0123456789";
+
     private static AircraftIdentificationMessage aircraftIdentificationMessage;
 
     public AircraftIdentificationMessage {
@@ -18,18 +19,20 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
 
     @Override
     public long timeStampNs() {
-        return timeStampNs;
+        return this.timeStampNs;
     }
 
     @Override
     public IcaoAddress icaoAddress() {
-        return icaoAddress;
+        return this.icaoAddress;
     }
 
 
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
-        CallSign callSign1 = callSignOfAircraft(rawMessage);
-        System.out.println(callSign1);
+        System.out.println(rawMessage.icaoAddress());
+        System.out.println(rawMessage.timeStampNs());
+        System.out.println(categoryOfAircraft(rawMessage));
+        System.out.println(callSignOfAircraft(rawMessage));
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), categoryOfAircraft(rawMessage), callSignOfAircraft(rawMessage));
 
     }
@@ -46,13 +49,12 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
             int cI;
             for (int i = 0; i < 43; i += 6) {
                 cI = Bits.extractUInt(rawMessage.payload(), 42 - i, 6);
-                if(string.charAt(cI) == string.charAt(32) && stringBuilder.isEmpty()){
+                if(STRING.charAt(cI) == STRING.charAt(32) && stringBuilder.isEmpty()){
                     continue;
                 }
-                stringBuilder.append(string.charAt(cI));
+                stringBuilder.append(STRING.charAt(cI));
             }
-            if (stringBuilder.toString().contains("?")) {return null;}
-            return new CallSign(stringBuilder.toString());
-
+            if (stringBuilder.toString().contains("?")) { return null; }
+            return new CallSign(stringBuilder.toString().trim());
         }
     }
