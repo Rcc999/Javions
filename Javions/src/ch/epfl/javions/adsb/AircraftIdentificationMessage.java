@@ -3,10 +3,12 @@ package ch.epfl.javions.adsb;
 import ch.epfl.javions.Bits;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
+import ch.epfl.javions.demodulation.AdsbDemodulator;
 
 public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAddress, int category, CallSign callSign) implements Message {
 
     private static final String STRING = "?ABCDEFGHIJKLMNOPQRSTUVWXYZ?????\s???????????????0123456789";
+
 
     private static AircraftIdentificationMessage aircraftIdentificationMessage;
 
@@ -14,7 +16,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         if (icaoAddress == null || callSign == null) {
             throw new NullPointerException("");
         }
-        Preconditions.checkArgument(timeStampNs < 0);
+        Preconditions.checkArgument(timeStampNs >= 0);
     }
 
     @Override
@@ -33,8 +35,8 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         System.out.println(rawMessage.timeStampNs());
         System.out.println(categoryOfAircraft(rawMessage));
         System.out.println(callSignOfAircraft(rawMessage));
-        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), categoryOfAircraft(rawMessage), callSignOfAircraft(rawMessage));
-
+        CallSign callSign = callSignOfAircraft(rawMessage);
+        return callSign == null ?  null : new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), categoryOfAircraft(rawMessage), callSign);
     }
         private static int categoryOfAircraft (RawMessage rawMessage){
             int typeCode = rawMessage.typeCode();
@@ -49,6 +51,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
             int cI;
             for (int i = 0; i < 43; i += 6) {
                 cI = Bits.extractUInt(rawMessage.payload(), 42 - i, 6);
+                if(cI >= 58 || cI < 0) {return null;}
                 if(STRING.charAt(cI) == STRING.charAt(32) && stringBuilder.isEmpty()){
                     continue;
                 }
