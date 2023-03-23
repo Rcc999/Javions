@@ -37,7 +37,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         System.out.println(callSignOfAircraft(rawMessage));*/
         CallSign callSign = callSignOfAircraft(rawMessage);
         int category = categoryOfAircraft(rawMessage);
-        return callSign == null &&  category== 0 ?  null : new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign);
+        return callSign == null ||  category== 0 ?  null : new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign);
     }
         private static int categoryOfAircraft (RawMessage rawMessage){
             int typeCode = rawMessage.typeCode();
