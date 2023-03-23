@@ -18,8 +18,11 @@ public class AircraftIdentificationMessagePersonalTest {
             int length = 0;
             while ((message = demodulator.nextMessage()) != null) {
                 AircraftIdentificationMessage air = AircraftIdentificationMessage.of(message);
-                System.out.println(air);
-                ++length;
+                if(air != null) {
+                    System.out.println(air);
+                    ++length;
+                }
+
             }
             System.out.println(length);
         }
