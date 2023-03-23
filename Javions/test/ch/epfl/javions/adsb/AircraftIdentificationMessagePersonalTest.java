@@ -18,7 +18,7 @@ public class AircraftIdentificationMessagePersonalTest {
             int length = 0;
             while ((message = demodulator.nextMessage()) != null) {
                 AircraftIdentificationMessage air = AircraftIdentificationMessage.of(message);
-                if(air != null) {
+                if(air != null && air.category() >= 160 && air.category() < 166) {
                     System.out.println(air);
                     ++length;
                 }

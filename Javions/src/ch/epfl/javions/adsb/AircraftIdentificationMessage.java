@@ -37,16 +37,16 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         System.out.println(callSignOfAircraft(rawMessage));*/
         CallSign callSign = callSignOfAircraft(rawMessage);
         int category = categoryOfAircraft(rawMessage);
-        return callSign == null ||  category== 0 ?  null : new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign);
+        return callSign == null  ?  null : new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign);
     }
         private static int categoryOfAircraft (RawMessage rawMessage){
             int typeCode = rawMessage.typeCode();
-            if(typeCode >= 1 && typeCode <= 4) {
+            //if(typeCode >= 1 && typeCode <= 4) {
                 int mostSignificant4bitsCategory = 14 - typeCode;
                 int cA = Bits.extractUInt(rawMessage.payload(), 48, 3);
                 return (mostSignificant4bitsCategory << 4) | cA;
-            }
-            return 0;
+            //}
+            //return 0;
         }
 
 
