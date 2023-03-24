@@ -18,19 +18,26 @@ public class AircraftIdentificationMessagePersonalTest {
             int length = 0;
             while ((message = demodulator.nextMessage()) != null) {
                 AircraftIdentificationMessage air = AircraftIdentificationMessage.of(message);
-                System.out.println(air);
-                ++length;
+                if(air != null && air.category() >= 160 && air.category() < 166) {
+                    System.out.println(air);
+                    ++length;
+                }
+
             }
             System.out.println(length);
         }
 
-        /**
-        byte[] a = {-115, 75, 23, -27, -8, 33, 0, 2, 0, 75, -72, -79, -15, -84};
-        RawMessage rawMessage = RawMessage.of(8096200, a);
+
+        /*byte[] a = {-115, 77, 34, 40, 35, 73, -108, -73, 40, 72, 32, 50, 59, -127};
+        RawMessage rawMessage = RawMessage.of(1499146900, a);
         System.out.println(rawMessage);
 
+        assert rawMessage != null;
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
-        System.out.println(icaoAddress); */
+        //System.out.println(icaoAddress);
+
+        AircraftIdentificationMessage air = AircraftIdentificationMessage.of(rawMessage);
+        System.out.println(air);*/
 
     }
 }
