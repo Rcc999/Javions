@@ -54,6 +54,9 @@ public final class AdsbDemodulator {
 
                 if((RawMessage.size(message[0]) == RawMessage.LENGTH) && rawMessage != null){
                     powerWindow.advanceBy(WINDOW_SIZE);
+                    /*for (int i = 0; i < message.length; i++) {
+                        System.out.print(message[i] + ", ");
+                    }*/
                     return rawMessage;
                 } else {
                     powerWindow.advance();
