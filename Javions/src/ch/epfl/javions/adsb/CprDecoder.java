@@ -17,14 +17,8 @@ public class CprDecoder {
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);
 
-        //Normalize y0 and y1, x0 and x1
-        double y0_normalized = normalized(y0);
-        double y1_normalized = normalized(y1);
-        double x0_normalized = normalized(x0);
-        double x1_normalized = normalized(x1);
-
         //Calculate les numéros de zones de latitude
-        double nb_zone_lat = Math.rint(y0_normalized * ZONE_LATITUDE1 - y1_normalized * ZONE_LATITUDE0);
+        double nb_zone_lat = Math.rint(y0 * ZONE_LATITUDE1 - y1 * ZONE_LATITUDE0);
 
         if (nb_zone_lat < 0) {
             index_zone_lat0 = nb_zone_lat + ZONE_LATITUDE0;
@@ -35,18 +29,23 @@ public class CprDecoder {
         }
 
         //Latitude in TURN
-        double latitude0 = (1 / ZONE_LATITUDE0) * (index_zone_lat0 + y0_normalized);
-        double latitude1 = (1 / ZONE_LATITUDE1) * (index_zone_lat1 + y1_normalized);
+        double latitude0 = (1 / ZONE_LATITUDE0) * (index_zone_lat0 + y0);
+        double latitude1 = (1 / ZONE_LATITUDE1) * (index_zone_lat1 + y1);
 
         //Calculate ZONE_LONGITUDE
-        double B = calculateB(latitude0);
-        double A = Math.acos(1 - B);
+        double B0 = calculateB(latitude0);
+        double B1 = calculateB(latitude1);
+        double A0 = Math.acos(1 - B0);
+        double A1 = Math.acos(1 - B1);
 
-        if (Double.isNaN(A)){
+        if (Double.isNaN(A0) && Double.isNaN(A1)){
             ZONE_LONGITUDE0 = 1;
         }
         else {
-            ZONE_LONGITUDE0 = Math.floor((2 * Math.PI) / A);
+            if (!compare(A0, A1)){
+                return null;
+            }
+            ZONE_LONGITUDE0 = Math.floor((2 * Math.PI) / A0);
         }
         ZONE_LONGITUDE1 = ZONE_LONGITUDE0 - 1;
 
@@ -54,10 +53,10 @@ public class CprDecoder {
         double longitude0;
         double longitude1;
         if (ZONE_LONGITUDE0 == 1) {
-            longitude0 = x0_normalized;
-            longitude1 = x1_normalized;
+            longitude0 = x0;
+            longitude1 = x1;
         } else {
-            double index_zone_long = Math.rint(x0_normalized * ZONE_LONGITUDE1 - x1_normalized * ZONE_LONGITUDE0);
+            double index_zone_long = Math.rint(x0 * ZONE_LONGITUDE1 - x1 * ZONE_LONGITUDE0);
             if (index_zone_long < 0) {
                 index_zone_long0 = index_zone_long + ZONE_LONGITUDE0;
                 index_zone_long1 = index_zone_long + ZONE_LONGITUDE1;
@@ -65,8 +64,8 @@ public class CprDecoder {
                 index_zone_long0 = index_zone_long;
                 index_zone_long1 = index_zone_long0;
             }
-            longitude0 = (1 / ZONE_LONGITUDE0) * (index_zone_long0 + x0_normalized);
-            longitude1 = (1 / ZONE_LONGITUDE1) * (index_zone_long1 + x0_normalized);
+            longitude0 = (1 / ZONE_LONGITUDE0) * (index_zone_long0 + x0);
+            longitude1 = (1 / ZONE_LONGITUDE1) * (index_zone_long1 + x0);
         }
 
         //Center At 0
@@ -90,12 +89,14 @@ public class CprDecoder {
         }
     }
 
-    private static double normalized(double a){
-        return Math.scalb(a, -17);
-    }
-
     private static double calculateB(double a){
         return (1 - Math.cos(2 * Math.PI * 1 / ZONE_LATITUDE0)) / Math.pow(Math.cos(Units.convert(a,Units.Angle.TURN ,Units.Angle.DEGREE)), 2);
+    }
+
+    private static boolean compare(double x, double y){
+        double a1 = Math.floor((2 * Math.PI) / x);
+        double a2 = Math.floor((2 * Math.PI) / y);
+        return a1 == a2;
     }
 
     private static double centerAt0(double a){
@@ -106,7 +107,7 @@ public class CprDecoder {
     }
 
     public static void main(String[] args){
-        GeoPos geoPos = decodePosition(111600, 94445, 108865, 77558, 0);
+        GeoPos geoPos = decodePosition(Math.scalb(111600, -17) , Math.scalb(94445, -17) , Math.scalb(108865, -17) , Math.scalb(77558, -17) , 0);
         System.out.println(geoPos);
     }
 }
