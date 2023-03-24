@@ -45,9 +45,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     private static double altitudeCalculator(RawMessage rawMessage){
         int alt = Bits.extractUInt(rawMessage.payload(), 36, 12);
-        if(!checkTypeCode(rawMessage)){
-            return Double.NaN;
-        }
 
         if(determineQ(rawMessage) == 1){
             return Units.convert((double) -1000 + removeBitForQ1(alt) * 25, Units.Length.FOOT, Units.Length.METER);
@@ -109,10 +106,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         return a;
     }
 
-    private static boolean checkTypeCode(RawMessage rawMessage){
-        return (rawMessage.typeCode() >= 9 && rawMessage.typeCode() <= 18) || (rawMessage.typeCode() >= 20 && rawMessage.typeCode() <= 22);
-    }
-
+    /**
     public static void main(String[] args) {
         System.out.println(removeBitForQ1( 0b100010110011));
         System.out.println(GrayToValue( 0b000101011, 9));
@@ -123,7 +117,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         RawMessage rawMessage = RawMessage.of(75898000, a);
         AirbornePositionMessage air = AirbornePositionMessage.of(rawMessage);
         System.out.println(air);
-    }
+    }*/
 
 }
 
