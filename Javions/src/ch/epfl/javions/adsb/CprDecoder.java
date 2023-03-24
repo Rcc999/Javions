@@ -18,10 +18,10 @@ public class CprDecoder {
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);
 
         //Normalize y0 and y1, x0 and x1
-        double y0_normalized = y0 * Math.scalb(1, -17);
-        double y1_normalized = y1 * Math.scalb(1, -17);
-        double x0_normalized = x0 * Math.scalb(1, -17);
-        double x1_normalized = x1 * Math.scalb(1, -17);
+        double y0_normalized = normalized(y0);
+        double y1_normalized = normalized(y1);
+        double x0_normalized = normalized(x0);
+        double x1_normalized = normalized(x1);
 
         //Calculate les numéros de zones de latitude
         double nb_zone_lat = Math.rint(y0_normalized * ZONE_LATITUDE1 - y1_normalized * ZONE_LATITUDE0);
@@ -39,7 +39,7 @@ public class CprDecoder {
         double latitude1 = (1 / ZONE_LATITUDE1) * (index_zone_lat1 + y1_normalized);
 
         //Calculate ZONE_LONGITUDE
-        double B = (1 - Math.cos(2 * Math.PI * 1 / ZONE_LATITUDE0)) / Math.pow(Math.cos(Units.convert(latitude0,Units.Angle.TURN ,Units.Angle.DEGREE)), 2);
+        double B = calculateB(latitude0);
         double A = Math.acos(1 - B);
 
         if (Double.isNaN(A)){
@@ -69,16 +69,18 @@ public class CprDecoder {
             longitude1 = (1 / ZONE_LONGITUDE1) * (index_zone_long1 + x0_normalized);
         }
 
-        //To CHECK
-        if (latitude0 > 0.5) { //recentrer 0
-            latitude0 = 1- latitude0;
-        }
+        //Center At 0
+        latitude0 = centerAt0(latitude0);
+        latitude1 = centerAt0(latitude1);
+        longitude0 = centerAt0(longitude0);
+        longitude1 = centerAt0(longitude1);
 
         int latitude0_T32 = (int) Math.rint(Units.convert(latitude0, Units.Angle.TURN, Units.Angle.T32));
         int latitude1_T32 = (int) Math.rint(Units.convert(latitude1, Units.Angle.TURN, Units.Angle.T32));
         int longitude0_T32 = (int) Math.rint(Units.convert(longitude0, Units.Angle.TURN, Units.Angle.T32));
         int longitude1_T32 = (int) Math.rint(Units.convert(longitude1, Units.Angle.TURN, Units.Angle.T32));
 
+        //Return longitude and latitude depend on most recent (even or odd)
         if (mostRecent == 1) {
             if (!GeoPos.isValidLatitudeT32(latitude1_T32)) return null;
             else return new GeoPos(longitude1_T32, latitude1_T32);
@@ -88,8 +90,23 @@ public class CprDecoder {
         }
     }
 
+    private static double normalized(double a){
+        return Math.scalb(a, -17);
+    }
+
+    private static double calculateB(double a){
+        return (1 - Math.cos(2 * Math.PI * 1 / ZONE_LATITUDE0)) / Math.pow(Math.cos(Units.convert(a,Units.Angle.TURN ,Units.Angle.DEGREE)), 2);
+    }
+
+    private static double centerAt0(double a){
+        if(a >= 0.5){
+            return a - 1;
+        }
+        return a;
+    }
+
     public static void main(String[] args){
-        GeoPos geoPos = decodePosition(111600, 94445, 108865, 77558, 1);
+        GeoPos geoPos = decodePosition(111600, 94445, 108865, 77558, 0);
         System.out.println(geoPos);
     }
 }
