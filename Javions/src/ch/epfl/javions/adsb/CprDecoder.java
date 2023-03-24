@@ -106,8 +106,9 @@ public class CprDecoder {
         return a;
     }
 
+    /**
     public static void main(String[] args){
         GeoPos geoPos = decodePosition(Math.scalb(111600, -17) , Math.scalb(94445, -17) , Math.scalb(108865, -17) , Math.scalb(77558, -17) , 0);
         System.out.println(geoPos);
-    }
+    }*/
 }
