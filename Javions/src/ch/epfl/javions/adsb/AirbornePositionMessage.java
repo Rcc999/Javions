@@ -11,8 +11,10 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     public AirbornePositionMessage {
         if (icaoAddress == null) { throw new NullPointerException("IcaoAddress is null");}
-        Preconditions.checkArgument(timeStampNs < 0 || (parity == 0 || parity == 1)
-                                    || (x >= 0 && x < 1) || (y >= 0 && y < 1));
+        Preconditions.checkArgument(timeStampNs >= 0);
+        Preconditions.checkArgument(parity == 0 || parity == 1);
+        Preconditions.checkArgument(x >= 0 && x < 1);
+        Preconditions.checkArgument(y >= 0 && y < 1);
     }
     @Override
     public long timeStampNs() {
