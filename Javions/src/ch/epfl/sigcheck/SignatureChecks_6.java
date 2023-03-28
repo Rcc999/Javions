@@ -8,7 +8,6 @@ package ch.epfl.sigcheck;
 final class SignatureChecks_6 {
     private SignatureChecks_6() {}
 
-    /**
     void checkAirborneVelocityMessage() throws Exception {
         v01 = new ch.epfl.javions.adsb.AirborneVelocityMessage(v02, v03, v04, v04);
         v01 = ch.epfl.javions.adsb.AirborneVelocityMessage.of(v05);
@@ -42,5 +41,5 @@ final class SignatureChecks_6 {
     java.lang.String v09;
     ch.epfl.javions.adsb.AircraftStateAccumulator<ch.epfl.javions.adsb.AircraftStateSetter> v10;
     ch.epfl.javions.adsb.AircraftStateSetter v11;
-    ch.epfl.javions.adsb.Message v12;*/
+    ch.epfl.javions.adsb.Message v12;
 }
