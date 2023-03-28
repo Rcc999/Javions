@@ -65,7 +65,7 @@ public class CprDecoder {
                 index_zone_long1 = index_zone_long0;
             }
             longitude0 = (1 / ZONE_LONGITUDE0) * (index_zone_long0 + x0);
-            longitude1 = (1 / ZONE_LONGITUDE1) * (index_zone_long1 + x0);
+            longitude1 = (1 / ZONE_LONGITUDE1) * (index_zone_long1 + x1);
         }
 
         //Center At 0
@@ -90,7 +90,7 @@ public class CprDecoder {
     }
 
     private static double calculateB(double a){
-        return (1 - Math.cos(2 * Math.PI * 1 / ZONE_LATITUDE0)) / Math.pow(Math.cos(Units.convert(a,Units.Angle.TURN ,Units.Angle.DEGREE)), 2);
+        return (1 - Math.cos(2 * Math.PI * (1 / ZONE_LATITUDE0))) / Math.pow(Math.cos(Units.convert(a,Units.Angle.TURN ,Units.Angle.RADIAN)), 2);
     }
 
     private static boolean compare(double x, double y){
@@ -101,14 +101,14 @@ public class CprDecoder {
 
     private static double centerAt0(double a){
         if(a >= 0.5){
-            return a - 1;
+            return  a-1;
         }
         return a;
     }
 
-    /**
+
     public static void main(String[] args){
-        GeoPos geoPos = decodePosition(Math.scalb(111600, -17) , Math.scalb(94445, -17) , Math.scalb(108865, -17) , Math.scalb(77558, -17) , 0);
+        GeoPos geoPos = decodePosition(Math.scalb(9413, -17) , Math.scalb(80534, -17) , Math.scalb(9144, -17) , Math.scalb(61714, -17) , 0);
         System.out.println(geoPos);
-    }*/
+    }
 }
