@@ -13,11 +13,12 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
     public static AirborneVelocityMessage of(RawMessage rawMessage){
-        /*if(rawMessage.typeCode() ==  19){
+        if (rawMessage.typeCode() ==  19){
+            if(speedCalculator(rawMessage, subTypeCalculator(rawMessage)) ==  0) {return null;}
+            return new AirborneVelocityMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), speedCalculator(rawMessage, subTypeCalculator(rawMessage)), trackOrHeadingCalculator(rawMessage));
+        }
 
-        }*/
 
-        if(speedCalculator(rawMessage, subTypeCalculator(rawMessage)) ==  0) {return null;}
         return null;
 
     }
@@ -64,7 +65,6 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         if(subTypeCalculator(rawMessage) == 2){return 4 * Units.convertFrom(groundSpeedNormalized(rawMessage), Units.Speed.KNOT);}
         return 0;
     }
-
 
     private static double groundHeadingEastWestCalculator(RawMessage rawMessage){
         return groundMovementCalculator(rawMessage)[1] == 0 ? groundSpeedNormalized(rawMessage) : -groundSpeedNormalized(rawMessage);
