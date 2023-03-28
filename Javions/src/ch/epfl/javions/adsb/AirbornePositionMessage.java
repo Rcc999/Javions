@@ -52,7 +52,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             return Units.convert((double) -1000 + removeBitForQ1(alt) * 25, Units.Length.FOOT, Units.Length.METER);
        } else {
             //Un-scramble
-            alt = shouldBeReplaceWithBetterAlgo(alt);
+            alt = unscrambled(alt);
 
             //Divide in 2 groups
             int group1 = Bits.extractUInt(alt, 0, 3);
@@ -100,6 +100,17 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         return d;
     }
 
+    private static int unscrambled(int b){
+        int swapped = 0;
+        int[] bitOrder = {7, 9, 11, 1, 3, 5, 6, 8, 10, 0, 2, 4};
+        for (int i = 0; i < bitOrder.length; i++) {
+            int bit = (b >> bitOrder[i]) & 1;
+            bit <<= i;
+            swapped |= bit;
+        }
+        return swapped;
+    }
+
     private static int GrayToValue(int gray, int nb_bits){
         int a = gray;
         for(int i = 1; i < nb_bits; ++i){
@@ -114,6 +125,9 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         System.out.println(GrayToValue( 0b000101011, 9));
         System.out.println(GrayToValue( 0b010, 3));
         System.out.println(shouldBeReplaceWithBetterAlgo(0b011001001010));
+        System.out.println(Integer.toBinaryString(shouldBeReplaceWithBetterAlgo(0b011001001010)));
+        System.out.println(unscrambled(0b011001001010));
+        System.out.println(Integer.toBinaryString(unscrambled(0b011001001010)));
 
         byte[] a = {-115, 73, 82, -103, 88, -77, 2, -26, -31, 95, -93, 82, 48, 107};
         RawMessage rawMessage = RawMessage.of(75898000, a);
