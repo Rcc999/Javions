@@ -28,9 +28,11 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 AirbornePositionMessage previousPositionMessage = currentPositionMessage;
                 currentPositionMessage = (AirbornePositionMessage) message;
                 stateSetter.setAltitude(position.altitude());
-                if(previousPositionMessage.parity() != currentPositionMessage.parity()){
-                    if(timeStampNsDiff(currentPositionMessage.timeStampNs(), previousPositionMessage.timeStampNs())){
-                        stateSetter.setPosition(positionCalculator(currentPositionMessage, currentPositionMessage, (AirbornePositionMessage) message));
+                if(previousPositionMessage != null){
+                    if(previousPositionMessage.parity() != currentPositionMessage.parity()){
+                        if(timeStampNsDiff(currentPositionMessage.timeStampNs(), previousPositionMessage.timeStampNs())){
+                            stateSetter.setPosition(positionCalculator(currentPositionMessage, currentPositionMessage, position)); //check
+                        }
                     }
                 }
             }
