@@ -14,14 +14,20 @@ public class AircraftStateAccumulatorTestPersonal {
         try (InputStream s = new FileInputStream(f)) {
             AdsbDemodulator d = new AdsbDemodulator(s);
             RawMessage m;
+            int length = 0;
             AircraftStateAccumulator<AircraftState> a =
                     new AircraftStateAccumulator<>(new AircraftState());
             while ((m = d.nextMessage()) != null) {
                 if (!m.icaoAddress().equals(expectedAddress)) continue;
 
                 Message pm = MessageParser.parse(m);
-                if (pm != null) a.update(pm);
+                if (pm != null){
+                    //System.out.println(pm);
+                    length++;
+                    a.update(pm);
+                }
             }
+            System.out.println(length);
         }
     }
 }
