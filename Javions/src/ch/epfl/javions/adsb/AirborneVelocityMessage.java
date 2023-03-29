@@ -34,7 +34,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     private static double trackOrHeadingCalculator(RawMessage rawMessage){
-     return Units.convertFrom(Math.atan2(groundHeadingNorthSouthCalculator(rawMessage), groundHeadingEastWestCalculator(rawMessage)), Units.Angle.RADIAN);
+     return Math.atan2(groundHeadingNorthSouthCalculator(rawMessage), groundHeadingEastWestCalculator(rawMessage));
     }
 
 
