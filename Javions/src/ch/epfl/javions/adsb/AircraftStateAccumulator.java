@@ -5,7 +5,8 @@ import ch.epfl.javions.GeoPos;
 public class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
     private final T stateSetter;
-    private AirbornePositionMessage currentPositionMessage;
+    private AirbornePositionMessage previousPositionMessageEven;
+    private AirbornePositionMessage previousPositionMessageOdd;
 
     public AircraftStateAccumulator(T stateSetter){
         if(stateSetter == null) throw new NullPointerException("State setter is null");
@@ -25,13 +26,20 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 stateSetter.setCategory(identification.category());
             }
             case AirbornePositionMessage position -> {
-                AirbornePositionMessage previousPositionMessage = currentPositionMessage;
-                currentPositionMessage = (AirbornePositionMessage) message;
+                if(position.parity() == 1){previousPositionMessageOdd = position;}
+                else{previousPositionMessageEven = position;}
+
                 stateSetter.setAltitude(position.altitude());
-                if(previousPositionMessage != null){
-                    if(previousPositionMessage.parity() != currentPositionMessage.parity()){
-                        if(timeStampNsDiff(currentPositionMessage.timeStampNs(), previousPositionMessage.timeStampNs())){
-                            stateSetter.setPosition(positionCalculator(currentPositionMessage, currentPositionMessage, position)); //check
+
+                if(previousPositionMessageEven != null && previousPositionMessageOdd != null){
+                    if(position.parity() == 1) {
+                        if (timeStampNsDiff(position.timeStampNs(), previousPositionMessageEven.timeStampNs())) {
+                            stateSetter.setPosition(positionCalculator(position, previousPositionMessageEven)); //check
+                        }
+                    }
+                    else{
+                        if(timeStampNsDiff(position.timeStampNs(), previousPositionMessageOdd.timeStampNs())){
+                            stateSetter.setPosition(positionCalculator(position, previousPositionMessageOdd));
                         }
                     }
                 }
@@ -49,7 +57,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
         return (current - previous) <= Math.pow(10, 10);
     }
 
-    private GeoPos positionCalculator(AirbornePositionMessage positionMessage1, AirbornePositionMessage positionMessage2, AirbornePositionMessage message){
+    private GeoPos positionCalculator(AirbornePositionMessage positionMessage1, AirbornePositionMessage positionMessage2){
         double x0 = 0.0, y0 = 0.0, x1 = 0.0, y1 = 0.0;
         switch (positionMessage1.parity()){
             case 0 -> {
@@ -65,7 +73,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 y1 = positionMessage1.y();
             }
         }
-        return CprDecoder.decodePosition(x0, y0, x1, y1, message.parity());
+        return CprDecoder.decodePosition(x0, y0, x1, y1, positionMessage1.parity());
     }
 
 }
