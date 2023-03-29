@@ -34,13 +34,11 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 if(previousPositionMessageEven != null && previousPositionMessageOdd != null){
                     if(position.parity() == 1) {
                         if (timeStampNsDiff(position.timeStampNs(), previousPositionMessageEven.timeStampNs())) {
-                            stateSetter.setPosition(positionCalculator(position, previousPositionMessageEven)); //check
+                            stateSetter.setPosition(positionCalculator(position, previousPositionMessageEven));
                         }
                     }
-                    else{
-                        if(timeStampNsDiff(position.timeStampNs(), previousPositionMessageOdd.timeStampNs())){
+                    else if(timeStampNsDiff(position.timeStampNs(), previousPositionMessageOdd.timeStampNs())){
                             stateSetter.setPosition(positionCalculator(position, previousPositionMessageOdd));
-                        }
                     }
                 }
             }

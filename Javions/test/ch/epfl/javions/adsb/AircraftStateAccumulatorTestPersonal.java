@@ -22,9 +22,9 @@ public class AircraftStateAccumulatorTestPersonal {
 
                 Message pm = MessageParser.parse(m);
                 if (pm != null){
-                    //System.out.println(pm);
+                    System.out.println(pm);
                     length++;
-                    a.update(pm);
+                    //a.update(pm);
                 }
             }
             System.out.println(length);
