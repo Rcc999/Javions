@@ -34,7 +34,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     private static double trackOrHeadingCalculator(RawMessage rawMessage){
-     return Math.atan2(groundHeadingNorthSouthCalculator(rawMessage), groundHeadingEastWestCalculator(rawMessage));
+     return Units.convertFrom(Math.atan2(groundHeadingNorthSouthCalculator(rawMessage), groundHeadingEastWestCalculator(rawMessage)), Units.Angle.RADIAN);
     }
 
 
@@ -56,11 +56,11 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
     private static double groundSpeedNormalized(RawMessage rawMessage){
-        return Math.hypot(groundMovementCalculator(rawMessage)[2], groundMovementCalculator(rawMessage)[4]);
+        return Math.hypot(groundMovementCalculator(rawMessage)[1], groundMovementCalculator(rawMessage)[3]);
     }
 
     private static double groundSpeedCalculator(RawMessage rawMessage){
-        if(groundMovementCalculator(rawMessage)[2] == 0 || groundMovementCalculator(rawMessage)[4] == -1){return 0;}
+        if(groundMovementCalculator(rawMessage)[1] == 0 || groundMovementCalculator(rawMessage)[3] == -1){return 0;}
         if(subTypeCalculator(rawMessage) == 1 ){return Units.convertFrom(groundSpeedNormalized(rawMessage), Units.Speed.KNOT); }
         if(subTypeCalculator(rawMessage) == 2){return 4 * Units.convertFrom(groundSpeedNormalized(rawMessage), Units.Speed.KNOT);}
         return 0;
@@ -85,14 +85,14 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     private static double airSpeedCalculator(RawMessage rawMessage){
         if(airMovementCalculator(rawMessage)[3] == -1){ return 0;}
-        if(subTypeCalculator(rawMessage) ==  3){return Units.convertFrom(airMovementCalculator(rawMessage)[3], Units.Speed.KNOT );}
-        if(subTypeCalculator(rawMessage) == 4){ return 4 * Units.convertFrom(airMovementCalculator(rawMessage)[3], Units.Speed.KNOT );}
+        if(subTypeCalculator(rawMessage) ==  3){return Units.convertFrom(airMovementCalculator(rawMessage)[2], Units.Speed.KNOT );}
+        if(subTypeCalculator(rawMessage) == 4){ return 4 * Units.convertFrom(airMovementCalculator(rawMessage)[2], Units.Speed.KNOT );}
         return 0;
     }
 
 
     private static double airHeadingCalculator(RawMessage rawMessage){
-        if(airMovementCalculator(rawMessage)[1] == 1){ return Units.convertFrom(Math.scalb(airMovementCalculator(rawMessage)[2], -10), Units.Angle.RADIAN);}
+        if(airMovementCalculator(rawMessage)[0] == 1){ return Units.convertFrom(Math.scalb(airMovementCalculator(rawMessage)[1], -10), Units.Angle.RADIAN);}
         return 0;
     }
 
@@ -101,4 +101,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     @Override
     public IcaoAddress icaoAddress() { return icaoAddress;}
+
 }
+
+
