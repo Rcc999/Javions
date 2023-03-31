@@ -1,12 +1,25 @@
 package ch.epfl.javions;
 
+/**
+ * Coordinates Geographic - longitude and latitude
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public record GeoPos(int longitudeT32, int latitudeT32) {
 
+    /**
+     * Constructs a geographic position (containing longitude and latitude)
+     *
+     * @param longitudeT32 of an object
+     * @param latitudeT32 of an object (must be between -90 and +90 degree)
+     */
     public GeoPos {
         Preconditions.checkArgument(isValidLatitudeT32(latitudeT32));
     }
 
     /**
+     * Check if latitude is between -90 and +90 degree
      *
      * @param latitudeT32: type int, value of latitude
      * @return check if it is valid or not
@@ -16,6 +29,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
     }
 
     /**
+     * Get longitude in radian
      *
      * @return longitude in radian
      */
@@ -24,6 +38,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
     }
 
     /**
+     * Get latitude in radian
      *
      * @return latitude in radian
      */
@@ -32,6 +47,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
     }
 
     /**
+     * Print out the string contains information about longitude and latitude in degree
      *
      * @return a string message of value of longitude and latitude, each in degree
      */
