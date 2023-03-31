@@ -1,11 +1,20 @@
 package ch.epfl.javions;
 
-//Check
+/**
+ * Projection of geographical coordinates
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public class WebMercator {
 
+    /**
+     * Constructor: private - non instantiable
+     */
     private WebMercator(){}
 
     /**
+     * Calculate x at a given longitude and zoom level
      *
      * @param zoomLevel: zoom level
      * @param longitude: longitude
@@ -17,6 +26,7 @@ public class WebMercator {
     }
 
     /**
+     * Calculate y at a given longitude and zoom level
      *
      * @param zoomLevel: zoom level
      * @param latitude: latitude
