@@ -1,20 +1,25 @@
 package ch.epfl.javions.demodulation;
 
 import ch.epfl.javions.Preconditions;
-
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Power calculator
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public final class PowerComputer {
 
     private final SamplesDecoder samplesDecoder;
-    private final InputStream stream;
     private final int batchSize;
     private final short [] samplesContained;
     private final int [] windowTable;
 
 
     /**
+     * Construct a table of power samples from the power calculation of samples data
      *
      * @param stream: the stream input of binary numbers
      * @param batchSize: the size of portion that we are going to divide the stream into after the calculation
@@ -22,7 +27,6 @@ public final class PowerComputer {
     public PowerComputer (InputStream stream, int batchSize){
         Preconditions.checkArgument(batchSize % Byte.SIZE == 0);
         Preconditions.checkArgument(batchSize > 0);
-        this.stream = stream;
         this.batchSize = batchSize;
         this.samplesDecoder = new SamplesDecoder(stream, batchSize*2);
         this.samplesContained = new short[batchSize*2];
@@ -30,6 +34,7 @@ public final class PowerComputer {
     }
 
     /**
+     * Fill the table with power samples and return number of samples placed in the table
      *
      * @param batch: the table in which will be filled
      * @return the number of samples whose power is calculated
