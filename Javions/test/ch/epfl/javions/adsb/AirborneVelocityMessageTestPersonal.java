@@ -3,6 +3,7 @@ package ch.epfl.javions.adsb;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import ch.epfl.javions.demodulation.AdsbDemodulator;
 import ch.epfl.javions.demodulation.AdsbDemodulatorTestPersonal;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,37 +11,22 @@ import java.io.InputStream;
 
 public class AirborneVelocityMessageTestPersonal {
 
-    /*public static void main(String[] args) throws IOException {
-        String file = AdsbDemodulatorTestPersonal.class.getResource("/samples_20230304_1442.bin").getFile();
-        //IcaoAddress expectedAddress = new IcaoAddress("4D2228");
-        try (InputStream stream = new FileInputStream(file)) {
-            AdsbDemodulator demodulator = new AdsbDemodulator(stream);
-            RawMessage message;
-            while ((message = demodulator.nextMessage()) != null) {
-                AirborneVelocityMessage airborneVelocityMessage = AirborneVelocityMessage.of(message);
-                if(message.typeCode() == 19) {
-                    if( AirborneVelocityMessage.of(message) == null) continue;
-                    System.out.println(airborneVelocityMessage);
-                }
-
-            }
-        }
-    }*/
-
     public static void main(String[] args) throws IOException {
-        String file = AdsbDemodulatorTestPersonal.class.getResource("/samples_20230304_1442.bin").getFile();
-        IcaoAddress expectedAddress = new IcaoAddress("4D2228");
-        try (InputStream s = new FileInputStream(file)) {
+        String f = AircraftStateAccumulatorTestPersonal.class.getResource("/samples_20230304_1442.bin").getFile();
+        try (InputStream s = new FileInputStream(f)) {
             AdsbDemodulator d = new AdsbDemodulator(s);
             RawMessage m;
-            AircraftStateAccumulator<AircraftState> a =
-                    new AircraftStateAccumulator<>(new AircraftState());
+            int length = 0;
             while ((m = d.nextMessage()) != null) {
-                if (!m.icaoAddress().equals(expectedAddress)) continue;
-
-                Message pm = MessageParser.parse(m);
-                if (pm != null) a.update(pm);
+                AirborneVelocityMessage pm = AirborneVelocityMessage.of(m);
+                if (pm != null && m.typeCode() == 19){
+                    System.out.println(pm);
+                    length++;
+                }
             }
+            System.out.println(length);
         }
     }
+
+
 }
