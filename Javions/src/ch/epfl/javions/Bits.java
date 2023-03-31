@@ -2,13 +2,21 @@ package ch.epfl.javions;
 
 import java.util.Objects;
 
+/**
+ * Operations of Bits - Extract from a value and Test value
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public class Bits {
+
     /**
      * Constructor: private - non instantiable
      */
     private Bits(){}
 
     /**
+     * Extract from a value a sequence of bits
      *
      * @param value : the 64 bits vector
      * @param start :  the index of the bit we start at
@@ -24,6 +32,7 @@ public class Bits {
     }
 
     /**
+     * Check if a given index in a value is 1
      *
      * @param value : the 64 bits vector
      * @param index : the index of the bit given
