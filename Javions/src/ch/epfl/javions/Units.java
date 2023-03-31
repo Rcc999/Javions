@@ -1,5 +1,11 @@
 package ch.epfl.javions;
 
+/**
+ * Units
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public final class Units {
 
     /**
@@ -62,6 +68,7 @@ public final class Units {
     }
 
     /**
+     * Convert a value from one to another unit given
      *
      * @param value: type double, a value that will be converted from one to another unit
      * @param fromUnit: initial unit
@@ -73,6 +80,7 @@ public final class Units {
     }
 
     /**
+     * Convert a value of some unit to base unit
      *
      * @param value: type double, a value that will be converted from one to base unit
      * @param fromUnit: initial unit
@@ -83,6 +91,7 @@ public final class Units {
     }
 
     /**
+     * Convert a value of some already-defined unit to another unit
      *
      * @param value:  type double, a value that will be converted from one to another unit
      * @param toUnit: final unit
