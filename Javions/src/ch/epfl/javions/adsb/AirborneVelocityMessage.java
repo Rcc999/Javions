@@ -57,22 +57,22 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     private static double groundSpeedCalculator(RawMessage rawMessage){
         if(groundMovementCalculator(rawMessage)[1] == -1 || groundMovementCalculator(rawMessage)[3] == -1){ return Double.NaN; }
-        if(subTypeCalculator(rawMessage) == 1 ){return Units.convertFrom(groundSpeedNormalized(rawMessage), Units.Speed.KNOT); }
+        if(subTypeCalculator(rawMessage) == 1 ){ return Units.convertFrom(groundSpeedNormalized(rawMessage), Units.Speed.KNOT); }
         if(subTypeCalculator(rawMessage) == 2){return 4 * Units.convertFrom(groundSpeedNormalized(rawMessage), Units.Speed.KNOT);}
         return Double.NaN;
     }
 
     private static double groundHeadingEastWestCalculator(RawMessage rawMessage){
-        return groundMovementCalculator(rawMessage)[0] == 0 ? groundSpeedNormalized(rawMessage) : -groundSpeedNormalized(rawMessage);
+        return groundMovementCalculator(rawMessage)[0] == 0 ? groundMovementCalculator(rawMessage)[1] : -groundMovementCalculator(rawMessage)[1];
     }
 
 
     private static double groundHeadingNorthSouthCalculator(RawMessage rawMessage){
-        return groundMovementCalculator(rawMessage) [2] == 0 ? groundSpeedNormalized(rawMessage) : -groundSpeedNormalized(rawMessage);
+        return groundMovementCalculator(rawMessage) [2] == 0 ? groundMovementCalculator(rawMessage)[3] : -groundMovementCalculator(rawMessage)[3];
     }
 
     private static double trackOrHeadingGroundCalculator(RawMessage rawMessage){
-        double trackOrHeadingGround =  Math.atan2(groundHeadingNorthSouthCalculator(rawMessage), groundHeadingEastWestCalculator(rawMessage));
+        double trackOrHeadingGround =  Math.atan2(groundHeadingEastWestCalculator(rawMessage), groundHeadingNorthSouthCalculator(rawMessage));
         return trackOrHeadingGround < 0 ? trackOrHeadingGround + Units.Angle.TURN : trackOrHeadingGround;
     }
 
