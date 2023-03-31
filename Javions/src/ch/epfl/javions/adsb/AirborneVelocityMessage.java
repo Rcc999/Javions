@@ -25,22 +25,12 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         };
     }
 
-
     private static double trackOrHeadingCalculator(RawMessage rawMessage, int subType){
         return switch (subType) {
             case 1, 2 -> trackOrHeadingGroundCalculator(rawMessage);
             case 3, 4 -> trackOrHeadingAirCalculator(rawMessage);
             default -> Double.NaN;
         };
-    }
-
-
-    private static int subTypeCalculator(RawMessage rawMessage){
-        return Bits.extractUInt(rawMessage.payload(), 48, 3);
-    }
-
-    private static int bitsInterpretedBySubType(RawMessage rawMessage){
-        return Bits.extractUInt(rawMessage.payload(), 21, 22);
     }
 
     private static int [] groundMovementCalculator(RawMessage rawMessage){
@@ -51,15 +41,16 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         return new int[]{Dew, Vew, Dns, Vns};
     }
 
-    private static double groundSpeedNormalized(RawMessage rawMessage){
-        return Math.hypot(groundMovementCalculator(rawMessage)[1], groundMovementCalculator(rawMessage)[3]);
-    }
 
     private static double groundSpeedCalculator(RawMessage rawMessage){
         if(groundMovementCalculator(rawMessage)[1] == -1 || groundMovementCalculator(rawMessage)[3] == -1){ return Double.NaN; }
         if(subTypeCalculator(rawMessage) == 1 ){ return Units.convertFrom(groundSpeedNormalized(rawMessage), Units.Speed.KNOT); }
         if(subTypeCalculator(rawMessage) == 2){return 4 * Units.convertFrom(groundSpeedNormalized(rawMessage), Units.Speed.KNOT);}
         return Double.NaN;
+    }
+
+    private static double groundSpeedNormalized(RawMessage rawMessage){
+        return Math.hypot(groundMovementCalculator(rawMessage)[1], groundMovementCalculator(rawMessage)[3]);
     }
 
     private static double groundHeadingEastWestCalculator(RawMessage rawMessage){
@@ -96,11 +87,20 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         return Double.NaN;
     }
 
+    private static int subTypeCalculator(RawMessage rawMessage){
+        return Bits.extractUInt(rawMessage.payload(), 48, 3);
+    }
+
+    private static int bitsInterpretedBySubType(RawMessage rawMessage){
+        return Bits.extractUInt(rawMessage.payload(), 21, 22);
+    }
+
     @Override
     public long timeStampNs() {return timeStampNs;}
 
     @Override
     public IcaoAddress icaoAddress() { return icaoAddress;}
+
 
 }
 
