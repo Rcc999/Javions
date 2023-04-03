@@ -16,7 +16,7 @@ public class AircraftStateAccumulatorTestPersonal {
 
     public static void main(String[] args) throws IOException {
         String f = AircraftStateAccumulatorTestPersonal.class.getResource("/samples_20230304_1442.bin").getFile();
-        //IcaoAddress expectedAddress = new IcaoAddress("495299");
+        IcaoAddress expectedAddress = new IcaoAddress("4D2228");
         try (InputStream s = new FileInputStream(f)) {
             AdsbDemodulator d = new AdsbDemodulator(s);
             RawMessage m;
@@ -24,7 +24,7 @@ public class AircraftStateAccumulatorTestPersonal {
             AircraftStateAccumulator<AircraftState> a =
                     new AircraftStateAccumulator<>(new AircraftState());
             while ((m = d.nextMessage()) != null) {
-                //if (!m.icaoAddress().equals(expectedAddress)) continue;
+                if (!m.icaoAddress().equals(expectedAddress)) continue;
 
                 Message pm = MessageParser.parse(m);
                 if (pm != null){
