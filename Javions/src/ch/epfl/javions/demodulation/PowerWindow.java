@@ -26,7 +26,8 @@ public final class PowerWindow {
      *
      * @param stream     :  the input flow
      * @param windowSize :  the size of the window
-     * @throws IOException : When the flow have to be closed
+     * @throws IOException when there is an error with input/output of the stream
+     * @throws IllegalArgumentException if the size of the window is invalid
      */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
         Preconditions.checkArgument(windowSize > 0 && windowSize <= (int) Math.pow(2, 16));
