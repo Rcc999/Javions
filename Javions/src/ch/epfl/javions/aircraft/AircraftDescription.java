@@ -18,11 +18,10 @@ public record AircraftDescription(String string) {
      * @param string the description of an aircraft. The constructor checks if it is valid or not.
      * @throws IllegalArgumentException if the description is invalid
      */
-    public AircraftDescription{
-        if(string.equals("")){
+    public AircraftDescription {
+        if (string.equals("")) {
             Preconditions.checkArgument(true);
-        }
-        else{
+        } else {
             Pattern num = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
             Preconditions.checkArgument(num.matcher(string).matches());
         }

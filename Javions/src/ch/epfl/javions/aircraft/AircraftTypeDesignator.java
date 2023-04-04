@@ -18,11 +18,10 @@ public record AircraftTypeDesignator(String string) {
      * @param string: type designator of the aircraft.
      * @throws IllegalArgumentException if the type designator is invalid
      */
-    public AircraftTypeDesignator{
-        if(string.equals("")){
+    public AircraftTypeDesignator {
+        if (string.equals("")) {
             Preconditions.checkArgument(true);
-        }
-        else{
+        } else {
             Pattern num = Pattern.compile("[A-Z0-9]{2,4}");
             Preconditions.checkArgument(num.matcher(string).matches());
         }

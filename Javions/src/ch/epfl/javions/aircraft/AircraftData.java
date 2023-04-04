@@ -9,7 +9,8 @@ import java.util.Objects;
  * @author Rayane Charif Chefchouni (339839)
  */
 public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator,
-                           String model, AircraftDescription description, WakeTurbulenceCategory wakeTurbulenceCategory) {
+                           String model, AircraftDescription description,
+                           WakeTurbulenceCategory wakeTurbulenceCategory) {
 
     /**
      * Collect fixed data of an aircraft
@@ -19,10 +20,9 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
      * @param model
      * @param description
      * @param wakeTurbulenceCategory
-     *
      * @throws NullPointerException if one of the parameter is null
      */
-    public AircraftData{
+    public AircraftData {
         Objects.requireNonNull(registration);
         Objects.requireNonNull(typeDesignator);
         Objects.requireNonNull(description);

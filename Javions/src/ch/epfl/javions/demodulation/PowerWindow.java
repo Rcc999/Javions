@@ -26,7 +26,7 @@ public final class PowerWindow {
      *
      * @param stream     :  the input flow
      * @param windowSize :  the size of the window
-     * @throws IOException when there is an error with input/output of the stream
+     * @throws IOException              when there is an error with input/output of the stream
      * @throws IllegalArgumentException if the size of the window is invalid
      */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
@@ -105,7 +105,7 @@ public final class PowerWindow {
      * Advance the window given the offset
      *
      * @param offset : number chosen to advance the window by this number of samples
-     * @throws IOException : to close the flow when it ends
+     * @throws IOException              : to close the flow when it ends
      * @throws IllegalArgumentException if offset is negative
      */
     public void advanceBy(int offset) throws IOException {

@@ -12,7 +12,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * Constructs a geographic position (containing longitude and latitude)
      *
      * @param longitudeT32 of an object
-     * @param latitudeT32 of an object (must be between -90 and +90 degree)
+     * @param latitudeT32  of an object (must be between -90 and +90 degree)
      * @throws IllegalArgumentException if latitude in T32 is invalid
      */
     public GeoPos {
@@ -25,7 +25,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @param latitudeT32: type int, value of latitude
      * @return check if it is valid or not
      */
-    public static boolean isValidLatitudeT32(int latitudeT32){
+    public static boolean isValidLatitudeT32(int latitudeT32) {
         return latitudeT32 >= (int) Math.scalb(-1, 30) && latitudeT32 <= (int) Math.scalb(1, 30);
     }
 
@@ -34,7 +34,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      *
      * @return longitude in radian
      */
-    public double longitude(){
+    public double longitude() {
         return Units.convert(longitudeT32, Units.Angle.T32, Units.Angle.RADIAN);
     }
 
@@ -54,6 +54,6 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      */
     @Override
     public String toString() {
-        return "("+Units.convert(longitudeT32,Units.Angle.T32 ,Units.Angle.DEGREE)+"\u00B0, "+ Units.convert(latitudeT32,Units.Angle.T32 ,Units.Angle.DEGREE)+"\u00B0)";
+        return "(" + Units.convert(longitudeT32, Units.Angle.T32, Units.Angle.DEGREE) + "\u00B0, " + Units.convert(latitudeT32, Units.Angle.T32, Units.Angle.DEGREE) + "\u00B0)";
     }
 }
