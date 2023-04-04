@@ -4,11 +4,19 @@ import ch.epfl.javions.Preconditions;
 
 import java.util.regex.Pattern;
 
+/**
+ * Check the registration of an aircraft
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public record AircraftRegistration(String string) {
 
     /**
+     * The constructor checks if the registration is valid or not
      *
-     * @param string: registration of an aircraft. The constructor checks if it is valid or not.
+     * @param string : registration of an aircraft
+     * @throws IllegalArgumentException if the registration is empty
      */
     public AircraftRegistration{
         Preconditions.checkArgument(!string.isEmpty());
