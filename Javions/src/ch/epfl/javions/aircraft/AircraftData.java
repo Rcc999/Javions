@@ -3,7 +3,7 @@ package ch.epfl.javions.aircraft;
 import java.util.Objects;
 
 /**
- * Checking data of an aircraft
+ * Data of an aircraft
  *
  * @author Tuan Dang Nguyen (361089)
  * @author Rayane Charif Chefchouni (339839)

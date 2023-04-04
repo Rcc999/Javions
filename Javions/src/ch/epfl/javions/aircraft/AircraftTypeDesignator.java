@@ -5,7 +5,7 @@ import ch.epfl.javions.Preconditions;
 import java.util.regex.Pattern;
 
 /**
- * Check the type designator of an aircraft
+ * Type designator of an aircraft
  *
  * @author Tuan Dang Nguyen (361089)
  * @author Rayane Charif Chefchouni (339839)
