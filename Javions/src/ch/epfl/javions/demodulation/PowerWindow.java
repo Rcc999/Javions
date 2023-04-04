@@ -71,7 +71,8 @@ public final class PowerWindow {
      * Get a value at a given index in the window
      *
      * @param i : index
-     * @return : the PoweredSample at the index i given by the window
+     * @return : the Powered Sample at the index i, given by the window
+     * @throws IndexOutOfBoundsException if value of index i is bigger than window size
      */
     public int get(int i) {
         if (!(i >= 0 && i < windowSize)) {
@@ -105,6 +106,7 @@ public final class PowerWindow {
      *
      * @param offset : number chosen to advance the window by this number of samples
      * @throws IOException : to close the flow when it ends
+     * @throws IllegalArgumentException if offset is negative
      */
     public void advanceBy(int offset) throws IOException {
         Preconditions.checkArgument(offset >= 0);

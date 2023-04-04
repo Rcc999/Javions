@@ -20,15 +20,11 @@ public final class Math2 {
      * @param v: a value
      * @param max: maximum value
      * @return min if v <= min or max if v >= max or v if min < v < max
+     * @throws IllegalArgumentException if min value is bigger than max value
      */
     public static int clamp(int min, int v, int max){
-
         Preconditions.checkArgument(!(min > max));
-
-        if(v <= min){
-            return min;
-        }
-        return Math.min(v, max);
+        return v <= min ? min : Math.min(v, max);
     }
 
     /**

@@ -13,6 +13,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      *
      * @param longitudeT32 of an object
      * @param latitudeT32 of an object (must be between -90 and +90 degree)
+     * @throws IllegalArgumentException if latitude in T32 is invalid
      */
     public GeoPos {
         Preconditions.checkArgument(isValidLatitudeT32(latitudeT32));
