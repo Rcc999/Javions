@@ -16,7 +16,7 @@ public record AircraftRegistration(String string) {
      * The constructor checks if the registration is valid or not
      *
      * @param string : registration of an aircraft
-     * @throws IllegalArgumentException if the registration is empty
+     * @throws IllegalArgumentException if the registration is empty or invalid
      */
     public AircraftRegistration{
         Preconditions.checkArgument(!string.isEmpty());
