@@ -5,110 +5,159 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 
 public class CprDecoder {
-
-    private CprDecoder() {}
-
     private static final double ZONE_LATITUDE0 = 60.0;
     private static final double ZONE_LATITUDE1 = 59.0;
-    private static double ZONE_LONGITUDE0, ZONE_LONGITUDE1 = 0;
-    private static double index_zone_lat0, index_zone_lat1 = 0;
-    private static double index_zone_long0, index_zone_long1 = 0;
+    private static final double ZONE_LONGITUDE_NAN = 1.0;
 
+    /**
+     * Private constructor - non instantiable
+     */
+    private CprDecoder() {
+    }
+
+    /**
+     * Get the position component of an aircraft
+     *
+     * @param x0         previous local longitude
+     * @param y0         previous local latitude
+     * @param x1         current local longitude
+     * @param y1         current local latitude
+     * @param mostRecent message
+     * @return longitude and latitude of the aircraft
+     * @throws IllegalStateException if most recent isn't 1 nor 0
+     */
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);
 
         //Calculate les numéros de zones de latitude
         double nb_zone_lat = Math.rint(y0 * ZONE_LATITUDE1 - y1 * ZONE_LATITUDE0);
 
-        if (nb_zone_lat < 0) {
-            index_zone_lat0 = nb_zone_lat + ZONE_LATITUDE0;
-            index_zone_lat1 = nb_zone_lat + ZONE_LATITUDE1;
-        } else {
-            index_zone_lat0 = nb_zone_lat;
-            index_zone_lat1 = index_zone_lat0;
-        }
+        double index_zone_lat0 = indexZoneCalculator(nb_zone_lat, ZONE_LATITUDE0);
+        double index_zone_lat1 = indexZoneCalculator(nb_zone_lat, ZONE_LATITUDE1);
 
         //Latitude in TURN
-        double latitude0 = (1 / ZONE_LATITUDE0) * (index_zone_lat0 + y0);
-        double latitude1 = (1 / ZONE_LATITUDE1) * (index_zone_lat1 + y1);
+        double latitude0 = longOrLatCalculator(ZONE_LATITUDE0, index_zone_lat0, y0);
+        double latitude1 = longOrLatCalculator(ZONE_LATITUDE1, index_zone_lat1, y1);
 
-        //Calculate ZONE_LONGITUDE
+        //Calculate zone_longitude
         double B0 = calculateB(latitude0);
         double B1 = calculateB(latitude1);
         double A0 = Math.acos(1 - B0);
         double A1 = Math.acos(1 - B1);
 
-        if (Double.isNaN(A0) && Double.isNaN(A1)){
-            ZONE_LONGITUDE0 = 1;
-        }
-        else {
-            if (!compare(A0, A1)){
+        double zone_longitude0;
+        if (Double.isNaN(A0) && Double.isNaN(A1)) {
+            zone_longitude0 = ZONE_LONGITUDE_NAN;
+        } else {
+            if (!compare(A0, A1)) {
                 return null;
             }
-            ZONE_LONGITUDE0 = Math.floor((2 * Math.PI) / A0);
+            zone_longitude0 = Math.floor((2 * Math.PI) / A0);
         }
-        ZONE_LONGITUDE1 = ZONE_LONGITUDE0 - 1;
+        double zone_longitude1 = zone_longitude0 - 1;
 
         //Calculate longitude in TURN
         double longitude0;
         double longitude1;
-        if (ZONE_LONGITUDE0 == 1) {
+        if (zone_longitude0 == 1) {
             longitude0 = x0;
             longitude1 = x1;
         } else {
-            double index_zone_long = Math.rint(x0 * ZONE_LONGITUDE1 - x1 * ZONE_LONGITUDE0);
-            if (index_zone_long < 0) {
-                index_zone_long0 = index_zone_long + ZONE_LONGITUDE0;
-                index_zone_long1 = index_zone_long + ZONE_LONGITUDE1;
-            } else {
-                index_zone_long0 = index_zone_long;
-                index_zone_long1 = index_zone_long0;
-            }
-            longitude0 = (1 / ZONE_LONGITUDE0) * (index_zone_long0 + x0);
-            longitude1 = (1 / ZONE_LONGITUDE1) * (index_zone_long1 + x1);
+            double index_zone_long = Math.rint(x0 * zone_longitude1 - x1 * zone_longitude0);
+
+            double index_zone_long0 = indexZoneCalculator(index_zone_long, zone_longitude0);
+            double index_zone_long1 = indexZoneCalculator(index_zone_long, zone_longitude1);
+
+            longitude0 = longOrLatCalculator(zone_longitude0, index_zone_long0, x0);
+            longitude1 = longOrLatCalculator(zone_longitude1, index_zone_long1, x1);
         }
 
-        //Center At 0
+        //Center at 0
         latitude0 = centerAt0(latitude0);
         latitude1 = centerAt0(latitude1);
         longitude0 = centerAt0(longitude0);
         longitude1 = centerAt0(longitude1);
 
-        int latitude0_T32 = (int) Math.rint(Units.convert(latitude0, Units.Angle.TURN, Units.Angle.T32));
-        int latitude1_T32 = (int) Math.rint(Units.convert(latitude1, Units.Angle.TURN, Units.Angle.T32));
-        int longitude0_T32 = (int) Math.rint(Units.convert(longitude0, Units.Angle.TURN, Units.Angle.T32));
-        int longitude1_T32 = (int) Math.rint(Units.convert(longitude1, Units.Angle.TURN, Units.Angle.T32));
+        int latitude0_T32 = toT32(latitude0);
+        int latitude1_T32 = toT32(latitude1);
+        int longitude0_T32 = toT32(longitude0);
+        int longitude1_T32 = toT32(longitude1);
 
         //Return longitude and latitude depend on most recent (even or odd)
         if (mostRecent == 1) {
-            if (!GeoPos.isValidLatitudeT32(latitude1_T32)) return null;
-            else return new GeoPos(longitude1_T32, latitude1_T32);
+            return !GeoPos.isValidLatitudeT32(latitude1_T32) ? null : new GeoPos(longitude1_T32, latitude1_T32);
         } else {
-            if (!GeoPos.isValidLatitudeT32(latitude0_T32)) return null;
-            else return new GeoPos(longitude0_T32, latitude0_T32);
+            return !GeoPos.isValidLatitudeT32(latitude0_T32) ? null : new GeoPos(longitude0_T32, latitude0_T32);
         }
     }
 
-    private static double calculateB(double a){
-        return (1 - Math.cos(2 * Math.PI * (1 / ZONE_LATITUDE0))) / Math.pow(Math.cos(Units.convert(a,Units.Angle.TURN ,Units.Angle.RADIAN)), 2);
+    /**
+     * Calculate the index zone either of longitude or latitude
+     *
+     * @param index_zone : number of zone
+     * @param zone of the aircraft
+     * @return the result of the calculation
+     */
+    private static double indexZoneCalculator(double index_zone, double zone) {
+        return (index_zone < 0) ? (index_zone + zone) : index_zone;
     }
 
-    private static boolean compare(double x, double y){
+    /**
+     * It is used to calculate A later
+     *
+     * @param a: latitude of the aircraft
+     * @return the result of the calculation
+     */
+    private static double calculateB(double a) {
+        return (1 - Math.cos(2 * Math.PI * (1 / ZONE_LATITUDE0))) / Math.pow(Math.cos(Units.convert(a, Units.Angle.TURN, Units.Angle.RADIAN)), 2);
+    }
+
+    /**
+     * Compare x and y
+     *
+     * @param x : "A0" calculated by latitude0
+     * @param y : "A1" calculated by latitude1
+     * @return true if A0 = A1, otherwise false
+     */
+    private static boolean compare(double x, double y)  {
         double a1 = Math.floor((2 * Math.PI) / x);
         double a2 = Math.floor((2 * Math.PI) / y);
         return a1 == a2;
     }
 
-    private static double centerAt0(double a){
-        if(a >= 0.5){
-            return  a-1;
+    /**
+     * Calculate longitude or latitude of an aircraft
+     *
+     * @param zone of the aircraft
+     * @param index_zone of the aircraft
+     * @param a : previous or current latitude or longitude
+     * @return the result of the calculation given different values
+     */
+    private static double longOrLatCalculator(double zone, double index_zone, double a) {
+        return (1 / zone) * (index_zone + a);
+    }
+
+    /**
+     * Center latitude and longitude around 0
+     *
+     * @param a : longitude or latitude of the aircraft
+     * @return value of longitude or latitude after re-center at 0
+     */
+    private static double centerAt0(double a) {
+        if (a >= 0.5) {
+            return a - 1;
         }
         return a;
     }
 
-
-    public static void main(String[] args){
-        GeoPos geoPos = decodePosition(Math.scalb(9413, -17) , Math.scalb(80534, -17) , Math.scalb(9144, -17) , Math.scalb(61714, -17) , 0);
-        System.out.println(geoPos);
+    /**
+     * Convert latitude or longitude to T32
+     *
+     * @param a : longitude or latitude
+     * @return correspond value in T32
+     */
+    private static int toT32(double a) {
+        return (int) Math.rint(Units.convert(a, Units.Angle.TURN, Units.Angle.T32));
     }
+
 }
