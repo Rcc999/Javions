@@ -5,6 +5,8 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 
 public class CprDecoder {
+
+    private static final double HALF_A_TURN = 0.5;
     private static final double ZONE_LATITUDE0 = 60.0;
     private static final double ZONE_LATITUDE1 = 59.0;
     private static final double ZONE_LONGITUDE_NAN = 1.0;
@@ -144,10 +146,7 @@ public class CprDecoder {
      * @return value of longitude or latitude after re-center at 0
      */
     private static double centerAt0(double a) {
-        if (a >= 0.5) {
-            return a - 1;
-        }
-        return a;
+        return a >= HALF_A_TURN ? a - 1 : a;
     }
 
     /**
