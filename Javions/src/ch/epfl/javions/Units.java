@@ -25,8 +25,7 @@ public final class Units {
      * It contains constants: RADIAN, TURN, DEGREE, T32
      */
     public static class Angle {
-        private Angle() {
-        }
+        private Angle() {}
 
         public static final double RADIAN = 1.0;
         public static final double TURN = 2 * Math.PI * RADIAN;
@@ -39,8 +38,7 @@ public final class Units {
      * It contains constants: METER, CENTIMETER, KILOMETER, INCH, FOOT, NAUTICAL_MILE
      */
     public static class Length {
-        private Length() {
-        }
+        private Length() {}
 
         public static final double METER = 1;
         public static final double CENTIMETER = CENTI * METER;
@@ -54,8 +52,9 @@ public final class Units {
      * Nested Class: Time
      * It contains constants: SECOND, MINUTE, HOUR
      */
-    public static class Time{
+    public static class Time {
         private Time() {}
+
         public static final double SECOND = 1;
         public static final double MINUTE = 60 * SECOND;
         public static final double HOUR = 60 * MINUTE;
@@ -67,8 +66,9 @@ public final class Units {
      */
     public static class Speed {
         private Speed() {}
-        public static final double KNOT = Length.NAUTICAL_MILE/Time.HOUR;
-        public static final double KILOMETER_PER_HOUR = Length.KILOMETER/Time.HOUR;
+
+        public static final double KNOT = Length.NAUTICAL_MILE / Time.HOUR;
+        public static final double KILOMETER_PER_HOUR = Length.KILOMETER / Time.HOUR;
     }
 
     /**
