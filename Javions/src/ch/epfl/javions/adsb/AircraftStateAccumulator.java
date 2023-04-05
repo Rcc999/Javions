@@ -10,6 +10,7 @@ import ch.epfl.javions.GeoPos;
  */
 public class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
+    private static final int MAXIMUM_DIFF_DURATION = 10;
     private final T stateSetter;
     private AirbornePositionMessage previousPositionMessageEven;
     private AirbornePositionMessage previousPositionMessageOdd;
@@ -91,7 +92,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @return true if the duration between current and previous given message is smaller than 10 seconds
      */
     private boolean timeStampNsDiff(long current, long previous) {
-        return (current - previous) <= Math.pow(10, 10);
+        return (current - previous) <= Math.pow(MAXIMUM_DIFF_DURATION, 10);
     }
 
     /**
