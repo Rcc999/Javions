@@ -13,8 +13,11 @@ import java.io.InputStream;
  */
 public final class AdsbDemodulator {
 
-    private final PowerWindow powerWindow;
     private final static int WINDOW_SIZE = 1200;
+    private final static int SIZE_DECODED_TABLE = 14;
+    private final static int VALUE_INDEX_80 = 80;
+    private final static int VALUE_INDEX_85 = 85;
+    private final PowerWindow powerWindow;
     private int sumActualWindow = 0;
 
     /**
@@ -36,35 +39,58 @@ public final class AdsbDemodulator {
     public RawMessage nextMessage() throws IOException {
 
         while (powerWindow.isFull()) {
-            byte[] message = new byte[14];
-            int sumPreviousWindow = sumActualWindow;
-            sumActualWindow = powerWindow.get(0) + powerWindow.get(10) + powerWindow.get(35) + powerWindow.get(45);
-            int sumNextWindow = powerWindow.get(1) + powerWindow.get(11) + powerWindow.get(36) + powerWindow.get(46);
-            int v = powerWindow.get(5) + powerWindow.get(15) + powerWindow.get(20) + powerWindow.get(25) + powerWindow.get(30) + powerWindow.get(40);
-            int diff_2 = sumActualWindow - sumNextWindow;
-            int diff_1 = sumActualWindow - sumPreviousWindow;
 
-            if ((diff_1 > 0) && (diff_2 > 0) && (sumActualWindow >= 2 * v)) {
-                // Decode to get the message and put each byte (8 bits) in the table
-                for (int i = 0; i < message.length; ++i) {
-                    int a = 0;
-                    for (int j = 0; j < 8; ++j) {
-                        if (powerWindow.get(80 + 10 * (j + i * 8)) < powerWindow.get(85 + 10 * (j + i * 8))) {
-                            a = (a << 1);
-                        } else {
-                            a = ((a << 1) | 1);
-                        }
-                    }
-                    message[i] = (byte) a;
-                }
+            if (checkComparisonCondition()) {
+                byte[] message = decodeMessage();
                 RawMessage rawMessage = RawMessage.of(powerWindow.position() * 100, message);
 
                 if ((RawMessage.size(message[0]) == RawMessage.LENGTH) && rawMessage != null) {
                     powerWindow.advanceBy(WINDOW_SIZE);
                     return rawMessage;
                 } else powerWindow.advance();
+
             } else powerWindow.advance();
         }
         return null;
+    }
+
+    /**
+     * Check relation between current sum and v, previous, next sum
+     *
+     * @return true if the conditions are satisfied
+     */
+    private boolean checkComparisonCondition() {
+        int sumPreviousWindow = sumActualWindow;
+        sumActualWindow = powerWindow.get(0) + powerWindow.get(10) + powerWindow.get(35) + powerWindow.get(45);
+        int sumNextWindow = powerWindow.get(1) + powerWindow.get(11) + powerWindow.get(36) + powerWindow.get(46);
+        int v = powerWindow.get(5) + powerWindow.get(15) + powerWindow.get(20) + powerWindow.get(25) + powerWindow.get(30) + powerWindow.get(40);
+        return sumActualWindow > sumNextWindow && sumActualWindow > sumPreviousWindow && sumActualWindow >= 2 * v;
+    }
+
+    /**
+     * Decode the message
+     *
+     * @return byte table, each slot contains a decoded byte
+     */
+    private byte[] decodeMessage() {
+        byte[] decoded = new byte[SIZE_DECODED_TABLE];
+
+        for (int i = 0; i < decoded.length; ++i) {
+            byte decodedBit = 0;
+            for (int j = 0; j < Byte.SIZE; ++j) {
+                decodedBit = (byte) (checkBetween8085(j, i) ? (decodedBit << 1) : ((decodedBit << 1) | 1));
+            }
+            decoded[i] = decodedBit;
+        }
+        return decoded;
+    }
+
+    /**
+     * Check value between 2 indexes
+     *
+     * @return true if value at index 80 < value at index 85 of the window
+     */
+    private boolean checkBetween8085(int j, int i) {
+        return powerWindow.get(VALUE_INDEX_80 + 10 * (j + i * Byte.SIZE)) < powerWindow.get(VALUE_INDEX_85 + 10 * (j + i * Byte.SIZE));
     }
 }
