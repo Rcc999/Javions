@@ -8,6 +8,8 @@ package ch.epfl.javions;
  */
 public class WebMercator {
 
+    private static final int ZOOM_LEVEL_0 = 8;
+
     /**
      * Constructor: private - non instantiable
      */
@@ -22,7 +24,7 @@ public class WebMercator {
      */
     public static double x(int zoomLevel, double longitude) {
         double longitudeEnRad = Units.convertTo(longitude, Units.Angle.RADIAN);
-        return (double) Math.scalb(1, 8 + zoomLevel) * (longitudeEnRad / (2 * Math.PI) + 0.5);
+        return (double) Math.scalb(1, ZOOM_LEVEL_0 + zoomLevel) * (longitudeEnRad / (2 * Math.PI) + 0.5);
     }
 
     /**
@@ -34,6 +36,6 @@ public class WebMercator {
      */
     public static double y(int zoomLevel, double latitude) {
         double latitudeEnRad = Units.convertTo(latitude, Units.Angle.RADIAN);
-        return Math.scalb(1, 8 + zoomLevel) * (-Math2.asinh(Math.tan(latitudeEnRad)) / (2 * Math.PI) + 0.5);
+        return Math.scalb(1, ZOOM_LEVEL_0 + zoomLevel) * (-Math2.asinh(Math.tan(latitudeEnRad)) / (2 * Math.PI) + 0.5);
     }
 }
