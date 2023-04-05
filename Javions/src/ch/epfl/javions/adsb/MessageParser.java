@@ -1,7 +1,7 @@
 package ch.epfl.javions.adsb;
 
 /**
- * Parsing messages into different type of airborne message
+ * Transforming raw messages into different type of airborne message
  *
  * @author Tuan Dang Nguyen (361089)
  * @author Rayane Charif Chefchouni (339839)
