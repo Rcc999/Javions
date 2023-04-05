@@ -44,8 +44,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @return position message of the aircraft or null if the message is invalid
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
-        return Double.isNaN(altitudeCalculator(rawMessage)) ?
-                null : new AirbornePositionMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(),
+        return Double.isNaN(altitudeCalculator(rawMessage))
+                ? null : new AirbornePositionMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(),
                 altitudeCalculator(rawMessage), determineParity(rawMessage), LAT_CPR(rawMessage), LON_CPR(rawMessage));
     }
 
@@ -122,15 +122,9 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             group1 = GrayToValue(group1, 3);
             group2 = GrayToValue(group2, 9);
 
-            if (group1 == 0 || group1 == 5 || group1 == 6) {
-                return Double.NaN;
-            }
-            if (group1 == 7) {
-                group1 = 5;
-            }
-            if (group2 % 2 == 1) {
-                group1 = 6 - group1;
-            }
+            if (group1 == 0 || group1 == 5 || group1 == 6) return Double.NaN;
+            if (group1 == 7) group1 = 5;
+            if (group2 % 2 == 1) group1 = 6 - group1;
 
             return Units.convert(-1300 + group1 * 100 + group2 * 500, Units.Length.FOOT, Units.Length.METER);
         }
