@@ -12,6 +12,7 @@ import java.io.*;
  */
 public final class PowerWindow {
 
+    private static final int SIZE_POWER_SAMPLES = (int) Math.pow(2, 16);
     private final int windowSize;
     private final PowerComputer powerComputer;
     private int numberOfSamples;
@@ -30,12 +31,12 @@ public final class PowerWindow {
      * @throws IllegalArgumentException if the size of the window is invalid
      */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
-        Preconditions.checkArgument(windowSize > 0 && windowSize <= (int) Math.pow(2, 16));
-        powerComputer = new PowerComputer(stream, (int) Math.pow(2, 16));
+        Preconditions.checkArgument(windowSize > 0 && windowSize <= SIZE_POWER_SAMPLES);
+        powerComputer = new PowerComputer(stream, SIZE_POWER_SAMPLES);
         this.windowSize = windowSize;
-        this.firstLot = new int[(int) Math.pow(2, 16)];
+        this.firstLot = new int[SIZE_POWER_SAMPLES];
         this.numberOfSamples = powerComputer.readBatch(firstLot);
-        this.secondLot = new int[(int) Math.pow(2, 16)];
+        this.secondLot = new int[SIZE_POWER_SAMPLES];
         this.actualWindowPosition = 0;
         this.position = 0;
     }
@@ -79,7 +80,9 @@ public final class PowerWindow {
             throw new IndexOutOfBoundsException("the index must be included in the correct interval");
         }
 
-        return actualWindowPosition + i < firstLot.length ? firstLot[i + actualWindowPosition] : secondLot[actualWindowPosition + i - firstLot.length];
+        return actualWindowPosition + i < firstLot.length
+                ? firstLot[i + actualWindowPosition]
+                : secondLot[actualWindowPosition + i - firstLot.length];
     }
 
     /**
