@@ -59,7 +59,7 @@ public class CprDecoder {
         //Calculate longitude in TURN
         double longitude0;
         double longitude1;
-        if (zone_longitude0 == 1) {
+        if (zone_longitude0 == ZONE_LONGITUDE_NAN) {
             longitude0 = x0;
             longitude1 = x1;
         } else {
