@@ -13,6 +13,7 @@ import java.io.InputStream;
  */
 public final class PowerComputer {
 
+    private static final int MULTIPLE_OF_8 = 0;
     private final SamplesDecoder samplesDecoder;
     private final int batchSize;
     private final short[] samplesContained;
@@ -27,7 +28,7 @@ public final class PowerComputer {
      * @throws IllegalArgumentException if batch size is not multiple of 8 or batch size is not strictly bigger than 0
      */
     public PowerComputer(InputStream stream, int batchSize) {
-        Preconditions.checkArgument(batchSize % Byte.SIZE == 0);
+        Preconditions.checkArgument(batchSize % Byte.SIZE == MULTIPLE_OF_8);
         Preconditions.checkArgument(batchSize > 0);
         this.batchSize = batchSize;
         this.samplesDecoder = new SamplesDecoder(stream, batchSize * 2);
@@ -41,11 +42,12 @@ public final class PowerComputer {
      * @param batch: the table in which will be filled
      * @return the number of samples whose power is calculated
      * @throws IOException              if inputs or outputs have problems
-     * @throws IllegalArgumentException if the length of
+     * @throws IllegalArgumentException if the length of the given table not equal to batch size
      */
     public int readBatch(int[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
-        int d = 0;
+
+        int counter = 0;
         int numberSamples = samplesDecoder.readBatch(samplesContained);
         for (int i = 0; i < numberSamples; i++) {
             windowTable[i % 8] = samplesContained[i];
@@ -53,8 +55,8 @@ public final class PowerComputer {
                 double f = Math.pow(windowTable[0] - windowTable[2] + windowTable[4] - windowTable[6], 2);
                 double g = Math.pow(windowTable[1] - windowTable[3] + windowTable[5] - windowTable[7], 2);
                 int P = (int) (f + g);
-                batch[d] = P;
-                ++d;
+                batch[counter] = P;
+                ++counter;
             }
         }
         return numberSamples / 2;
