@@ -14,6 +14,19 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity,
                                       double x, double y) implements Message {
 
+    private static final int START_INDEX_ALT = 36;
+    private static final int SIZE_ATTRIBUTE_ALT = 12;
+    private static final int START_INDEX_LON = 17;
+    private static final int START_INDEX_LAT = 0;
+    private static final int SIZE_ATTRIBUTE_LON_LAT = 17;
+    private static final int NORMALIZED_CONSTANT = -17;
+    private static final int START_INDEX_PARITY = 34;
+    private static final int SIZE_ATTRIBUTE_PARITY = 1;
+    private static final int START_INDEX_LSB = 0;
+    private static final int SIZE_LSB = 3;
+    private static final int START_INDEX_MSB = 3;
+    private static final int SIZE_MSB = 9;
+
     /**
      * Construct an airborne position message
      *
@@ -76,7 +89,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @return latitude normalized extracted from raw message
      */
     private static double LAT_CPR(RawMessage rawMessage) {
-        return Math.scalb(Bits.extractUInt(rawMessage.payload(), 0, 17), -17);
+        return Math.scalb(Bits.extractUInt(rawMessage.payload(), START_INDEX_LAT, SIZE_ATTRIBUTE_LON_LAT), NORMALIZED_CONSTANT);
     }
 
     /**
@@ -86,7 +99,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @return longitude normalized extracted
      */
     private static double LON_CPR(RawMessage rawMessage) {
-        return Math.scalb(Bits.extractUInt(rawMessage.payload(), 17, 17), -17);
+        return Math.scalb(Bits.extractUInt(rawMessage.payload(), START_INDEX_LON, SIZE_ATTRIBUTE_LON_LAT), NORMALIZED_CONSTANT);
     }
 
     /**
@@ -96,7 +109,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @return the parity extracted
      */
     private static int determineParity(RawMessage rawMessage) {
-        return Bits.extractUInt(rawMessage.payload(), 34, 1);
+        return Bits.extractUInt(rawMessage.payload(), START_INDEX_PARITY, SIZE_ATTRIBUTE_PARITY);
     }
 
     /**
@@ -106,21 +119,21 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @return altitude of the aircraft
      */
     private static double altitudeCalculator(RawMessage rawMessage) {
-        int alt = Bits.extractUInt(rawMessage.payload(), 36, 12);
+        int alt = Bits.extractUInt(rawMessage.payload(), START_INDEX_ALT, SIZE_ATTRIBUTE_ALT);
 
         if (determineQ(rawMessage) == 1) {
             return Units.convert((double) -1000 + removeBitForQ1(alt) * 25, Units.Length.FOOT, Units.Length.METER);
         } else {
-            //Un-scramble
+            //Unscramble
             alt = unscrambled(alt);
 
             //Divide in 2 groups
-            int group1 = Bits.extractUInt(alt, 0, 3);
-            int group2 = Bits.extractUInt(alt, 3, 9);
+            int group1 = Bits.extractUInt(alt, START_INDEX_LSB, SIZE_LSB);
+            int group2 = Bits.extractUInt(alt, START_INDEX_MSB, SIZE_MSB);
 
             //From Gray --> Real Value
-            group1 = GrayToValue(group1, 3);
-            group2 = GrayToValue(group2, 9);
+            group1 = GrayToValue(group1, SIZE_LSB);
+            group2 = GrayToValue(group2, SIZE_MSB);
 
             if (group1 == 0 || group1 == 5 || group1 == 6) return Double.NaN;
             if (group1 == 7) group1 = 5;
