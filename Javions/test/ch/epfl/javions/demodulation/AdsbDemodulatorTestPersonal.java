@@ -14,7 +14,7 @@ public class AdsbDemodulatorTestPersonal {
             RawMessage message;
             int length = 0;
             while ((message = demodulator.nextMessage()) != null) {
-                System.out.println(message);
+                System.out.print(message);
                 ++length;
             }
             System.out.println(length);

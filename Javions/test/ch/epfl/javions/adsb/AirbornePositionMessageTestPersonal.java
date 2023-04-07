@@ -16,7 +16,8 @@ public class AirbornePositionMessageTestPersonal {
             int length = 0;
             while ((message = demodulator.nextMessage()) != null) {
                 AirbornePositionMessage air = AirbornePositionMessage.of(message);
-                if(air != null){
+                int typeCode = message.typeCode();
+                if(air != null && (( 9 <= typeCode && typeCode <= 18) || (20 <= typeCode && typeCode <= 22))){
                     System.out.println(air);
                     length++;
                 }

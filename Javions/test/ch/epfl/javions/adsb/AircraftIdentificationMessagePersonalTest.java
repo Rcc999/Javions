@@ -8,7 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class AircraftIdentificationMessagePersonalTest {
+    public class AircraftIdentificationMessagePersonalTest {
     public static void main(String[] args) throws IOException {
 
         String file = AdsbDemodulatorTestPersonal.class.getResource("/samples_20230304_1442.bin").getFile();

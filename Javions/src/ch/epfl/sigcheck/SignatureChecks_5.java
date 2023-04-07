@@ -8,7 +8,7 @@ package ch.epfl.sigcheck;
 final class SignatureChecks_5 {
     private SignatureChecks_5() {}
 
-    /*void checkCprDecoder() throws Exception {
+    void checkCprDecoder() throws Exception {
         v03 = ch.epfl.javions.adsb.CprDecoder.decodePosition(v01, v01, v01, v01, v02);
     }
 
@@ -49,7 +49,7 @@ final class SignatureChecks_5 {
     java.lang.Object v09;
     boolean v10;
     java.lang.String v11;
-    //ch.epfl.javions.adsb.AirbornePositionMessage v12;
+    ch.epfl.javions.adsb.AirbornePositionMessage v12;
 
-     */
+
 }

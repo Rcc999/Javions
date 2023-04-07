@@ -20,9 +20,7 @@ public class AircraftState implements AircraftStateSetter{
     }
 
     @Override
-    public void setPosition(GeoPos position) {
-        System.out.println("position : " + position);
-    }
+    public void setPosition(GeoPos position) {System.out.println("position : " + position);}
 
     @Override
     public void setAltitude(double altitude) {
