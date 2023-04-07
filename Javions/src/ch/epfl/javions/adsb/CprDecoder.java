@@ -26,6 +26,8 @@ public class CprDecoder {
      * @param y1         local latitude of odd message
      * @param mostRecent message
      * @return longitude and latitude of the aircraft
+     * or null if the latitude of the decoded position is invalid (i.e. within ±90°)
+     * or if the position cannot be determined due to a latitude band change
      * @throws IllegalStateException if most recent isn't 1 nor 0
      */
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
