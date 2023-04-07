@@ -54,7 +54,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * Get a position message of the aircraft
      *
      * @param rawMessage of the aircraft
-     * @return position message of the aircraft or null if the message is invalid
+     * @return position message of the aircraft or null if the altitude is invalid
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
         return Double.isNaN(altitudeCalculator(rawMessage))
