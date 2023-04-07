@@ -12,7 +12,7 @@ import java.io.*;
  */
 public final class PowerWindow {
 
-    private static final int SIZE_POWER_SAMPLES = (int) Math.pow(2, 16);
+    private static final int BATCH_SIZE = (int) Math.pow(2, 16);
     private final int windowSize;
     private final PowerComputer powerComputer;
     private int numberOfSamples;
@@ -31,12 +31,12 @@ public final class PowerWindow {
      * @throws IllegalArgumentException if the size of the window is invalid
      */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
-        Preconditions.checkArgument(windowSize > 0 && windowSize <= SIZE_POWER_SAMPLES);
-        powerComputer = new PowerComputer(stream, SIZE_POWER_SAMPLES);
+        Preconditions.checkArgument(windowSize > 0 && windowSize <= BATCH_SIZE);
+        powerComputer = new PowerComputer(stream, BATCH_SIZE);
         this.windowSize = windowSize;
-        this.firstLot = new int[SIZE_POWER_SAMPLES];
+        this.firstLot = new int[BATCH_SIZE];
         this.numberOfSamples = powerComputer.readBatch(firstLot);
-        this.secondLot = new int[SIZE_POWER_SAMPLES];
+        this.secondLot = new int[BATCH_SIZE];
         this.actualWindowPosition = 0;
         this.position = 0;
     }
@@ -88,7 +88,7 @@ public final class PowerWindow {
     /**
      * Advance the window by one sample
      *
-     * @throws IOException : to close the flow when it ends
+     * @throws IOException if there is an error in inputs/outputs of the stream
      */
     public void advance() throws IOException {
         this.position++;
@@ -108,11 +108,11 @@ public final class PowerWindow {
      * Advance the window given the offset
      *
      * @param offset : number chosen to advance the window by this number of samples
-     * @throws IOException              : to close the flow when it ends
-     * @throws IllegalArgumentException if offset is negative
+     * @throws IOException              if there is an error in inputs/outputs of the stream
+     * @throws IllegalArgumentException if offset is negative or null
      */
     public void advanceBy(int offset) throws IOException {
-        Preconditions.checkArgument(offset >= 0);
+        Preconditions.checkArgument(offset > 0);
         for (int i = 0; i < offset; i++) {
             advance();
         }

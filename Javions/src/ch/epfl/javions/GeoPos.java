@@ -23,7 +23,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * Check if latitude is between -90 and +90 degree
      *
      * @param latitudeT32: type int, value of latitude
-     * @return check if it is valid or not
+     * @return true if latitude is between -90 and +90 degree, else false
      */
     public static boolean isValidLatitudeT32(int latitudeT32) {
         return latitudeT32 >= (int) Math.scalb(-1, 30) && latitudeT32 <= (int) Math.scalb(1, 30);

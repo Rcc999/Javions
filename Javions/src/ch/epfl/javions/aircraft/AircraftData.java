@@ -15,11 +15,11 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
     /**
      * Collect fixed data of an aircraft
      *
-     * @param registration
-     * @param typeDesignator
-     * @param model
-     * @param description
-     * @param wakeTurbulenceCategory
+     * @param registration           of the aircraft
+     * @param typeDesignator         of the aircraft
+     * @param model                  of the aircraft
+     * @param description            of the aircraft
+     * @param wakeTurbulenceCategory of the aircraft
      * @throws NullPointerException if one of the parameter is null
      */
     public AircraftData {
