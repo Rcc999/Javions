@@ -20,10 +20,10 @@ public class CprDecoder {
     /**
      * Get the position component of an aircraft
      *
-     * @param x0         previous local longitude
-     * @param y0         previous local latitude
-     * @param x1         current local longitude
-     * @param y1         current local latitude
+     * @param x0         local longitude of even message
+     * @param y0         local latitude of even message
+     * @param x1         local longitude of odd message
+     * @param y1         local latitude of odd message
      * @param mostRecent message
      * @return longitude and latitude of the aircraft
      * @throws IllegalStateException if most recent isn't 1 nor 0
