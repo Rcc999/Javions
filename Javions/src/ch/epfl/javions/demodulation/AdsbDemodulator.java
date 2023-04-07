@@ -63,7 +63,8 @@ public final class AdsbDemodulator {
         int sumPreviousWindow = sumActualWindow;
         sumActualWindow = powerWindow.get(0) + powerWindow.get(10) + powerWindow.get(35) + powerWindow.get(45);
         int sumNextWindow = powerWindow.get(1) + powerWindow.get(11) + powerWindow.get(36) + powerWindow.get(46);
-        int v = powerWindow.get(5) + powerWindow.get(15) + powerWindow.get(20) + powerWindow.get(25) + powerWindow.get(30) + powerWindow.get(40);
+        int v = powerWindow.get(5) + powerWindow.get(15) + powerWindow.get(20) + powerWindow.get(25)
+                + powerWindow.get(30) + powerWindow.get(40);
         return sumActualWindow > sumNextWindow && sumActualWindow > sumPreviousWindow && sumActualWindow >= 2 * v;
     }
 
@@ -91,6 +92,7 @@ public final class AdsbDemodulator {
      * @return true if value at index 80 < value at index 85 of the window
      */
     private boolean checkBetween8085(int j, int i) {
-        return powerWindow.get(VALUE_INDEX_80 + 10 * (j + i * Byte.SIZE)) < powerWindow.get(VALUE_INDEX_85 + 10 * (j + i * Byte.SIZE));
+        return powerWindow.get(VALUE_INDEX_80 + 10 * (j + i * Byte.SIZE))
+                < powerWindow.get(VALUE_INDEX_85 + 10 * (j + i * Byte.SIZE));
     }
 }
