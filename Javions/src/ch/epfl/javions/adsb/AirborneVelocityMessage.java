@@ -5,6 +5,12 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+/**
+ * Calculate the Airborne velocity message
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress, double speed,
                                       double trackOrHeading) implements Message {
 
@@ -41,7 +47,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
      * Construct an airborne velocity message from a raw message
      *
      * @param rawMessage : the raw message
-     * @return the airborne velocity message or null if the message is invalid
+     * @return the airborne velocity message or null if the message is invalid or null if the message is invalid (e.g. if the speed or the track/heading is NaN)
      */
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
         if (Double.isNaN(speedCalculator(rawMessage, subTypeCalculator(rawMessage))) || Double.isNaN(trackOrHeadingCalculator(rawMessage, subTypeCalculator(rawMessage)))) {
@@ -215,10 +221,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @return the track or heading of the aircraft
      */
     private static double trackOrHeadingAirCalculator(RawMessage rawMessage) {
-        if (airMovementCalculator(rawMessage)[0] == 1) {
-            return Units.convertFrom(Math.scalb(airMovementCalculator(rawMessage)[1], -10), Units.Angle.TURN);
-        }
-        return Double.NaN;
+        return airMovementCalculator(rawMessage)[0] == 1 ? Units.convertFrom(Math.scalb(airMovementCalculator(rawMessage)[1], -10), Units.Angle.TURN) : Double.NaN;
     }
 
 
