@@ -4,6 +4,12 @@ import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 
+/**
+ * A class that decodes the position of an aircraft from the CPR encoded position
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public class CprDecoder {
 
     private static final double HALF_A_TURN = 0.5;

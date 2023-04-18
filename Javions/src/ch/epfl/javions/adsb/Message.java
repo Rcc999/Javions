@@ -2,7 +2,7 @@ package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.aircraft.IcaoAddress;
 /**
- * Operations of Bits - Extract from a value and Test value
+ * Interface for the message of an aircraft
  *
  * @author Tuan Dang Nguyen (361089)
  * @author Rayane Charif Chefchouni (339839)
