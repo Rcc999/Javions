@@ -11,14 +11,19 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
     private final IcaoAddress icaoAddress;
     private final AircraftData data;
+    private long timeStampNs;
     private final LongProperty timeStampNsProperty;
+    private int category;
     private final IntegerProperty categoryProperty;
+    private CallSign callSign;
     private final ObjectProperty<CallSign> callSignProperty;
+    private double altitude, velocity, trackOrHeading;
     private final DoubleProperty altitudeProperty, velocityProperty, trackOrHeadingProperty;
-    private final ObjectProperty<GeoPos> positionProperty;
     private GeoPos position;
+    private final ObjectProperty<GeoPos> positionProperty;
 
-    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data){
+
+    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
         this.icaoAddress = icaoAddress;
         this.data = data;
         this.timeStampNsProperty = new SimpleLongProperty(0L);
@@ -28,34 +33,48 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.altitudeProperty = new SimpleDoubleProperty(0.0);
         this.velocityProperty = new SimpleDoubleProperty(0.0);
         this.trackOrHeadingProperty = new SimpleDoubleProperty(0.0);
-        this.position = null;
     }
 
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {
+        this.timeStampNs = timeStampNs;
         timeStampNsProperty.set(timeStampNs);
     }
 
-    public ReadOnlyLongProperty timeStampNsProperty(){
+    public ReadOnlyLongProperty timeStampNsProperty() {
         return timeStampNsProperty;
+    }
+
+    public long getTimeStampNs() {
+        return timeStampNs;
     }
 
     @Override
     public void setCategory(int category) {
+        this.category = category;
         categoryProperty.set(category);
     }
 
-    public ReadOnlyIntegerProperty categoryProperty(){
+    public ReadOnlyIntegerProperty categoryProperty() {
         return categoryProperty;
+    }
+
+    public int getCategory() {
+        return category;
     }
 
     @Override
     public void setCallSign(CallSign callSign) {
+        this.callSign = callSign;
         callSignProperty.set(callSign);
     }
 
-    public ReadOnlyObjectProperty<CallSign> callSignProperty(){
+    public ReadOnlyObjectProperty<CallSign> callSignProperty() {
         return callSignProperty;
+    }
+
+    public CallSign getCallSign() {
+        return callSign;
     }
 
     @Override
@@ -64,38 +83,53 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         positionProperty.set(position);
     }
 
-    public ReadOnlyObjectProperty<GeoPos> positionProperty(){
+    public ReadOnlyObjectProperty<GeoPos> positionProperty() {
         return positionProperty;
     }
 
-    public GeoPos getPosition(){
+    public GeoPos getPosition() {
         return position;
     }
 
     @Override
     public void setAltitude(double altitude) {
+        this.altitude = altitude;
         altitudeProperty.set(altitude);
     }
 
-    public ReadOnlyDoubleProperty altitudeProperty(){
+    public ReadOnlyDoubleProperty altitudeProperty() {
         return altitudeProperty;
+    }
+
+    public double getAltitude() {
+        return altitude;
     }
 
     @Override
     public void setVelocity(double velocity) {
+        this.velocity = velocity;
         velocityProperty.add(velocity);
     }
 
-    public ReadOnlyDoubleProperty velocityProperty(){
+    public ReadOnlyDoubleProperty velocityProperty() {
         return velocityProperty;
+    }
+
+    public double getVelocity() {
+        return velocity;
     }
 
     @Override
     public void setTrackOrHeading(double trackOrHeading) {
+        this.trackOrHeading = trackOrHeading;
         trackOrHeadingProperty.set(trackOrHeading);
     }
 
-    public ReadOnlyDoubleProperty trackOrHeadingProperty(){
+    public ReadOnlyDoubleProperty trackOrHeadingProperty() {
         return trackOrHeadingProperty;
+    }
+
+    public double getTrackOrHeading() {
+        return trackOrHeading;
     }
 }
