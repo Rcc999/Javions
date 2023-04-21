@@ -3,11 +3,31 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
+import ch.epfl.javions.aircraft.AircraftData;
+import ch.epfl.javions.aircraft.IcaoAddress;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.ReadOnlyLongProperty;
+import javafx.beans.property.SimpleLongProperty;
 
 public final class ObservableAircraftState implements AircraftStateSetter {
+
+    private final IcaoAddress icaoAddress;
+    private final AircraftData data;
+    private final LongProperty timeStampNsProperty;
+
+    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data){
+        this.icaoAddress = icaoAddress;
+        this.data = data;
+        this.timeStampNsProperty = new SimpleLongProperty(0L);
+    }
+
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {
+        timeStampNsProperty.set(timeStampNs);
+    }
 
+    public ReadOnlyLongProperty timeStampNsProperty(){
+        return timeStampNsProperty;
     }
 
     @Override
