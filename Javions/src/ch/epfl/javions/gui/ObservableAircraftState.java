@@ -24,7 +24,6 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private final ObjectProperty<GeoPos> positionProperty;
     private final ObservableList<AirbornePos> listFirst = FXCollections.observableArrayList();
     private final ObservableList<AirbornePos> listSecond = FXCollections.unmodifiableObservableList(listFirst);
-
     private long previousTimeStamps = 0;
 
 
@@ -152,11 +151,13 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     private void calculateTrajectory(long latestTimeStamps){
-        if(listFirst.isEmpty() || !getPosition().equals(listFirst.get(listFirst.size()-1).pos())){
-            listFirst.add(new AirbornePos(getPosition(), getAltitude()));
-        }else{
-            if(getLastMessageTimeStampNs() == latestTimeStamps){
-                listFirst.set(listFirst.size() - 1, new AirbornePos(getPosition(), getAltitude()));
+        if(getPosition() != null){
+            if(listFirst.isEmpty() || !getPosition().equals(listFirst.get(listFirst.size()-1).pos())){
+                listFirst.add(new AirbornePos(getPosition(), getAltitude()));
+            }else{
+                if(getLastMessageTimeStampNs() == latestTimeStamps){
+                    listFirst.set(listFirst.size() - 1, new AirbornePos(getPosition(), getAltitude()));
+                }
             }
         }
     }
