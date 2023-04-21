@@ -6,22 +6,27 @@ import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.*;
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableList;
+
+import java.util.Collections;
+import java.util.List;
 
 public final class ObservableAircraftState implements AircraftStateSetter {
 
     private final IcaoAddress icaoAddress;
     private final AircraftData data;
-    private long timeStampNs;
     private final LongProperty timeStampNsProperty;
-    private int category;
     private final IntegerProperty categoryProperty;
-    private CallSign callSign;
     private final ObjectProperty<CallSign> callSignProperty;
-    private double altitude, velocity, trackOrHeading;
     private final DoubleProperty altitudeProperty, velocityProperty, trackOrHeadingProperty;
-    private GeoPos position;
     private final ObjectProperty<GeoPos> positionProperty;
+    private ObservableList<AirbornePos> listFirst;
 
+
+    public record AirbornePos(GeoPos pos, double altitude){
+
+    }
 
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
         this.icaoAddress = icaoAddress;
@@ -35,9 +40,16 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.trackOrHeadingProperty = new SimpleDoubleProperty(0.0);
     }
 
+    public AircraftData getAircraftData() {
+        return data;
+    }
+
+    public IcaoAddress getIcaoAddress(){
+        return icaoAddress;
+    }
+
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {
-        this.timeStampNs = timeStampNs;
         timeStampNsProperty.set(timeStampNs);
     }
 
@@ -45,13 +57,12 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         return timeStampNsProperty;
     }
 
-    public long getTimeStampNs() {
-        return timeStampNs;
+    public long getLastMessageTimeStampNs() {
+        return timeStampNsProperty.get();
     }
 
     @Override
     public void setCategory(int category) {
-        this.category = category;
         categoryProperty.set(category);
     }
 
@@ -60,12 +71,11 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     public int getCategory() {
-        return category;
+        return categoryProperty.get();
     }
 
     @Override
     public void setCallSign(CallSign callSign) {
-        this.callSign = callSign;
         callSignProperty.set(callSign);
     }
 
@@ -74,12 +84,11 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     public CallSign getCallSign() {
-        return callSign;
+        return callSignProperty.get();
     }
 
     @Override
     public void setPosition(GeoPos position) {
-        this.position = position;
         positionProperty.set(position);
     }
 
@@ -88,12 +97,11 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     public GeoPos getPosition() {
-        return position;
+        return positionProperty.get();
     }
 
     @Override
     public void setAltitude(double altitude) {
-        this.altitude = altitude;
         altitudeProperty.set(altitude);
     }
 
@@ -102,12 +110,11 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     public double getAltitude() {
-        return altitude;
+        return altitudeProperty.get();
     }
 
     @Override
     public void setVelocity(double velocity) {
-        this.velocity = velocity;
         velocityProperty.add(velocity);
     }
 
@@ -116,12 +123,11 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     public double getVelocity() {
-        return velocity;
+        return velocityProperty.get();
     }
 
     @Override
     public void setTrackOrHeading(double trackOrHeading) {
-        this.trackOrHeading = trackOrHeading;
         trackOrHeadingProperty.set(trackOrHeading);
     }
 
@@ -130,6 +136,6 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     public double getTrackOrHeading() {
-        return trackOrHeading;
+        return trackOrHeadingProperty.get();
     }
 }
