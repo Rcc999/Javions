@@ -16,6 +16,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private final ObjectProperty<CallSign> callSignProperty;
     private final DoubleProperty altitudeProperty, velocityProperty, trackOrHeadingProperty;
     private final ObjectProperty<GeoPos> positionProperty;
+    private GeoPos position;
 
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data){
         this.icaoAddress = icaoAddress;
@@ -27,6 +28,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.altitudeProperty = new SimpleDoubleProperty(0.0);
         this.velocityProperty = new SimpleDoubleProperty(0.0);
         this.trackOrHeadingProperty = new SimpleDoubleProperty(0.0);
+        this.position = null;
     }
 
     @Override
@@ -58,11 +60,16 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
     @Override
     public void setPosition(GeoPos position) {
+        this.position = position;
         positionProperty.set(position);
     }
 
     public ReadOnlyObjectProperty<GeoPos> positionProperty(){
         return positionProperty;
+    }
+
+    public GeoPos getPosition(){
+        return position;
     }
 
     @Override
