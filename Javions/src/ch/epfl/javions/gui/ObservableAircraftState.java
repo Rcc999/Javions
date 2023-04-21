@@ -6,6 +6,7 @@ import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 
@@ -21,7 +22,10 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private final ObjectProperty<CallSign> callSignProperty;
     private final DoubleProperty altitudeProperty, velocityProperty, trackOrHeadingProperty;
     private final ObjectProperty<GeoPos> positionProperty;
-    private ObservableList<AirbornePos> listFirst;
+    private final ObservableList<AirbornePos> listFirst = FXCollections.observableArrayList();
+    private final ObservableList<AirbornePos> listSecond = FXCollections.unmodifiableObservableList(listFirst);
+
+    private long previousTimeStamps = 0;
 
 
     public record AirbornePos(GeoPos pos, double altitude){
@@ -90,6 +94,8 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     @Override
     public void setPosition(GeoPos position) {
         positionProperty.set(position);
+        calculateTrajectory(previousTimeStamps);
+        previousTimeStamps = getLastMessageTimeStampNs();
     }
 
     public ReadOnlyObjectProperty<GeoPos> positionProperty() {
@@ -103,6 +109,8 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     @Override
     public void setAltitude(double altitude) {
         altitudeProperty.set(altitude);
+        calculateTrajectory(previousTimeStamps);
+        previousTimeStamps = getLastMessageTimeStampNs();
     }
 
     public ReadOnlyDoubleProperty altitudeProperty() {
@@ -138,4 +146,19 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     public double getTrackOrHeading() {
         return trackOrHeadingProperty.get();
     }
+
+    public ObservableList<AirbornePos> trajectory(){
+        return listSecond;
+    }
+
+    private void calculateTrajectory(long latestTimeStamps){
+        if(listFirst.isEmpty() || !getPosition().equals(listFirst.get(listFirst.size()-1).pos())){
+            listFirst.add(new AirbornePos(getPosition(), getAltitude()));
+        }else{
+            if(getLastMessageTimeStampNs() == latestTimeStamps){
+                listFirst.set(listFirst.size() - 1, new AirbornePos(getPosition(), getAltitude()));
+            }
+        }
+    }
+
 }
