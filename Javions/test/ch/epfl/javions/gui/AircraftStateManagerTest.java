@@ -1,6 +1,8 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.Units;
+import ch.epfl.javions.adsb.Message;
+import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 
@@ -88,9 +90,14 @@ class AircraftStateManagerTest {
                 while (System.nanoTime() - startTimeNs < 0.0125 * timeStampNs) {
                     Thread.sleep(10);
                 }
-                aircraftStateManager.updateWithMessage(RawMessage.of(timeStampNs, bytes));
-                aircraftStateManager.purge();
-                formattedPrint();
+                RawMessage rawMessage = RawMessage.of(timeStampNs, bytes);
+                if(rawMessage != null){
+                    Message message = MessageParser.parse(rawMessage);
+                    aircraftStateManager.updateWithMessage(message);
+                    aircraftStateManager.purge();
+                    formattedPrint();
+                }
+
                 Thread.sleep(10);
                 System.out.println(++count / 308000.0);
 //                scanner.nextLine();
