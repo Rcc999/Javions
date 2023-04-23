@@ -1,6 +1,7 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.adsb.AircraftStateAccumulator;
+import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.aircraft.IcaoAddress;
@@ -29,24 +30,18 @@ public final class AircraftStateManager {
         this.unmodifiableObservableSet = FXCollections.unmodifiableObservableSet(observableAircraftStates);
     }
 
-    public void purge(Message message){
-       long lastMessageTimeStamp = message.timeStampNs();
-       long oneMinuteAgo = lastMessageTimeStamp - (60 * 1000000000L);
+    public void purge(){
+       long oneMinuteAgo = timeStamps - (60 * 1000000000L);
 
-       for (ObservableAircraftState state : observableAircraftStates) {
-           if (state.timeStampNsProperty().get() < oneMinuteAgo) {
-               observableAircraftStates.remove(state);
-           }
-       }
-        /*for (IcaoAddress icaoAddress : associativeMap.keySet()) {
-            AircraftStateAccumulator<ObservableAircraftState> liveState = associativeMap.get(icaoAddress);
+        for (IcaoAddress icaoAddress : associativeMap.keySet()) {
+            AircraftStateAccumulator<ObservableAircraftState> states = associativeMap.get(icaoAddress);
+            ObservableAircraftState stateToRemove = states.stateSetter();
 
-            if (lastMessageTimeStamp < oneMinuteAgo) {
-                ObservableAircraftState stateToRemove = liveState.stateSetter();
+            if (timeStamps - stateToRemove.getLastMessageTimeStampNs() <= oneMinuteAgo) {
                 observableAircraftStates.remove(stateToRemove);
                 associativeMap.remove(icaoAddress);
             }
-        }*/
+        }
     }
 
     public void updateWithMessage(Message message) throws IOException {
