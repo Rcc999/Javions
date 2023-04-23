@@ -7,11 +7,8 @@ import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 
-import java.util.Collections;
-import java.util.List;
 
 public final class ObservableAircraftState implements AircraftStateSetter {
 
@@ -24,7 +21,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private final ObjectProperty<GeoPos> positionProperty;
     private final ObservableList<AirbornePos> listFirst = FXCollections.observableArrayList();
     private final ObservableList<AirbornePos> listSecond = FXCollections.unmodifiableObservableList(listFirst);
-    private long previousTimeStamps = 0;
+    private long previousTimeStamps = -1;
 
 
     public record AirbornePos(GeoPos pos, double altitude){
@@ -152,13 +149,11 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
     private void calculateTrajectory(long latestTimeStamps){
         if(getPosition() != null){
-            if(listFirst.isEmpty() || !getPosition().equals(listFirst.get(listFirst.size()-1).pos())){
+            if(listFirst.isEmpty() || !getPosition().equals(listFirst.get(listFirst.size()-1).pos()))
                 listFirst.add(new AirbornePos(getPosition(), getAltitude()));
-            }else{
-                if(getLastMessageTimeStampNs() == latestTimeStamps){
+
+            else if(getLastMessageTimeStampNs() == latestTimeStamps)
                     listFirst.set(listFirst.size() - 1, new AirbornePos(getPosition(), getAltitude()));
-                }
-            }
         }
     }
 
