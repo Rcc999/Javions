@@ -50,7 +50,8 @@ public final class AircraftStateManager {
             associativeMap.get(key).update(message);
         } else {
             ObservableAircraftState state = new ObservableAircraftState(key, aircraftDatabase.get(key));
-            Objects.requireNonNull(associativeMap.put(key, new AircraftStateAccumulator<>(state))).update(message);
+            associativeMap.put(key, new AircraftStateAccumulator<>(state));
+            associativeMap.get(key).update(message);
         }
 
         if(associativeMap.get(key).stateSetter().getPosition() != null)
