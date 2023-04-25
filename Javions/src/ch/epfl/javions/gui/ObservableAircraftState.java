@@ -9,7 +9,12 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-
+/**
+ * Observable Aircraft States
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public final class ObservableAircraftState implements AircraftStateSetter {
 
     private final IcaoAddress icaoAddress;
@@ -24,10 +29,14 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private long previousTimeStamps = -1;
 
 
-    public record AirbornePos(GeoPos pos, double altitude){
+    public record AirbornePos(GeoPos pos, double altitude){}
 
-    }
-
+    /**
+     * Construct the observable state of the aircraft
+     *
+     * @param icaoAddress of the aircraft
+     * @param data provides fixed characteristics of this aircraft
+     */
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
         this.icaoAddress = icaoAddress;
         this.data = data;
@@ -40,10 +49,16 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.trackOrHeadingProperty = new SimpleDoubleProperty(0.0);
     }
 
+    /**
+     * @return data of the aircraft
+     */
     public AircraftData getAircraftData() {
         return data;
     }
 
+    /**
+     * @return ICAO address of the aircraft
+     */
     public IcaoAddress getIcaoAddress(){
         return icaoAddress;
     }
@@ -147,6 +162,11 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         return listSecond;
     }
 
+    /**
+     * Calculate the trajectory and put it in the trajectory list that contains the position of the aircraft
+     *
+     * @param latestTimeStamps of the aircraft whose trajectory is added the latest
+     */
     private void calculateTrajectory(long latestTimeStamps){
         if(getPosition() != null){
             if(listFirst.isEmpty() || !getPosition().equals(listFirst.get(listFirst.size()-1).pos()))
