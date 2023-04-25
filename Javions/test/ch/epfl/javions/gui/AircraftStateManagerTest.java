@@ -95,8 +95,9 @@ class AircraftStateManagerTest {
                     Message message = MessageParser.parse(rawMessage);
                     aircraftStateManager.updateWithMessage(message);
                     aircraftStateManager.purge();
-                    formattedPrint();
+
                 }
+                formattedPrint();
 
                 Thread.sleep(10);
                 System.out.println(++count / 308000.0);
