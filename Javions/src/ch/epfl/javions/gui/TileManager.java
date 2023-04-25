@@ -16,7 +16,7 @@ public class TileManager {
     private final static int MAX_CAPACITY = 100;
     private final Path pathToDisk;
     private final String name;
-    private final LinkedHashMap<TileIDd, Image> memory;
+    private final LinkedHashMap<TileId, Image> memory;
 
     public TileManager(Path pathToDisk, String name) {
         this.pathToDisk = pathToDisk;
@@ -24,7 +24,7 @@ public class TileManager {
         memory = new LinkedHashMap<>(MAX_CAPACITY, 0.75F, true);
     }
 
-    public Image imageForTileAt(TileIDd tileId) throws IOException {
+    public Image imageForTileAt(TileId tileId) throws IOException {
 
         Path pathToDirectory = pathToDisk.resolve(String.valueOf(tileId.zoomLevel)).resolve(String.valueOf(tileId.x));
         Path pathToY = pathToDirectory.resolve((tileId.y) + ".png");
@@ -33,7 +33,7 @@ public class TileManager {
             return memory.get(tileId);
         }
 
-        Iterator<TileIDd> it = memory.keySet().iterator();
+        Iterator<TileId> it = memory.keySet().iterator();
 
         if (memory.size() == MAX_CAPACITY) {
             memory.remove(it.next());
@@ -63,7 +63,7 @@ public class TileManager {
     }
 
 
-    public record TileIDd(int x, int y, int zoomLevel) {
+    public record TileId(int x, int y, int zoomLevel) {
 
         public static boolean isValid(int zoomLevel, int x, int y) {
             int max = 1 << zoomLevel;
