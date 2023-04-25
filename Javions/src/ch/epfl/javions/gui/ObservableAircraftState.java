@@ -119,7 +119,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
     @Override
     public void setVelocity(double velocity) {
-        velocityProperty.add(velocity);
+        velocityProperty.set(velocity);
     }
 
     public ReadOnlyDoubleProperty velocityProperty() {

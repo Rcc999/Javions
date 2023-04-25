@@ -55,17 +55,18 @@ class AircraftStateManagerTest {
             String callString = call == null ? "" : call.string();
             String registration = aircraftData == null ? "" : aircraftData.registration().string();
             String model = aircraftData == null ? "" : aircraftData.model();
+            String velocity = Units.convertTo(aircraftState.getVelocity(), Units.Speed.KILOMETER_PER_HOUR) == 0
+                    ? "Nan"
+                    : "" + (int) Units.convertTo(aircraftState.getVelocity(), Units.Speed.KILOMETER_PER_HOUR);
             System.out.printf(format,
                     aircraftState.getIcaoAddress().string(),
                     callString,
                     registration,
                     model,
-                    Units.convertTo(aircraftState.getPosition().longitude(),
-                            Units.Angle.DEGREE),
-                    Units.convertTo(aircraftState.getPosition().latitude(),
-                            Units.Angle.DEGREE),
-                    aircraftState.getAltitude(),
-                    Units.convertTo(aircraftState.getVelocity(), Units.Speed.KILOMETER_PER_HOUR));
+                    Units.convertTo(aircraftState.getPosition().longitude(), Units.Angle.DEGREE),
+                    Units.convertTo(aircraftState.getPosition().latitude(), Units.Angle.DEGREE),
+                    (int) aircraftState.getAltitude(),
+                    velocity);
             currentTime = Math.max(currentTime, aircraftState.getLastMessageTimeStampNs());
 
         }
