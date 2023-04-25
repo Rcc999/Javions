@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.Preconditions;
 import javafx.scene.image.Image;
 
 import java.awt.*;
@@ -28,6 +29,7 @@ public class TileManager {
 
         Path pathToDirectory = pathToDisk.resolve(String.valueOf(tileId.zoomLevel)).resolve(String.valueOf(tileId.x));
         Path pathToY = pathToDirectory.resolve((tileId.y) + ".png");
+        Preconditions.checkArgument(TileId.isValid(tileId.zoomLevel, tileId.x, tileId.y));
 
         if (memory.containsKey(tileId)) {
             return memory.get(tileId);
@@ -63,7 +65,7 @@ public class TileManager {
     }
 
 
-    public record TileId(int x, int y, int zoomLevel) {
+    public record TileId(int zoomLevel, int x, int y) {
 
         public static boolean isValid(int zoomLevel, int x, int y) {
             int max = 1 << zoomLevel;
@@ -71,7 +73,6 @@ public class TileManager {
                     && x <= max
                     && y >= 0
                     && y <= max;
-
         }
     }
 }
