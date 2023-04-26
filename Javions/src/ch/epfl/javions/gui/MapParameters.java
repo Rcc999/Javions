@@ -13,7 +13,7 @@ public final class MapParameters {
     private final IntegerProperty zoomLevelProperty;
 
     public MapParameters(int zoomLevel, double x, double y) {
-        Preconditions.checkArgument(zoomLevel >= 6 && zoomLevel <= 19);
+        Preconditions.checkArgument(zoomLevel >= 6 && zoomLevel <= 19);// use clamp
 
         this.zoomLevelProperty = new SimpleIntegerProperty(zoomLevel);
         this.minXProperty = new SimpleDoubleProperty(x);
