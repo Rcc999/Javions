@@ -24,6 +24,7 @@ public final class BaseMapController {
         this.tileManager = tileManager;
 
         this.mapParameters = mapParameters;
+        this.mapParameters.zoomLevelProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
         canvas = new Canvas();
         mainPane = new Pane(canvas);
         //mainPane.getChildren().add(canvas);
