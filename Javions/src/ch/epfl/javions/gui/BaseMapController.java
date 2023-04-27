@@ -25,6 +25,8 @@ public final class BaseMapController {
 
         this.mapParameters = mapParameters;
         this.mapParameters.zoomLevelProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
+        mapParameters.minXProperty().addListener((observable, oldValue, newValue) -> redrawOnNextPulse());
+        mapParameters.minYProperty().addListener((observable, oldValue, newValue) -> redrawOnNextPulse());
         canvas = new Canvas();
         mainPane = new Pane(canvas);
         //mainPane.getChildren().add(canvas);
@@ -88,14 +90,18 @@ public final class BaseMapController {
         mainPane.setOnMousePressed(e -> lastMousePosition.set(new Point2D(e.getX(), e.getY())));
 
         mainPane.setOnMouseDragged(e -> {
-            Point2D newMousePosition = lastMousePosition.get()
+            Point2D currentPosition = new Point2D(e.getX(), e.getY());
+            Point2D delta = currentPosition.subtract(lastMousePosition.get());
+            mapParameters.scroll((int) delta.getX(), (int) delta.getY());
+            lastMousePosition.set(currentPosition);
+            /*Point2D newMousePosition = lastMousePosition.get()
                     .add(mapParameters.getMinX(), mapParameters.getMinY())
                     .subtract(e.getX(), e.getY());
 
             mapParameters.scroll((int) (lastMousePosition.get().getX() - newMousePosition.getX()),
                     (int) (lastMousePosition.get().getY() - newMousePosition.getY()));
 
-            lastMousePosition.set(new Point2D(e.getX(), e.getY()));
+            lastMousePosition.set(new Point2D(e.getX(), e.getY()));*/
         });
 
         LongProperty minScrollTime = new SimpleLongProperty();
@@ -114,5 +120,4 @@ public final class BaseMapController {
             mapParameters.scroll(offsetX, offsetY);
         });
     }
-
 }
