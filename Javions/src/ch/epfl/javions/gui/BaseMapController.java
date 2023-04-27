@@ -106,8 +106,12 @@ public final class BaseMapController {
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
-
-            // … à faire : appeler les méthodes de MapParameters
+            Point2D mousePos = mainPane.sceneToLocal(e.getSceneX(), e.getSceneY());
+            int offsetX = (int) (mousePos.getX() - mapParameters.getMinX());
+            int offsetY = (int) (mousePos.getY() - mapParameters.getMinY());
+            mapParameters.scroll(-offsetX, -offsetY);
+            mapParameters.changeZoomLevel(zoomDelta);
+            mapParameters.scroll(offsetX, offsetY);
         });
     }
 
