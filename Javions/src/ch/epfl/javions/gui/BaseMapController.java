@@ -2,8 +2,8 @@ package ch.epfl.javions.gui;
 
 import ch.epfl.javions.GeoPos;
 import javafx.application.Platform;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.*;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
@@ -38,7 +38,7 @@ public final class BaseMapController {
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
 
-
+        eventHandler();
     }
 
     public Pane pane() {
@@ -82,6 +82,22 @@ public final class BaseMapController {
     }
 
     private void eventHandler() {
+
+        ObjectProperty<Point2D> lastMousePosition = new SimpleObjectProperty<>();
+
+        mainPane.setOnMousePressed(e -> lastMousePosition.set(new Point2D(e.getX(), e.getY())));
+
+        mainPane.setOnMouseDragged(e -> {
+            Point2D newMousePosition = lastMousePosition.get()
+                    .add(mapParameters.getMinX(), mapParameters.getMinY())
+                    .subtract(e.getX(), e.getY());
+
+            mapParameters.scroll((int) (lastMousePosition.get().getX() - newMousePosition.getX()),
+                    (int) (lastMousePosition.get().getY() - newMousePosition.getY()));
+
+            lastMousePosition.set(new Point2D(e.getX(), e.getY()));
+        });
+
         LongProperty minScrollTime = new SimpleLongProperty();
         mainPane.setOnScroll(e -> {
             int zoomDelta = (int) Math.signum(e.getDeltaY());
