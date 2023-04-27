@@ -92,16 +92,8 @@ public final class BaseMapController {
         mainPane.setOnMouseDragged(e -> {
             Point2D currentPosition = new Point2D(e.getX(), e.getY());
             Point2D delta = currentPosition.subtract(lastMousePosition.get());
-            mapParameters.scroll((int) delta.getX(), (int) delta.getY());
+            mapParameters.scroll(- (int) delta.getX(), - (int) delta.getY());
             lastMousePosition.set(currentPosition);
-            /*Point2D newMousePosition = lastMousePosition.get()
-                    .add(mapParameters.getMinX(), mapParameters.getMinY())
-                    .subtract(e.getX(), e.getY());
-
-            mapParameters.scroll((int) (lastMousePosition.get().getX() - newMousePosition.getX()),
-                    (int) (lastMousePosition.get().getY() - newMousePosition.getY()));
-
-            lastMousePosition.set(new Point2D(e.getX(), e.getY()));*/
         });
 
         LongProperty minScrollTime = new SimpleLongProperty();
@@ -112,7 +104,8 @@ public final class BaseMapController {
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
-            Point2D mousePos = mainPane.sceneToLocal(e.getSceneX(), e.getSceneY());
+
+            Point2D mousePos = mainPane.sceneToLocal(e.getX(), e.getY());
             int offsetX = (int) (mousePos.getX() - mapParameters.getMinX());
             int offsetY = (int) (mousePos.getY() - mapParameters.getMinY());
             mapParameters.scroll(-offsetX, -offsetY);
