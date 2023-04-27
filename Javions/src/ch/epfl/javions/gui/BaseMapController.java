@@ -25,11 +25,11 @@ public final class BaseMapController {
 
         this.mapParameters = mapParameters;
         this.mapParameters.zoomLevelProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
-        mapParameters.minXProperty().addListener((observable, oldValue, newValue) -> redrawOnNextPulse());
-        mapParameters.minYProperty().addListener((observable, oldValue, newValue) -> redrawOnNextPulse());
+        this.mapParameters.minXProperty().addListener((observable, oldValue, newValue) -> redrawOnNextPulse());
+        this.mapParameters.minYProperty().addListener((observable, oldValue, newValue) -> redrawOnNextPulse());
+
         canvas = new Canvas();
         mainPane = new Pane(canvas);
-        //mainPane.getChildren().add(canvas);
 
         canvas.widthProperty().bind(mainPane.widthProperty());
         canvas.heightProperty().bind(mainPane.heightProperty());
