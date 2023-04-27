@@ -108,9 +108,9 @@ public final class BaseMapController {
             Point2D mousePos = mainPane.sceneToLocal(e.getX(), e.getY());
             int offsetX = (int) (mousePos.getX() - mapParameters.getMinX());
             int offsetY = (int) (mousePos.getY() - mapParameters.getMinY());
-            mapParameters.scroll(-offsetX, -offsetY);
-            mapParameters.changeZoomLevel(zoomDelta);
             mapParameters.scroll(offsetX, offsetY);
+            mapParameters.changeZoomLevel(-zoomDelta);
+            mapParameters.scroll(-offsetX, offsetY);
         });
     }
 }

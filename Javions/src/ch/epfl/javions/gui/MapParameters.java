@@ -50,11 +50,14 @@ public final class MapParameters {
     }
 
     public void changeZoomLevel(int zoomDiff){
-        int newZoomLevel = getZoomLevel() + zoomDiff;
-        Preconditions.checkArgument(Math2.clamp(6, newZoomLevel, 19) == newZoomLevel);
+        int newZoomLevel = Math2.clamp(6, getZoomLevel() + zoomDiff, 19);
+        double scaleFactor = Math.pow(2, newZoomLevel - getZoomLevel());
+        minXProperty.set(getMinX() * scaleFactor);
+        minYProperty.set(getMinY() * scaleFactor);
         zoomLevelProperty.set(newZoomLevel);
-        minYProperty.set(getMinY() * Math.pow(2,newZoomLevel));
-        minXProperty.set(getMinX() * Math.pow(2,newZoomLevel));
+        System.out.println(newZoomLevel);
+        System.out.println("Min x :" + getMinX());
+        System.out.println("Min y :" + getMinY());
     }
 
 
