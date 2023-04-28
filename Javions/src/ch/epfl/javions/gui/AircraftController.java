@@ -19,6 +19,7 @@ public final class AircraftController {
     }
 
     public Pane pane() {
+        return null;
     }
 }
 
