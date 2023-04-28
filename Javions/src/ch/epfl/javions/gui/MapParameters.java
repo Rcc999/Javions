@@ -55,9 +55,6 @@ public final class MapParameters {
         minXProperty.set(getMinX() * scaleFactor);
         minYProperty.set(getMinY() * scaleFactor);
         zoomLevelProperty.set(newZoomLevel);
-        System.out.println(newZoomLevel);
-        System.out.println("Min x :" + getMinX());
-        System.out.println("Min y :" + getMinY());
     }
 
 
