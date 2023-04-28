@@ -1,6 +1,7 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.GeoPos;
+import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.geometry.Point2D;
@@ -33,6 +34,7 @@ public final class BaseMapController {
 
         canvas.widthProperty().bind(mainPane.widthProperty());
         canvas.heightProperty().bind(mainPane.heightProperty());
+
         canvas.widthProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
         canvas.heightProperty().addListener((p, oldS, newS) -> redrawOnNextPulse());
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
@@ -48,6 +50,18 @@ public final class BaseMapController {
     }
 
     public void centerOn(GeoPos geoPos) {
+        // Convertir les coordonnées géographiques (longitude, latitude) en coordonnées de l'image (x, y) avec WebMercator
+        double xImage = WebMercator.x(mapParameters.getZoomLevel(), geoPos.longitude());
+        double yImage = WebMercator.y(mapParameters.getZoomLevel(), geoPos.latitude());
+
+        // Calculer les décalages nécessaires pour centrer la carte sur les coordonnées de l'image
+        double decalageX = xImage - canvas.getWidth() / 2 - mapParameters.getMinX(); //Not sure
+        double decalageY = yImage - canvas.getHeight() / 2 - mapParameters.getMinY();
+
+        // Mettre à jour les paramètres de la carte pour centrer la vue sur les coordonnées
+        mapParameters.scroll((int) decalageX, (int) decalageY);
+
+        redrawOnNextPulse();
     }
 
 
@@ -56,11 +70,11 @@ public final class BaseMapController {
         redrawNeeded = false;
 
         GraphicsContext context = canvas.getGraphicsContext2D();
+        context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         double xImageSpace = mapParameters.getMinX() % PIXEL_PER_TILE;
         double yImageSpace = mapParameters.getMinY() % PIXEL_PER_TILE;
-
-        for (int x = 0; x < canvas.getWidth(); x += PIXEL_PER_TILE) {
-            for (int y = 0; y < canvas.getHeight(); y += PIXEL_PER_TILE) {
+        for (int x = 0; x <= canvas.getWidth() + PIXEL_PER_TILE; x += PIXEL_PER_TILE) {
+            for (int y = 0; y <= canvas.getHeight() + PIXEL_PER_TILE; y += PIXEL_PER_TILE) {
                 int tileXCoordinate = Math.floorDiv((int) (mapParameters.getMinX() + x), PIXEL_PER_TILE);
                 int tileYCoordinate = Math.floorDiv((int) (mapParameters.getMinY() + y), PIXEL_PER_TILE);
 
@@ -75,7 +89,6 @@ public final class BaseMapController {
                 }
             }
         }
-
     }
 
     private void redrawOnNextPulse() {
@@ -89,12 +102,15 @@ public final class BaseMapController {
 
         mainPane.setOnMousePressed(e -> lastMousePosition.set(new Point2D(e.getX(), e.getY())));
 
+
         mainPane.setOnMouseDragged(e -> {
             Point2D currentPosition = new Point2D(e.getX(), e.getY());
             Point2D delta = currentPosition.subtract(lastMousePosition.get());
-            mapParameters.scroll(- (int) delta.getX(), - (int) delta.getY());
+            mapParameters.scroll(-(int) delta.getX(), -(int) delta.getY());
             lastMousePosition.set(currentPosition);
         });
+
+        mainPane.setOnMouseReleased(e -> lastMousePosition.set(null));
 
         LongProperty minScrollTime = new SimpleLongProperty();
         mainPane.setOnScroll(e -> {
@@ -105,12 +121,12 @@ public final class BaseMapController {
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
 
-            Point2D mousePos = mainPane.sceneToLocal(e.getX(), e.getY());
-            int offsetX = (int) (mousePos.getX() - mapParameters.getMinX());
-            int offsetY = (int) (mousePos.getY() - mapParameters.getMinY());
+            Point2D mousePos = new Point2D(e.getX(), e.getY());
+            int offsetX = (int) (mousePos.getX());
+            int offsetY = (int) (mousePos.getY());
             mapParameters.scroll(offsetX, offsetY);
             mapParameters.changeZoomLevel(-zoomDelta);
-            mapParameters.scroll(-offsetX, offsetY);
+            mapParameters.scroll(-offsetX, -offsetY);
         });
     }
 }
