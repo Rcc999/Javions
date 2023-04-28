@@ -2,7 +2,6 @@ package ch.epfl.javions.gui;
 
 import ch.epfl.javions.Math2;
 import ch.epfl.javions.Preconditions;
-import ch.epfl.javions.WebMercator;
 import javafx.beans.property.*;
 
 //Need Check
@@ -55,9 +54,6 @@ public final class MapParameters {
         minXProperty.set(getMinX() * scaleFactor);
         minYProperty.set(getMinY() * scaleFactor);
         zoomLevelProperty.set(newZoomLevel);
-        System.out.println(newZoomLevel);
-        System.out.println("Min x :" + getMinX());
-        System.out.println("Min y :" + getMinY());
     }
 
 
