@@ -79,7 +79,8 @@ public final class AircraftController {
         return iconAndLabelGroup;
     }
 
-
+    /**
+    Hmmmmm maybe have to add listeners to update stuffs? */
     private SVGPath icon(ObservableAircraftState aircraftState) {
         SVGPath svgPath = new SVGPath();
         svgPath.getStyleClass().add("aircraft");
@@ -90,8 +91,12 @@ public final class AircraftController {
         AircraftDescription description = data == null
                 ? new AircraftDescription("") : data.description();
 
-        AircraftIcon aircraftIcon = AircraftIcon.iconFor(typeDesignator, description,
-                aircraftState.getCategory(), data.wakeTurbulenceCategory());
+
+        AircraftIcon aircraftIcon = (data == null)
+                ? AircraftIcon.iconFor(typeDesignator, description, aircraftState.getCategory(), WakeTurbulenceCategory.UNKNOWN)
+                : AircraftIcon.iconFor(typeDesignator, description, aircraftState.getCategory(), data.wakeTurbulenceCategory());
+
+
         ObjectProperty<AircraftIcon> iconProperty = new SimpleObjectProperty<>(aircraftIcon);
 
         var iconCategory = aircraftState.categoryProperty().map(e -> aircraftIcon);
