@@ -59,7 +59,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     public static AirbornePositionMessage of(RawMessage rawMessage) {
         return Double.isNaN(altitudeCalculator(rawMessage))
                 ? null : new AirbornePositionMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(),
-                altitudeCalculator(rawMessage), determineParity(rawMessage), LAT_CPR(rawMessage), LON_CPR(rawMessage));
+                altitudeCalculator(rawMessage), determineParity(rawMessage), lat_CPR(rawMessage), loN_CPR(rawMessage));
     }
 
     /**
@@ -88,7 +88,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @param rawMessage of the aircraft
      * @return latitude normalized extracted from raw message
      */
-    private static double LAT_CPR(RawMessage rawMessage) {
+    private static double lat_CPR(RawMessage rawMessage) {
         return Math.scalb(Bits.extractUInt(rawMessage.payload(), START_INDEX_LAT, SIZE_ATTRIBUTE_LON_LAT), NORMALIZED_CONSTANT);
     }
 
@@ -98,7 +98,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @param rawMessage of the aircraft
      * @return longitude normalized extracted
      */
-    private static double LON_CPR(RawMessage rawMessage) {
+    private static double loN_CPR(RawMessage rawMessage) {
         return Math.scalb(Bits.extractUInt(rawMessage.payload(), START_INDEX_LON, SIZE_ATTRIBUTE_LON_LAT), NORMALIZED_CONSTANT);
     }
 
