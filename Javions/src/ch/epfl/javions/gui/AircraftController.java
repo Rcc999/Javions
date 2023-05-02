@@ -14,6 +14,8 @@ import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
+import java.util.Iterator;
+
 public final class AircraftController {
 
     private final MapParameters mapParameters;
@@ -81,7 +83,14 @@ public final class AircraftController {
     private SVGPath icon(ObservableAircraftState aircraftState) {
         SVGPath svgPath = new SVGPath();
         svgPath.getStyleClass().add("aircraft");
-        AircraftIcon aircraftIcon = AircraftIcon.iconFor(data.typeDesignator(), data.description(),
+        //Haven't gérer le case where data is null
+
+        AircraftTypeDesignator typeDesignator = data == null
+                ? new AircraftTypeDesignator("") : data.typeDesignator();
+        AircraftDescription description = data == null
+                ? new AircraftDescription("") : data.description();
+
+        AircraftIcon aircraftIcon = AircraftIcon.iconFor(typeDesignator, description,
                 aircraftState.getCategory(), data.wakeTurbulenceCategory());
         ObjectProperty<AircraftIcon> iconProperty = new SimpleObjectProperty<>(aircraftIcon);
 
