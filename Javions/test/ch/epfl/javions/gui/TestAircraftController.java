@@ -22,19 +22,19 @@ import java.util.List;
 public class TestAircraftController extends Application {
     public static void main(String[] args) { launch(args); }
 
-    static List<RawMessage> readAllMessages(String fileName) throws IOException {
+    static List<RawMessage> readAllMessages() throws IOException {
         List<RawMessage> rawMessages = new ArrayList<>();
         try (DataInputStream s = new DataInputStream(
                 new BufferedInputStream(
-                        new FileInputStream(fileName)))){
+                        new FileInputStream(TestAircraftController.class.getResource("/messages_20230318_0915.bin").getFile())))){
             byte[] bytes = new byte[RawMessage.LENGTH];
             while (s.read() != -1) {
                 long timeStampNs = s.readLong();
                 int bytesRead = s.readNBytes(bytes, 0, bytes.length);
                 assert bytesRead == RawMessage.LENGTH;
-                ByteString message = new ByteString(bytes);
-                rawMessages.add(new RawMessage(timeStampNs, message));
-                System.out.printf("%13d: %s\n", timeStampNs, message);
+                RawMessage rawMessage = RawMessage.of(timeStampNs, bytes);
+                if(rawMessage != null) rawMessages.add(rawMessage);
+
             }
         }
         return rawMessages;
@@ -66,7 +66,7 @@ public class TestAircraftController extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        var mi = readAllMessages("messages_20230318_0915.bin")
+        var mi = readAllMessages()
                 .iterator();
 
         // Animation des aéronefs
