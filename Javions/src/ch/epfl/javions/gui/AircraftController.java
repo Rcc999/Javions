@@ -1,8 +1,8 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.Units;
-import ch.epfl.javions.aircraft.AircraftData;
-import ch.epfl.javions.aircraft.IcaoAddress;
+import ch.epfl.javions.WebMercator;
+import ch.epfl.javions.aircraft.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -29,20 +29,23 @@ public final class AircraftController {
         this.mapParameters = mapParameters;
         this.observableAircraftStates = observableAircraftStates;
         this.selectedAircraftState = selectedAircraftState;
-        data = selectedAircraftState.get().getAircraftData();
+        //data = observableAircraftStates.iterator().next().getAircraftData() != null ? observableAircraftStates.iterator().next().getAircraftData() : null;
+        data = selectedAircraftState.get() != null
+                ? selectedAircraftState.get().getAircraftData()
+                : null;
 
         pane = new Pane();
         pane.getStyleClass().add("aircraft.css");
-
-        //annotedAircraftGroup = new Group();
-        //annotedAircraftGroup.setId(selectedAircraftState.get().getIcaoAddress().toString());
-
-        //svgPath.rotateProperty().bind(selectedAircraftState.get().trackOrHeadingProperty());
-
-        //svgPath.rotateProperty().bind(Bindings.createDoubleBinding(observableAircraftStates.getClass().));
+        pane.setPickOnBounds(false);
 
         observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
-                change -> { /* … corps de la lambda */});
+                change -> {
+                    if (change.wasAdded()) {
+                        pane.getChildren().add(annotatedAircraftGroup(change.getElementAdded()));
+                    } else if (change.wasRemoved()) {
+                        pane.getChildren().remove(annotatedAircraftGroup(change.getElementRemoved()));
+                    }
+                });
     }
 
     public Pane pane() {
@@ -53,14 +56,27 @@ public final class AircraftController {
     private Group annotatedAircraftGroup(ObservableAircraftState aircraftState) {
         Group aircraftGroup = new Group();
         aircraftGroup.setId(aircraftState.getIcaoAddress().toString());
+        aircraftGroup.getChildren().add(iconAndLabelGroup(aircraftState));
         aircraftGroup.viewOrderProperty().bind(aircraftState.altitudeProperty().negate());
         return aircraftGroup;
     }
 
-    /*private Group iconAndLabelGroup(ObservableAircraftState aircraftState) {
+    private Group iconAndLabelGroup(ObservableAircraftState aircraftState) {
         Group iconAndLabelGroup = new Group();
+        iconAndLabelGroup.getChildren().add(icon(aircraftState));
+
+        iconAndLabelGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
+            double x = WebMercator.x(mapParameters.getZoomLevel(), aircraftState.positionProperty().get().longitude());
+            return x - mapParameters.getMinX();
+        })); //aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minXProperty())); // not so sure
+
+        iconAndLabelGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() -> {
+            double y = WebMercator.y(mapParameters.getZoomLevel(), aircraftState.positionProperty().get().latitude());
+            return y - mapParameters.getMinY();
+        })); //aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minYProperty())); // not so sure
         return iconAndLabelGroup;
-    }*/
+    }
+
 
     private SVGPath icon(ObservableAircraftState aircraftState) {
         SVGPath svgPath = new SVGPath();
@@ -74,6 +90,8 @@ public final class AircraftController {
 
         svgPath.rotateProperty().bind(Bindings.createDoubleBinding(() -> aircraftIcon.canRotate() ?  aircraftState.trackOrHeadingProperty().get() : 0.0,
                 iconProperty, aircraftState.trackOrHeadingProperty()));
+
+        //svgPath.fillProperty().bind();
 
 
         return svgPath;

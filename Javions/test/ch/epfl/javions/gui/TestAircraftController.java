@@ -43,7 +43,6 @@ public class TestAircraftController extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // … à compléter (voir TestBaseMapController)
         Path tileCache = Path.of("tile-cache");
         TileManager tm =
                 new TileManager(tileCache, "tile.openstreetmap.org");
