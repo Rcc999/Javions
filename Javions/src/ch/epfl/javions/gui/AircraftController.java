@@ -70,12 +70,14 @@ public final class AircraftController {
         iconAndLabelGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
             double x = WebMercator.x(mapParameters.getZoomLevel(), aircraftState.positionProperty().get().longitude());
             return x - mapParameters.getMinX();
-        })); //aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minXProperty())); // not so sure
+        },aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minXProperty()));
+        //aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minXProperty())); // not so sure
 
         iconAndLabelGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() -> {
             double y = WebMercator.y(mapParameters.getZoomLevel(), aircraftState.positionProperty().get().latitude());
             return y - mapParameters.getMinY();
-        })); //aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minYProperty())); // not so sure
+        }, aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minYProperty()));
+        //aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minYProperty())); // not so sure
         return iconAndLabelGroup;
     }
 
@@ -90,7 +92,6 @@ public final class AircraftController {
                 ? new AircraftTypeDesignator("") : data.typeDesignator();
         AircraftDescription description = data == null
                 ? new AircraftDescription("") : data.description();
-
 
         AircraftIcon aircraftIcon = (data == null)
                 ? AircraftIcon.iconFor(typeDesignator, description, aircraftState.getCategory(), WakeTurbulenceCategory.UNKNOWN)
