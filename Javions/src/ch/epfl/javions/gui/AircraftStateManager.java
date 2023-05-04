@@ -31,6 +31,8 @@ public final class AircraftStateManager {
 
     public void purge(){
         for (IcaoAddress icaoAddress : associativeMap.keySet()) {
+            if(associativeMap.get(icaoAddress).stateSetter().getPosition() == null)
+                continue;
             AircraftStateAccumulator<ObservableAircraftState> states = associativeMap.get(icaoAddress);
             ObservableAircraftState stateToRemove = states.stateSetter();
             if (currentTimeStampNs - stateToRemove.getLastMessageTimeStampNs() >= MINUTE_AGO_PURGE) {

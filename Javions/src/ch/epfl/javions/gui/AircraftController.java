@@ -12,9 +12,8 @@ import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
-
-import java.util.Iterator;
 
 public final class AircraftController {
 
@@ -80,8 +79,10 @@ public final class AircraftController {
         return iconAndLabelGroup;
     }
 
+
     /**
-    Hmmmmm maybe have to add listeners to update stuffs? */
+     * Hmm, maybe have to add listeners to update stuffs?
+     */
     private SVGPath icon(ObservableAircraftState aircraftState) {
         SVGPath svgPath = new SVGPath();
         svgPath.getStyleClass().add("aircraft");
@@ -97,17 +98,23 @@ public final class AircraftController {
                 : AircraftIcon.iconFor(typeDesignator, description, aircraftState.getCategory(), data.wakeTurbulenceCategory());
 
 
-        ObjectProperty<AircraftIcon> iconProperty = new SimpleObjectProperty<>(aircraftIcon);
-
         var iconCategory = aircraftState.categoryProperty().map(e -> aircraftIcon);
         svgPath.contentProperty().bind(iconCategory.map(AircraftIcon::svgPath));
 
-        svgPath.rotateProperty().bind(Bindings.createDoubleBinding(() -> aircraftIcon.canRotate() ?  aircraftState.trackOrHeadingProperty().get() : 0.0,
+        ObjectProperty<AircraftIcon> iconProperty = new SimpleObjectProperty<>(aircraftIcon);
+
+        svgPath.rotateProperty().bind(Bindings.createDoubleBinding(() -> aircraftIcon.canRotate()
+                        ? Units.convertTo(aircraftState.trackOrHeadingProperty().get(), Units.Angle.DEGREE)
+                        : 0.0,
                 iconProperty, aircraftState.trackOrHeadingProperty()));
 
-        svgPath.fillProperty().bind(Bindings.createObjectBinding(() -> ColorRamp.PLASMA.at(aircraftState.altitudeProperty().get()),
-                iconProperty, aircraftState.altitudeProperty()));
+        /*svgPath.fillProperty().bind(Bindings.createObjectBinding(() -> ColorRamp.PLASMA.at(aircraftState.altitudeProperty().get()),
+        iconProperty, aircraftState.altitudeProperty()));*/
 
+        var iconColor = aircraftState.altitudeProperty().map()
+
+       svgPath.fillProperty().bind(aircraftState.altitudeProperty().map((b) -> ColorRamp.PLASMA.at(aircraftState.altitudeProperty().get())));
+        System.out.println(aircraftState.altitudeProperty().get());
 
         return svgPath;
     }

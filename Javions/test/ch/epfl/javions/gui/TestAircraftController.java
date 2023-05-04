@@ -77,7 +77,9 @@ public class TestAircraftController extends Application {
                 try {
                     for (int i = 0; i < 10; i += 1) {
                         Message m = mi.hasNext() ? MessageParser.parse(mi.next()) : null;
-                        if (m != null) asm.updateWithMessage(m);
+                        if (m != null)
+                            asm.updateWithMessage(m);
+                        //asm.purge();
                     }
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
