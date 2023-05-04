@@ -72,6 +72,7 @@ public class TestAircraftController extends Application {
         // Animation des aéronefs
         new AnimationTimer() {
             @Override
+
             public void handle(long now) {
                 try {
                     for (int i = 0; i < 10; i += 1) {
