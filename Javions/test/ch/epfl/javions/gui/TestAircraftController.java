@@ -1,6 +1,5 @@
 package ch.epfl.javions.gui;
 
-import ch.epfl.javions.ByteString;
 import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
@@ -51,7 +50,7 @@ public class TestAircraftController extends Application {
         BaseMapController bmc = new BaseMapController(tm, mp);
 
 
-        // Création de la base de données
+        // Creation de la base de data
         URL dbUrl = getClass().getResource("/aircraft.zip");
         assert dbUrl != null;
         String f = Path.of(dbUrl.toURI()).toString();
@@ -69,7 +68,7 @@ public class TestAircraftController extends Application {
         var mi = readAllMessages()
                 .iterator();
 
-        // Animation des aéronefs
+        // Animation des aircraft
         new AnimationTimer() {
             @Override
 

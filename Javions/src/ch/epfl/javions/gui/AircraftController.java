@@ -5,7 +5,6 @@ import ch.epfl.javions.WebMercator;
 import ch.epfl.javions.aircraft.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
@@ -29,7 +28,7 @@ public final class AircraftController {
         this.mapParameters = mapParameters;
         this.observableAircraftStates = observableAircraftStates;
         this.selectedAircraftState = selectedAircraftState;
-        //data = observableAircraftStates.iterator().next().getAircraftData() != null ? observableAircraftStates.iterator().next().getAircraftData() : null;
+
         data = selectedAircraftState.get() != null
                 ? selectedAircraftState.get().getAircraftData()
                 : null;
@@ -68,14 +67,14 @@ public final class AircraftController {
         iconAndLabelGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
             double x = WebMercator.x(mapParameters.getZoomLevel(), aircraftState.positionProperty().get().longitude());
             return x - mapParameters.getMinX();
-        },aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minXProperty()));
-        //aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minXProperty())); // not so sure
+        }, aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minXProperty()));
 
         iconAndLabelGroup.layoutYProperty().bind(Bindings.createDoubleBinding(() -> {
             double y = WebMercator.y(mapParameters.getZoomLevel(), aircraftState.positionProperty().get().latitude());
             return y - mapParameters.getMinY();
         }, aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minYProperty()));
-        //aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minYProperty())); // not so sure
+
+
         return iconAndLabelGroup;
     }
 
@@ -86,7 +85,6 @@ public final class AircraftController {
     private SVGPath icon(ObservableAircraftState aircraftState) {
         SVGPath svgPath = new SVGPath();
         svgPath.getStyleClass().add("aircraft");
-        //Haven't gérer le case where data is null
 
         AircraftTypeDesignator typeDesignator = data == null
                 ? new AircraftTypeDesignator("") : data.typeDesignator();
