@@ -23,7 +23,6 @@ public final class AircraftController {
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
     private final AircraftData data;
     private final Pane pane;
-    //private final Group annotedAircraftGroup;
 
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> observableAircraftStates,
@@ -106,7 +105,8 @@ public final class AircraftController {
         svgPath.rotateProperty().bind(Bindings.createDoubleBinding(() -> aircraftIcon.canRotate() ?  aircraftState.trackOrHeadingProperty().get() : 0.0,
                 iconProperty, aircraftState.trackOrHeadingProperty()));
 
-        //svgPath.fillProperty().bind();
+        svgPath.fillProperty().bind(Bindings.createObjectBinding(() -> ColorRamp.PLASMA.at(aircraftState.altitudeProperty().get()),
+                iconProperty, aircraftState.altitudeProperty()));
 
 
         return svgPath;
