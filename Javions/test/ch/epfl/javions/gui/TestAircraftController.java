@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.ByteString;
 import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
@@ -21,22 +22,22 @@ import java.util.List;
 public class TestAircraftController extends Application {
     public static void main(String[] args) { launch(args); }
 
-    static List<RawMessage> readAllMessages() throws IOException {
-        List<RawMessage> rawMessages = new ArrayList<>();
+    static List<RawMessage> readAllMessages(String fileName) throws IOException {
+        List<RawMessage> messages = new ArrayList<>();
+        int bytesRead;
+        long timeStampNs;
+        byte[] bytes = new byte[RawMessage.LENGTH];
         try (DataInputStream s = new DataInputStream(
                 new BufferedInputStream(
-                        new FileInputStream(TestAircraftController.class.getResource("/messages_20230318_0915.bin").getFile())))){
-            byte[] bytes = new byte[RawMessage.LENGTH];
-            while (s.read() != -1) {
-                long timeStampNs = s.readLong();
-                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                assert bytesRead == RawMessage.LENGTH;
-                RawMessage rawMessage = RawMessage.of(timeStampNs, bytes);
-                if(rawMessage != null) rawMessages.add(rawMessage);
-
-            }
+                        new FileInputStream(fileName)))) {
+            do {
+                timeStampNs = s.readLong();
+                bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                messages.add(new RawMessage(timeStampNs, new ByteString(bytes)));
+            } while (bytesRead == RawMessage.LENGTH);
         }
-        return rawMessages;
+        catch (EOFException e) { /* ignore */ }
+        return messages;
     }
 
 
@@ -65,8 +66,9 @@ public class TestAircraftController extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        var mi = readAllMessages()
-                .iterator();
+        var file = getClass().getResource("/messages_20230318_0915.bin").getFile();
+        var messages =
+                readAllMessages(file).iterator();
 
         // Animation des aircraft
         /**
@@ -74,16 +76,17 @@ public class TestAircraftController extends Application {
          */
         new AnimationTimer() {
             @Override
-
             public void handle(long now) {
                 try {
-                    for (int i = 0; i < 10; i += 1) {
-                        Message m = mi.hasNext() ? MessageParser.parse(mi.next()) : null;
-                        if (m != null)
-                            asm.updateWithMessage(m);
-                        //asm.purge();
+                    for (int i = 0; i < 10; ++i) {
+                        Message message = MessageParser.parse(messages.next());
+                        if (message != null) {
+                            asm.updateWithMessage(message);
+                        }
                     }
-                } catch (IOException e) {
+                    asm.purge();
+                }
+                catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
             }
