@@ -47,7 +47,7 @@ public final class AircraftController {
         pane.getStylesheets().add("aircraft.css");
         pane.setPickOnBounds(false);
 
-        observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
+        this.observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
                 change -> {
                     if (change.wasAdded()) {
                         pane.getChildren().add(annotatedAircraftGroup(change.getElementAdded()));
@@ -60,7 +60,6 @@ public final class AircraftController {
     public Pane pane() {
         return pane;
     }
-
 
     private Group annotatedAircraftGroup(ObservableAircraftState aircraftState) {
         Group aircraftGroup = new Group();
@@ -125,7 +124,9 @@ public final class AircraftController {
 
     private Group iconAndLabelGroup(ObservableAircraftState aircraftState) {
         Group iconAndLabelGroup = new Group();
+
         iconAndLabelGroup.getChildren().add(icon(aircraftState));
+        iconAndLabelGroup.getChildren().add(labelGroup(aircraftState));
 
         iconAndLabelGroup.layoutXProperty().bind(Bindings.createDoubleBinding(() -> {
             double x = WebMercator.x(mapParameters.getZoomLevel(), aircraftState.positionProperty().get().longitude());
@@ -161,15 +162,54 @@ public final class AircraftController {
         ObjectProperty<AircraftIcon> iconProperty = new SimpleObjectProperty<>(aircraftIcon);
 
         svgPath.rotateProperty().bind(Bindings.createDoubleBinding(() -> aircraftIcon.canRotate()
-                        ? Units.convertTo(aircraftState.trackOrHeadingProperty().get(), Units.Angle.DEGREE)
+                        ? Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
                         : 0.0,
                 iconProperty, aircraftState.trackOrHeadingProperty()));
 
 
         svgPath.fillProperty().bind(aircraftState.altitudeProperty().map((b) -> ColorRamp.PLASMA.at(b.doubleValue())));
 
+        svgPath.setOnMouseClicked(e -> selectedAircraftState.set(aircraftState));
+
         return svgPath;
     }
+
+    private Group labelGroup(ObservableAircraftState aircraftState) {
+
+        Group rectAndText = new Group();
+        rectAndText.getStyleClass().add("label");
+
+        Text text = new Text();
+        Rectangle rectangle = new Rectangle();
+
+        var velocityText = aircraftState.velocityProperty().map(e ->
+                Units.convertTo(e.doubleValue(), Units.Speed.KILOMETER_PER_HOUR));
+
+        text.textProperty().bind(Bindings.format(
+                "%s \n%.0f km/h" + "\u2002" + "%.0f m",
+                firstLineLabel(aircraftState), velocityText, aircraftState.altitudeProperty()));
+
+        rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
+        rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
+
+        rectAndText.getChildren().add(rectangle);
+        rectAndText.getChildren().add(text);
+
+        rectAndText.visibleProperty().bind(mapParameters.zoomLevelProperty().greaterThanOrEqualTo(11).or(
+                selectedAircraftState.isEqualTo(aircraftState)));
+
+        return rectAndText;
+    }
+
+    private String firstLineLabel(ObservableAircraftState observableAircraftState) {
+        AircraftData aircraftData = observableAircraftState.getAircraftData();
+        if (aircraftData != null) {
+            if (aircraftData.registration() != null) return aircraftData.registration().string();
+            if (aircraftData.description() != null) return aircraftData.description().string();
+        }
+        return observableAircraftState.getIcaoAddress().string();
+    }
+
 }
 
 
