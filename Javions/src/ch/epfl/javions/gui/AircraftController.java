@@ -106,13 +106,8 @@ public final class AircraftController {
                         : 0.0,
                 iconProperty, aircraftState.trackOrHeadingProperty()));
 
-        /*svgPath.fillProperty().bind(Bindings.createObjectBinding(() -> ColorRamp.PLASMA.at(aircraftState.altitudeProperty().get()),
-        iconProperty, aircraftState.altitudeProperty()));*/
 
-        var iconColor = aircraftState.altitudeProperty().map()
-
-       svgPath.fillProperty().bind(aircraftState.altitudeProperty().map((b) -> ColorRamp.PLASMA.at(aircraftState.altitudeProperty().get())));
-        System.out.println(aircraftState.altitudeProperty().get());
+        svgPath.fillProperty().bind(aircraftState.altitudeProperty().map((b) -> ColorRamp.PLASMA.at(b.doubleValue())));
 
         return svgPath;
     }
