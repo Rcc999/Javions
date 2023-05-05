@@ -3,7 +3,6 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.Preconditions;
 import javafx.scene.paint.Color;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,13 +18,12 @@ public final class ColorRamp {
 
 
     public Color at(double value){
-        if(value <= 0)
-            return colors.get(0);
-        if(value >= 1)
-            return colors.get(colors.size() - 1);
 
-        double floorResult = Math.floor(value / MAX_ALTITUDE);
+        double floorResult = value / MAX_ALTITUDE;
         double colorFade = Math.cbrt(floorResult);
+
+        if(colorFade <= 0) return colors.get(0);
+        if(colorFade >= 1) return colors.get(colors.size() - 1);
 
         double position = colorFade * (colors.size() - 1);
         int index = (int) Math.floor(position);
