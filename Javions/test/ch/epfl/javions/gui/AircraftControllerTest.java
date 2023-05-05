@@ -22,9 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * @author Ozair Faizan (361118)
- */
+
 public final class AircraftControllerTest extends Application {
     public static void main(String[] args) {
         launch(args);
