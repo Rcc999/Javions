@@ -9,35 +9,34 @@ import javafx.collections.ObservableSet;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
 public final class AircraftStateManager {
 
     public static final long MINUTE_AGO_PURGE = 60 * 1_000_000_000L;
-    private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> associativeMap;
+    private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> associativeMap; //call it accumulator map
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObservableSet<ObservableAircraftState> unmodifiableObservableAircraftStates;
     private final AircraftDatabase aircraftDatabase;
-    private  long currentTimeStampNs = 0;
+    private long currentTimeStampNs = 0;
 
 
     public AircraftStateManager(AircraftDatabase aircraftDataBase) {
         this.aircraftDatabase = aircraftDataBase;
         this.associativeMap = new HashMap<>();
-        this.observableAircraftStates=  FXCollections.observableSet();
+        this.observableAircraftStates = FXCollections.observableSet();
         this.unmodifiableObservableAircraftStates = FXCollections.unmodifiableObservableSet(observableAircraftStates);
     }
 
-    public void purge(){
-        for (IcaoAddress icaoAddress : associativeMap.keySet()) {
-            if(associativeMap.get(icaoAddress).stateSetter().getPosition() == null)
-                continue;
-            AircraftStateAccumulator<ObservableAircraftState> states = associativeMap.get(icaoAddress);
-            ObservableAircraftState stateToRemove = states.stateSetter();
-            if (currentTimeStampNs - stateToRemove.getLastMessageTimeStampNs() >= MINUTE_AGO_PURGE) {
-                observableAircraftStates.remove(stateToRemove);
-                associativeMap.remove(icaoAddress);
+    public void purge() {
+        Iterator<AircraftStateAccumulator<ObservableAircraftState>> iterator = associativeMap.values().iterator();
+        while(iterator.hasNext()){
+            AircraftStateAccumulator<ObservableAircraftState> stateAccumulator = iterator.next();
+            if (currentTimeStampNs - stateAccumulator.stateSetter().getLastMessageTimeStampNs() >= MINUTE_AGO_PURGE) {
+                observableAircraftStates.remove(stateAccumulator.stateSetter());
+                iterator.remove();
             }
         }
     }
@@ -50,7 +49,7 @@ public final class AircraftStateManager {
         }
         associativeMap.get(key).update(message);
 
-        if(associativeMap.get(key).stateSetter().getPosition() != null)
+        if (associativeMap.get(key).stateSetter().getPosition() != null)
             observableAircraftStates.add(associativeMap.get(key).stateSetter());
 
         currentTimeStampNs = message.timeStampNs();
