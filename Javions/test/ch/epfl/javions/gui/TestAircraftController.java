@@ -69,6 +69,9 @@ public class TestAircraftController extends Application {
                 .iterator();
 
         // Animation des aircraft
+        /**
+         * Purge has a problem
+         */
         new AnimationTimer() {
             @Override
 
