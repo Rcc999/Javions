@@ -5,6 +5,8 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+import java.util.Objects;
+
 /**
  * Position message of an aircraft
  *
@@ -41,9 +43,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @throws IllegalArgumentException if the value of local longitude and latitude aren't between 0 (included) and 1 (excluded)
      */
     public AirbornePositionMessage {
-        if (icaoAddress == null) {
-            throw new NullPointerException("IcaoAddress is null");
-        }
+        Objects.requireNonNull(icaoAddress);
         Preconditions.checkArgument(timeStampNs >= 0);
         Preconditions.checkArgument(parity == 0 || parity == 1);
         Preconditions.checkArgument(x >= 0 && x < 1);
@@ -59,27 +59,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     public static AirbornePositionMessage of(RawMessage rawMessage) {
         return Double.isNaN(altitudeCalculator(rawMessage))
                 ? null : new AirbornePositionMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(),
-                altitudeCalculator(rawMessage), determineParity(rawMessage), lat_CPR(rawMessage), loN_CPR(rawMessage));
-    }
-
-    /**
-     * Get the time stamp of the current position message
-     *
-     * @return time stamp of the current position message
-     */
-    @Override
-    public long timeStampNs() {
-        return timeStampNs;
-    }
-
-    /**
-     * Get the ICAO address of the current position message
-     *
-     * @return ICAO address of the current position message
-     */
-    @Override
-    public IcaoAddress icaoAddress() {
-        return icaoAddress;
+                altitudeCalculator(rawMessage), determineParity(rawMessage), latCpr(rawMessage), lonCpr(rawMessage));
     }
 
     /**
@@ -88,7 +68,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @param rawMessage of the aircraft
      * @return latitude normalized extracted from raw message
      */
-    private static double lat_CPR(RawMessage rawMessage) {
+    private static double latCpr(RawMessage rawMessage) {
         return Math.scalb(Bits.extractUInt(rawMessage.payload(), START_INDEX_LAT, SIZE_ATTRIBUTE_LON_LAT), NORMALIZED_CONSTANT);
     }
 
@@ -98,7 +78,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @param rawMessage of the aircraft
      * @return longitude normalized extracted
      */
-    private static double loN_CPR(RawMessage rawMessage) {
+    private static double lonCpr(RawMessage rawMessage) {
         return Math.scalb(Bits.extractUInt(rawMessage.payload(), START_INDEX_LON, SIZE_ATTRIBUTE_LON_LAT), NORMALIZED_CONSTANT);
     }
 
@@ -150,7 +130,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @return value of bit Q of the aircraft
      */
     private static int determineQ(RawMessage rawMessage) {
-        return Bits.extractUInt(Bits.extractUInt(rawMessage.payload(), 36, 12), 4, 1);
+        return Bits.extractUInt(Bits.extractUInt(rawMessage.payload(), START_INDEX_ALT, SIZE_ATTRIBUTE_ALT), 4, 1);
     }
 
     /**
