@@ -19,8 +19,7 @@ public record AircraftRegistration(String string) {
      * @throws IllegalArgumentException if the registration is empty or invalid
      */
     public AircraftRegistration {
-        Preconditions.checkArgument(!string.isEmpty());
         Pattern num = Pattern.compile("[A-Z0-9 .?/_+-]+");
-        Preconditions.checkArgument(num.matcher(string).matches());
+        Preconditions.checkArgument(!string.isEmpty() && num.matcher(string).matches());
     }
 }

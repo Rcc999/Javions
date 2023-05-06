@@ -19,9 +19,8 @@ public record IcaoAddress(String string) {
      * @throws IllegalArgumentException if the address is empty or invalid
      */
     public IcaoAddress {
-        Preconditions.checkArgument(!string.isEmpty());
         Pattern num = Pattern.compile("[0-9A-F]{6}");
-        Preconditions.checkArgument(num.matcher(string).matches());
+        Preconditions.checkArgument(!string.isEmpty() && num.matcher(string).matches());
     }
 
 }
