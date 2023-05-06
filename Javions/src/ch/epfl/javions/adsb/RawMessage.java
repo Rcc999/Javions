@@ -18,7 +18,7 @@ import java.util.HexFormat;
 public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public static final int LENGTH = 14;
-    private static final Crc24 crc24 = new Crc24(Crc24.GENERATOR);
+    private static final Crc24 CRC = new Crc24(Crc24.GENERATOR);
     private static final int DF_VALUE = 17;
     private static final int START_ME = 51;
     private static final int SIZE_SIGNIFICANT_BIT = 5;
@@ -50,7 +50,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public static RawMessage of(long timeStampsNs, byte[] bytes) {
         ByteString bytesBis = new ByteString(bytes);
-        return crc24.crc(bytes) == 0 ? new RawMessage(timeStampsNs, bytesBis) : null;
+        return CRC.crc(bytes) == 0 ? new RawMessage(timeStampsNs, bytesBis) : null;
     }
 
     /**
