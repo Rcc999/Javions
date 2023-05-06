@@ -8,6 +8,9 @@ package ch.epfl.javions;
  */
 public record GeoPos(int longitudeT32, int latitudeT32) {
 
+    private static final int SQUARE_NEGATIVE = (int) Math.scalb(-1, 30);
+    private static final int SQUARE_POSITIVE = (int) Math.scalb(1, 30);
+
     /**
      * Constructs a geographic position (containing longitude and latitude)
      *
@@ -26,7 +29,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return true if latitude is between -90 and +90 degree, else false
      */
     public static boolean isValidLatitudeT32(int latitudeT32) {
-        return latitudeT32 >= (int) Math.scalb(-1, 30) && latitudeT32 <= (int) Math.scalb(1, 30);
+        return latitudeT32 >= SQUARE_NEGATIVE && latitudeT32 <= SQUARE_POSITIVE;
     }
 
     /**
@@ -35,7 +38,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return longitude in radian
      */
     public double longitude() {
-        return Units.convert(longitudeT32, Units.Angle.T32, Units.Angle.RADIAN);
+        return Units.convertFrom(longitudeT32, Units.Angle.T32);
     }
 
     /**
@@ -44,7 +47,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return latitude in radian
      */
     public double latitude() {
-        return Units.convert(latitudeT32, Units.Angle.T32, Units.Angle.RADIAN);
+        return Units.convertFrom(latitudeT32, Units.Angle.T32);
     }
 
     /**
