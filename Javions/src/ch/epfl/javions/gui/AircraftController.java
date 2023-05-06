@@ -3,7 +3,6 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
 import ch.epfl.javions.aircraft.*;
-import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -21,7 +20,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
-
 
 
 public final class AircraftController {
@@ -74,15 +72,14 @@ public final class AircraftController {
         Group trajectoryGroup = new Group();
         trajectoryGroup.getStyleClass().add("trajectory");
 
-        mapParameters.zoomLevelProperty().addListener((observable, oldValue, newValue) -> {
-            updateTrajectoryLine(trajectoryGroup, aircraftState.trajectory());
-        });
+        mapParameters.zoomLevelProperty().addListener((observable, oldValue, newValue) ->
+                updateTrajectoryLine(trajectoryGroup, aircraftState.trajectory()));
 
         trajectoryGroup.layoutXProperty().bind(mapParameters.minXProperty().negate());
         trajectoryGroup.layoutYProperty().bind(mapParameters.minYProperty().negate());
 
         aircraftState.trajectory().addListener((ListChangeListener<ObservableAircraftState.AirbornePos>) change ->
-            {updateTrajectoryLine(trajectoryGroup, aircraftState.trajectory()); });
+                updateTrajectoryLine(trajectoryGroup, aircraftState.trajectory()));
 
         trajectoryGroup.visibleProperty().bind(selectedAircraftState.isEqualTo(aircraftState));
 
@@ -107,10 +104,9 @@ public final class AircraftController {
         trajectoryLine.setEndY(WebMercator.y(mapParameters.getZoomLevel(), endPoint.pos().latitude()));
 
 
-
-        if (startPoint.altitude() == endPoint.altitude()) {
+        if (startPoint.altitude() == endPoint.altitude())
             trajectoryLine.setStroke(ColorRamp.PLASMA.at(startPoint.altitude()));
-        } else {
+        else {
             Color c1 = ColorRamp.PLASMA.at(startPoint.altitude());
             Color c2 = ColorRamp.PLASMA.at(endPoint.altitude());
             Stop s1 = new Stop(0, c1);
@@ -167,7 +163,7 @@ public final class AircraftController {
                 iconProperty, aircraftState.trackOrHeadingProperty()));
 
 
-        svgPath.fillProperty().bind(aircraftState.altitudeProperty().map((b) -> ColorRamp.PLASMA.at(b.doubleValue())));
+        svgPath.fillProperty().bind(aircraftState.altitudeProperty().map(b -> ColorRamp.PLASMA.at(b.doubleValue())));
 
         svgPath.setOnMouseClicked(e -> selectedAircraftState.set(aircraftState));
 
