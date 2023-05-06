@@ -44,10 +44,8 @@ public class TestAircraftController extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Path tileCache = Path.of("tile-cache");
-        TileManager tm =
-                new TileManager(tileCache, "tile.openstreetmap.org");
-        MapParameters mp =
-                new MapParameters(17, 17_389_327, 11_867_430);
+        TileManager tm = new TileManager(tileCache, "tile.openstreetmap.org");
+        MapParameters mp = new MapParameters(17, 17_389_327, 11_867_430);
         BaseMapController bmc = new BaseMapController(tm, mp);
 
 
@@ -58,10 +56,8 @@ public class TestAircraftController extends Application {
         var db = new AircraftDatabase(f);
 
         AircraftStateManager asm = new AircraftStateManager(db);
-        ObjectProperty<ObservableAircraftState> sap =
-                new SimpleObjectProperty<>();
-        AircraftController ac =
-                new AircraftController(mp, asm.states(), sap);
+        ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
+        AircraftController ac = new AircraftController(mp, asm.states(), sap);
         var root = new StackPane(bmc.pane(), ac.pane());
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
@@ -71,18 +67,13 @@ public class TestAircraftController extends Application {
                 readAllMessages(file).iterator();
 
         // Animation des aircraft
-        /**
-         * Purge has a problem
-         */
         new AnimationTimer() {
             @Override
             public void handle(long now) {
                 try {
                     for (int i = 0; i < 10; ++i) {
                         Message message = MessageParser.parse(messages.next());
-                        if (message != null) {
-                            asm.updateWithMessage(message);
-                        }
+                        if (message != null) asm.updateWithMessage(message);
                     }
                     asm.purge();
                 }
