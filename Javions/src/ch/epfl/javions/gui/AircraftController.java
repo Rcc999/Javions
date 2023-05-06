@@ -89,10 +89,8 @@ public final class AircraftController {
 
     private void updateTrajectoryLine(Group trajectoryGroup, ObservableList<ObservableAircraftState.AirbornePos> aircraftState) {
         trajectoryGroup.getChildren().clear();
-        for (int i = 0; i < aircraftState.size() - 1; i++) {
-            trajectoryGroup.getChildren().add(trajectoryLine(aircraftState.get(i)
-                    , aircraftState.get(i + 1)));
-        }
+        for (int i = 0; i < aircraftState.size() - 1; i++)
+            trajectoryGroup.getChildren().add(trajectoryLine(aircraftState.get(i), aircraftState.get(i + 1)));
     }
 
     private Line trajectoryLine(ObservableAircraftState.AirbornePos startPoint, ObservableAircraftState.AirbornePos endPoint) {
