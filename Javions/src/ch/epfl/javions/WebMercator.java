@@ -23,8 +23,8 @@ public class WebMercator {
      * @return value of longitude in radian corresponds to zoom level
      */
     public static double x(int zoomLevel, double longitude) {
-        double longitudeEnRad = Units.convertTo(longitude, Units.Angle.RADIAN);
-        return (double) Math.scalb(1, ZOOM_LEVEL_0 + zoomLevel) * (longitudeEnRad / (2 * Math.PI) + 0.5);
+        double x = 0.5 + Units.convertTo(longitude, Units.Angle.TURN);
+        return Math.scalb(x, 8 + zoomLevel);
     }
 
     /**
@@ -35,7 +35,7 @@ public class WebMercator {
      * @return value of latitude in radian corresponds to zoom level
      */
     public static double y(int zoomLevel, double latitude) {
-        double latitudeEnRad = Units.convertTo(latitude, Units.Angle.RADIAN);
-        return Math.scalb(1, ZOOM_LEVEL_0 + zoomLevel) * (-Math2.asinh(Math.tan(latitudeEnRad)) / (2 * Math.PI) + 0.5);
+        double y = 0.5 + Units.convertTo(-Math2.asinh(Math.tan(latitude)), Units.Angle.TURN);
+        return Math.scalb(y, 8 + zoomLevel);
     }
 }
