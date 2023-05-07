@@ -24,7 +24,7 @@ public class WebMercator {
      */
     public static double x(int zoomLevel, double longitude) {
         double x = 0.5 + Units.convertTo(longitude, Units.Angle.TURN);
-        return Math.scalb(x, 8 + zoomLevel);
+        return Math.scalb(x, ZOOM_LEVEL_0 + zoomLevel);
     }
 
     /**
@@ -36,6 +36,6 @@ public class WebMercator {
      */
     public static double y(int zoomLevel, double latitude) {
         double y = 0.5 + Units.convertTo(-Math2.asinh(Math.tan(latitude)), Units.Angle.TURN);
-        return Math.scalb(y, 8 + zoomLevel);
+        return Math.scalb(y, ZOOM_LEVEL_0 + zoomLevel);
     }
 }
