@@ -4,6 +4,7 @@ import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
 import ch.epfl.javions.aircraft.*;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
@@ -176,12 +177,22 @@ public final class AircraftController {
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
 
+
         var velocityText = aircraftState.velocityProperty().map(e ->
                 Units.convertTo(e.doubleValue(), Units.Speed.KILOMETER_PER_HOUR));
 
-        text.textProperty().bind(Bindings.format(
-                "%s \n%.0f km/h" + "\u2002" + "%.0f m",
-                firstLineLabel(aircraftState), velocityText, aircraftState.altitudeProperty()));
+
+        StringBinding textBinding = Bindings.createStringBinding(() -> {
+            String velocityString = velocityText.getValue() == 0
+                    ? "?"
+                    : String.format("%.0f km/h", velocityText.getValue());
+            String altitudeString = aircraftState.altitudeProperty().getValue() == 0
+                    ? "?"
+                    : String.format("%.0f", aircraftState.altitudeProperty().getValue());
+            return String.format("%s \n%s" + "\u2002" + "%s m", firstLineLabel(aircraftState), velocityString, altitudeString);
+        }, velocityText, aircraftState.altitudeProperty());
+
+        text.textProperty().bind(textBinding);
 
         rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
