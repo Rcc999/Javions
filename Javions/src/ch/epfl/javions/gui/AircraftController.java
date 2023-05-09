@@ -185,11 +185,11 @@ public final class AircraftController {
         StringBinding textBinding = Bindings.createStringBinding(() -> {
             String velocityString = velocityText.getValue() == 0
                     ? "?"
-                    : String.format("%.0f km/h", velocityText.getValue());
+                    : String.format("%.0f", velocityText.getValue());
             String altitudeString = aircraftState.altitudeProperty().getValue() == 0
                     ? "?"
                     : String.format("%.0f", aircraftState.altitudeProperty().getValue());
-            return String.format("%s \n%s" + "\u2002" + "%s m", firstLineLabel(aircraftState), velocityString, altitudeString);
+            return String.format("%s \n%s km/h" + "\u2002" + "%s m", firstLineLabel(aircraftState), velocityString, altitudeString);
         }, velocityText, aircraftState.altitudeProperty());
 
         text.textProperty().bind(textBinding);
