@@ -1,6 +1,7 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.adsb.CallSign;
+import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -30,6 +31,7 @@ public final class AircraftTableController {
         this.selectedAircraft = selectedAircraft;
         tableView = new TableView<>();
 
+        setTableStringColumn();
 
         observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
                 items -> {
@@ -78,10 +80,22 @@ public final class AircraftTableController {
 
         setColumnToTable("OACI", 60, state -> new ReadOnlyObjectWrapper<>(state.getIcaoAddress().string()));
         setColumnToTable("Call Sign", 70, state -> state.callSignProperty().map(CallSign::string));
-        setColumnToTable("Registration", 90, state -> new ReadOnlyObjectWrapper<>(state.getAircraftData().registration().string()));
-        setColumnToTable("Model", 230, state -> new ReadOnlyObjectWrapper<>(state.getAircraftData().model()));
-        setColumnToTable("Type", 50, state -> new ReadOnlyObjectWrapper<>(state.getAircraftData().typeDesignator().string()));
-        setColumnToTable("Description", 70, state -> new ReadOnlyObjectWrapper<>(state.getAircraftData().description().string()));
+        setColumnToTable("Registration", 90, state -> {
+            AircraftData data = state.getAircraftData();
+            return new ReadOnlyObjectWrapper<>(data).map(d -> d.registration().string());
+        });
+        setColumnToTable("Model", 230, state -> {
+            AircraftData data = state.getAircraftData();
+            return new ReadOnlyObjectWrapper<>(data).map(AircraftData::model);
+        });
+        setColumnToTable("Type", 50, state -> {
+            AircraftData data = state.getAircraftData();
+            return new ReadOnlyObjectWrapper<>(data).map(d -> d.typeDesignator().string());
+        });
+        setColumnToTable("Description", 70, state -> {
+            AircraftData data = state.getAircraftData();
+            return new ReadOnlyObjectWrapper<>(data).map(d -> d.description().string());
+        });
     }
 
     private void setTableNumericColumn(){
