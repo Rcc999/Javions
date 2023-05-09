@@ -22,12 +22,34 @@ public final class AircraftTableController {
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraft;
     private final TableView<ObservableAircraftState> tableView;
+    private Consumer<ObservableAircraftState> aircraftStateConsumer;
 
     public AircraftTableController(ObservableSet<ObservableAircraftState> observableAircraftStates,
                                    ObjectProperty<ObservableAircraftState> selectedAircraft) {
         this.observableAircraftStates = observableAircraftStates;
         this.selectedAircraft = selectedAircraft;
         tableView = new TableView<>();
+
+
+        observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
+                items -> {
+                    if(items.wasAdded()){
+                        tableView.getItems().add(items.getElementAdded());
+                        tableView.sort();
+                    } else if(items.wasRemoved()){
+                        tableView.getItems().remove(items.getElementRemoved());
+                    }
+                });
+
+        selectedAircraft.addListener((observable, oldValue, newValue) -> {
+            if(!Objects.equals(tableView.getSelectionModel().getSelectedItem(), newValue)){
+                 tableView.scrollTo(newValue);
+            }
+                tableView.getSelectionModel().select(newValue);
+                });
+
+        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                selectedAircraft.set(newValue));
     }
 
     public Node pane(){
@@ -60,4 +82,22 @@ public final class AircraftTableController {
         setColumnToTable("Type", 50, state -> new ReadOnlyObjectWrapper<>(state.getAircraftData().typeDesignator().string()));
         setColumnToTable("Description", 70, state -> new ReadOnlyObjectWrapper<>(state.getAircraftData().description().string()));
     }
+
+    private void setTableNumericColumn(){
+
+        tableView.getStyleClass().add("numeric");
+    }
+
+    private void setColumnToTable(String title, double width,
+                                  Function<ObservableAircraftState, ObservableValue<String>> stringValue){
+
+        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(title);
+        column.setPrefWidth(width);
+        column.setCellValueFactory(f -> stringValue.apply(f.getValue()));
+
+        tableView.getColumns().add(column);
+
+    }
+
+
 }
