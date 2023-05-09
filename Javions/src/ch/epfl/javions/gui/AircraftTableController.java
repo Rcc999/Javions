@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftData;
 import javafx.beans.property.ObjectProperty;
@@ -20,6 +21,16 @@ import java.util.function.Function;
 import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS;
 
 public final class AircraftTableController {
+
+    public static final int FRACTION_DIGITS_LAT_LON = 4;
+    public static final int WIDTH_TYPE_COLUMN = 50;
+    private static final int NUMERICAL_COLUMN_WIDTH = 85;
+    public static final int FRACTION_DIGITS_ALT_VEL = 0;
+    public static final int WIDTH_OACI_COLUMN = 60;
+    public static final int WIDTH_CALL_SIGN_COLUMN = 70;
+    public static final int WIDTH_REGISTRATION_COLUMN = 90;
+    public static final int WIDTH_MODELE_COLUMN = 230;
+    public static final int WIDTH_DESCRIPTION_COLUMN = 70;
 
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraft;
@@ -110,6 +121,31 @@ public final class AircraftTableController {
         column.setCellValueFactory(f -> stringValue.apply(f.getValue()));
         tableView.getColumns().add(column);
 
+    }
+
+    private void setTableNumericalColumn(){
+        //Haven't take into account cases where stuffs are 0
+        //Number behind comma doens't work yet
+
+        setNumericalColumnToTable("Longitude (°)", state -> {
+            var lonInDegree = Units.convertTo(state.getPosition().longitude(), Units.Angle.DEGREE);
+            return new ReadOnlyObjectWrapper<>(NumberFormat.getInstance().format(lonInDegree));
+        } ,FRACTION_DIGITS_LAT_LON);
+        
+        setNumericalColumnToTable("Latitude (°)", state -> {
+            var latInDegree = Units.convertTo(state.getPosition().latitude(), Units.Angle.DEGREE);
+            return new ReadOnlyObjectWrapper<>(NumberFormat.getInstance().format(latInDegree));
+        }, FRACTION_DIGITS_LAT_LON);
+
+        setNumericalColumnToTable("Altitude (m)", state -> new ReadOnlyObjectWrapper<>(
+                NumberFormat.getInstance().format(state.getAltitude())), FRACTION_DIGITS_ALT_VEL);
+
+        setNumericalColumnToTable("Velocity (km/h)", state -> {
+            var velocityInKm = Units.convertTo(state.getVelocity(), Units.Speed.KILOMETER_PER_HOUR);
+            NumberFormat nf = NumberFormat.getInstance();
+            nf.setMaximumFractionDigits(0);
+            return new ReadOnlyObjectWrapper<>(nf.format(velocityInKm));
+        }, FRACTION_DIGITS_ALT_VEL);
     }
 
     private void setNumericalColumnToTable(String title, Function<ObservableAircraftState,
