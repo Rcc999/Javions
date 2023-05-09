@@ -95,9 +95,8 @@ class AircraftStateManagerTest {
                 if(rawMessage != null){
                     Message message = MessageParser.parse(rawMessage);
                     aircraftStateManager.updateWithMessage(message);
-                    aircraftStateManager.purge();
-
                 }
+                aircraftStateManager.purge();
                 formattedPrint();
 
                 Thread.sleep(10);
