@@ -44,6 +44,7 @@ public final class AircraftControllerTest extends Application {
         }
         catch (EOFException e) { /* ignore */ }
         return messages;
+
     }
 
     @Override
