@@ -3,8 +3,10 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftData;
+import javafx.beans.binding.DoubleExpression;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
@@ -124,41 +126,30 @@ public final class AircraftTableController {
     }
 
     private void setTableNumericalColumn(){
-        //Haven't take into account cases where stuffs are 0
-        //Number behind comma doens't work yet
+        //Haven't taken into account cases where stuffs are 0
+        //Number behind comma doesn't work yet
 
-        setNumericalColumnToTable("Longitude (°)", state -> {
-            var lonInDegree = Units.convertTo(state.getPosition().longitude(), Units.Angle.DEGREE);
-            return new ReadOnlyObjectWrapper<>(NumberFormat.getInstance().format(lonInDegree));
-        } ,FRACTION_DIGITS_LAT_LON);
-        
-        setNumericalColumnToTable("Latitude (°)", state -> {
-            var latInDegree = Units.convertTo(state.getPosition().latitude(), Units.Angle.DEGREE);
-            return new ReadOnlyObjectWrapper<>(NumberFormat.getInstance().format(latInDegree));
-        }, FRACTION_DIGITS_LAT_LON);
 
-        setNumericalColumnToTable("Altitude (m)", state -> new ReadOnlyObjectWrapper<>(
-                NumberFormat.getInstance().format(state.getAltitude())), FRACTION_DIGITS_ALT_VEL);
-
-        setNumericalColumnToTable("Velocity (km/h)", state -> {
-            var velocityInKm = Units.convertTo(state.getVelocity(), Units.Speed.KILOMETER_PER_HOUR);
-            NumberFormat nf = NumberFormat.getInstance();
-            nf.setMaximumFractionDigits(0);
-            return new ReadOnlyObjectWrapper<>(nf.format(velocityInKm));
-        }, FRACTION_DIGITS_ALT_VEL);
+        setNumericalColumnToTable("Longitude (°)", state -> new SimpleDoubleProperty(state.getPosition().longitude()),FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
+        setNumericalColumnToTable("Latitude (°)", state -> new SimpleDoubleProperty(state.getPosition().latitude()), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
+        setNumericalColumnToTable("Altitude (m)", state -> new SimpleDoubleProperty(state.getAltitude()), FRACTION_DIGITS_ALT_VEL, Units.Length.METER);
+        setNumericalColumnToTable("Velocity (km/h)", state -> new SimpleDoubleProperty(state.getVelocity()),FRACTION_DIGITS_ALT_VEL, Units.Speed.KILOMETER_PER_HOUR);
     }
 
     private void setNumericalColumnToTable(String title, Function<ObservableAircraftState,
-            ObservableValue<String>> numericalValue, int fractionDigitsMax) {
+            DoubleExpression> numericalValue, int fractionDigitsMax, double unity) {
+
 
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(title);
         column.setPrefWidth(NUMERICAL_COLUMN_WIDTH);
 
         NumberFormat nf = NumberFormat.getInstance();
-
         nf.setMaximumFractionDigits(fractionDigitsMax);
+        nf.setMinimumFractionDigits(fractionDigitsMax);
 
-        column.setCellValueFactory(f -> numericalValue.apply(f.getValue()));// not sure
+
+        column.setCellValueFactory(f -> numericalValue.apply(f.getValue()).map(d ->
+                nf.format(Units.convertTo(d.doubleValue(), unity))));
 
         column.setComparator((s1, s2) ->{
             if(s1.isEmpty() || s2.isEmpty()) {
