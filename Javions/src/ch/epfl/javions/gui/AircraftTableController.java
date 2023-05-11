@@ -86,7 +86,7 @@ public final class AircraftTableController {
 
     private void handler() {
         tableView.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2 && event.getButton().equals(MouseButton.PRIMARY)) {
+            if (event.getClickCount() == 2 && event.getButton().equals(MouseButton.PRIMARY) && aircraftStateConsumer != null) {
                 aircraftStateConsumer.accept(tableView.getSelectionModel().getSelectedItem());
             }
         });
