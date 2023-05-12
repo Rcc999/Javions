@@ -105,7 +105,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     @Override
     public void setPosition(GeoPos position) {
         positionProperty.set(position);
-        calculateTrajectory(previousTimeStamps);
+        calculateTrajectory(previousTimeStamps, true);
         previousTimeStamps = getLastMessageTimeStampNs();
     }
 
@@ -120,7 +120,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     @Override
     public void setAltitude(double altitude) {
         altitudeProperty.set(altitude);
-        calculateTrajectory(previousTimeStamps);
+        calculateTrajectory(previousTimeStamps, false);
         previousTimeStamps = getLastMessageTimeStampNs();
     }
 
@@ -167,9 +167,10 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param latestTimeStamps of the aircraft whose trajectory is added the latest
      */
-    private void calculateTrajectory(long latestTimeStamps){
+    private void calculateTrajectory(long latestTimeStamps, boolean positionAdded){
         if(getPosition() != null){
-            if(listFirst.isEmpty() || !getPosition().equals(listFirst.get(listFirst.size()-1).pos()))
+            if(positionAdded && getAltitude() != 0) listFirst.add(new AirbornePos(getPosition(), getAltitude()));
+            if(listFirst.isEmpty())
                 listFirst.add(new AirbornePos(getPosition(), getAltitude()));
 
             else if(getLastMessageTimeStampNs() == latestTimeStamps)
