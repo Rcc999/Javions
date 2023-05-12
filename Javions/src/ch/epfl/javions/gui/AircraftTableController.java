@@ -96,6 +96,7 @@ public final class AircraftTableController {
     private void setTableStringColumn() {
         //Add constants too
 
+
         setStringColumnToTable("OACI", WIDTH_OACI_COLUMN, state -> new ReadOnlyObjectWrapper<>(state.getIcaoAddress().string()));
         setStringColumnToTable("Call Sign", WIDTH_CALL_SIGN_COLUMN, state -> state.callSignProperty().map(CallSign::string));
         setStringColumnToTable("Registration", WIDTH_REGISTRATION_COLUMN, state -> {
@@ -129,7 +130,6 @@ public final class AircraftTableController {
         //Haven't taken into account cases where stuffs are 0
         //Number behind comma doesn't work yet: SOLVED
 
-
         setNumericalColumnToTable("Longitude (°)", state ->
                 new SimpleDoubleProperty(state.getPosition().longitude()), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
         setNumericalColumnToTable("Latitude (°)", state ->
@@ -144,19 +144,20 @@ public final class AircraftTableController {
             DoubleExpression> numericalValue, int fractionDigitsMax, double unity) {
 
 
-        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(title);
-        column.setPrefWidth(NUMERICAL_COLUMN_WIDTH);
+        TableColumn<ObservableAircraftState, String> numericalColumn = new TableColumn<>(title);
+        numericalColumn.getStyleClass().add("numeric");
+        numericalColumn.setPrefWidth(NUMERICAL_COLUMN_WIDTH);
 
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMaximumFractionDigits(fractionDigitsMax);
         nf.setMinimumFractionDigits(fractionDigitsMax);
 
 
-        column.setCellValueFactory(f -> numericalValue.apply(f.getValue()).map(d -> d.doubleValue() == 0
+        numericalColumn.setCellValueFactory(f -> numericalValue.apply(f.getValue()).map(d -> d.doubleValue() == 0
                 ? ""
                 : nf.format(Units.convertTo(d.doubleValue(), unity))));
 
-        column.setComparator((s1, s2) ->{
+        numericalColumn.setComparator((s1, s2) ->{
             if(s1.isEmpty() || s2.isEmpty()) {
                 return s1.compareTo(s2);
             } else {
@@ -170,7 +171,7 @@ public final class AircraftTableController {
             }
         });
 
-        tableView.getColumns().add(column);
+        tableView.getColumns().add(numericalColumn);
     }
 
 }
