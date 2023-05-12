@@ -127,7 +127,7 @@ public final class AircraftTableController {
     }
 
     private void setTableNumericalColumn(){
-        //Haven't taken into account cases where stuffs are 0
+        //Haven't taken into account cases where stuffs are 0: SOLVED
         //Number behind comma doesn't work yet: SOLVED
 
         setNumericalColumnToTable("Longitude (°)", state ->
