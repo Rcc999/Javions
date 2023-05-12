@@ -95,8 +95,6 @@ public final class AircraftTableController {
     //Have to take into account cases where stuffs are null
     private void setTableStringColumn() {
         //Add constants too
-
-
         setStringColumnToTable("OACI", WIDTH_OACI_COLUMN, state -> new ReadOnlyObjectWrapper<>(state.getIcaoAddress().string()));
         setStringColumnToTable("Call Sign", WIDTH_CALL_SIGN_COLUMN, state -> state.callSignProperty().map(CallSign::string));
         setStringColumnToTable("Registration", WIDTH_REGISTRATION_COLUMN, state -> {
