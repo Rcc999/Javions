@@ -29,7 +29,7 @@ public final class BaseMapController {
     /**
      * Construction of the map using the tiles, coordinate x, y of top left corner and zoom level
      *
-     * @param tileManager: managing the tiles
+     * @param tileManager:   managing the tiles
      * @param mapParameters: contain x,y of the top left corner and zoom level
      */
     public BaseMapController(TileManager tileManager, MapParameters mapParameters) {
@@ -115,8 +115,8 @@ public final class BaseMapController {
     /**
      * Handler of all the mouse events
      * <p>
-     * Mouse Pressed: set new position when press
-     * Mouse Dragged: set new position when drag by translating the position
+     * Mouse Pressed:  set new position when press
+     * Mouse Dragged:  set new position when drag by translating the position
      * Mouse Released: no interaction then position of the mouse is null
      * Mouse scrolled: change zoom level and updating new coordinate of top left corner of the map
      */

@@ -29,14 +29,15 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private long previousTimeStamps = -1;
 
 
-    public record AirbornePos(GeoPos pos, double altitude){}
+    public record AirbornePos(GeoPos pos, double altitude) {
+    }
 
     /**
      * Construct the observable state of the aircraft that contains
      * category, call sign, position, altitude, velocity and track or heading
      *
      * @param icaoAddress of the aircraft
-     * @param data provides fixed characteristics of this aircraft
+     * @param data        provides fixed characteristics of this aircraft
      */
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
         this.icaoAddress = icaoAddress;
@@ -64,7 +65,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @return ICAO address of the aircraft
      */
-    public IcaoAddress getIcaoAddress(){
+    public IcaoAddress getIcaoAddress() {
         return icaoAddress;
     }
 
@@ -268,7 +269,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @return an observable list of the pair position and altitude
      */
-    public ObservableList<AirbornePos> trajectory(){
+    public ObservableList<AirbornePos> trajectory() {
         return listSecond;
     }
 
@@ -276,16 +277,16 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * Calculate the trajectory and put it in the trajectory list that contains the position of the aircraft
      *
      * @param latestTimeStamps of the aircraft whose trajectory is added the latest
-     * @param positionAdded is true if a position is set, false otherwise
+     * @param positionAdded    is true if a position is set, false otherwise
      */
-    private void calculateTrajectory(long latestTimeStamps, boolean positionAdded){
-        if(getPosition() != null){
-            if(positionAdded && getAltitude() != 0) listFirst.add(new AirbornePos(getPosition(), getAltitude()));
-            if(listFirst.isEmpty())
+    private void calculateTrajectory(long latestTimeStamps, boolean positionAdded) {
+        if (getPosition() != null) {
+            if (positionAdded && getAltitude() != 0) listFirst.add(new AirbornePos(getPosition(), getAltitude()));
+            if (listFirst.isEmpty())
                 listFirst.add(new AirbornePos(getPosition(), getAltitude()));
 
-            else if(getLastMessageTimeStampNs() == latestTimeStamps)
-                    listFirst.set(listFirst.size() - 1, new AirbornePos(getPosition(), getAltitude()));
+            else if (getLastMessageTimeStampNs() == latestTimeStamps)
+                listFirst.set(listFirst.size() - 1, new AirbornePos(getPosition(), getAltitude()));
         }
     }
 

@@ -58,7 +58,7 @@ public final class AircraftTableController {
      * Construct a table that contain information and data of an aircraft
      *
      * @param observableAircraftStates: State of aircraft
-     * @param selectedAircraft: Chosen aircraft by clicking on one
+     * @param selectedAircraft:         Chosen aircraft by clicking on one
      */
     public AircraftTableController(ObservableSet<ObservableAircraftState> observableAircraftStates,
                                    ObjectProperty<ObservableAircraftState> selectedAircraft) {
@@ -147,8 +147,8 @@ public final class AircraftTableController {
     /**
      * Construct a text column
      *
-     * @param title of the column
-     * @param width of the column
+     * @param title       of the column
+     * @param width       of the column
      * @param stringValue that will be put in the column
      */
     private void setStringColumnToTable(String title, double width,
@@ -164,7 +164,7 @@ public final class AircraftTableController {
     /**
      * Set numerical text columns to the table
      */
-    private void setTableNumericalColumn(){
+    private void setTableNumericalColumn() {
         //Haven't taken into account cases where stuffs are 0: SOLVED
         //Number behind comma doesn't work yet: SOLVED
 
@@ -175,16 +175,16 @@ public final class AircraftTableController {
         setNumericalColumnToTable(ALTITUDE, state ->
                 new SimpleDoubleProperty(state.getAltitude()), FRACTION_DIGITS_ALT_VEL, Units.Length.METER);
         setNumericalColumnToTable(VELOCITY, state ->
-                new SimpleDoubleProperty(state.getVelocity()),FRACTION_DIGITS_ALT_VEL, Units.Speed.KILOMETER_PER_HOUR);
+                new SimpleDoubleProperty(state.getVelocity()), FRACTION_DIGITS_ALT_VEL, Units.Speed.KILOMETER_PER_HOUR);
     }
 
     /**
      * Construct a numerical column
      *
-     * @param title of the column
-     * @param numericalValue that will be put in the column
+     * @param title             of the column
+     * @param numericalValue    that will be put in the column
      * @param fractionDigitsMax is number of decimal of that will be displayed on the table
-     * @param unity of the value
+     * @param unity             of the value
      */
     private void setNumericalColumnToTable(String title, Function<ObservableAircraftState,
             DoubleExpression> numericalValue, int fractionDigitsMax, double unity) {
@@ -201,8 +201,8 @@ public final class AircraftTableController {
                 ? EMPTY
                 : nf.format(Units.convertTo(d.doubleValue(), unity))));
 
-        numericalColumn.setComparator((s1, s2) ->{
-            if(s1.isEmpty() || s2.isEmpty()) {
+        numericalColumn.setComparator((s1, s2) -> {
+            if (s1.isEmpty() || s2.isEmpty()) {
                 return s1.compareTo(s2);
             } else {
                 try {
