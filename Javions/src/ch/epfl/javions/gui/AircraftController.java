@@ -42,9 +42,9 @@ public final class AircraftController {
      * Label: altitude and velocity
      * Trajectory: of the aircraft
      *
-     * @param mapParameters: contain x,y of the top left corner and zoom level
+     * @param mapParameters:            contain x,y of the top left corner and zoom level
      * @param observableAircraftStates: contains the set of states of a visible aircraft
-     * @param selectedAircraftState: an aircraft that is clicked on
+     * @param selectedAircraftState:    an aircraft that is clicked on
      */
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> observableAircraftStates,
