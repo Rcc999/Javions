@@ -11,7 +11,12 @@ import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 
-
+/**
+ * Background map controller
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public final class BaseMapController {
 
     public static final int PIXEL_PER_TILE = 256;
@@ -21,6 +26,12 @@ public final class BaseMapController {
     private final Canvas canvas;
     private final Pane mainPane;
 
+    /**
+     * Construction of the map using the tiles, coordinate x, y of top left corner and zoom level
+     *
+     * @param tileManager: managing the tiles
+     * @param mapParameters: contain x,y of the top left corner and zoom level
+     */
     public BaseMapController(TileManager tileManager, MapParameters mapParameters) {
         this.tileManager = tileManager;
 
@@ -45,6 +56,11 @@ public final class BaseMapController {
         eventHandler();
     }
 
+    /**
+     * Get the pane of the map in the background
+     *
+     * @return the pane correspondent to the map
+     */
     public Pane pane() {
         return mainPane;
     }
@@ -96,6 +112,14 @@ public final class BaseMapController {
         Platform.requestNextPulse();
     }
 
+    /**
+     * Handler of all the mouse events
+     * <p>
+     * Mouse Pressed: set new position when press
+     * Mouse Dragged: set new position when drag by translating the position
+     * Mouse Released: no interaction then position of the mouse is null
+     * Mouse scrolled: change zoom level and updating new coordinate of top left corner of the map
+     */
     private void eventHandler() {
 
         ObjectProperty<Point2D> lastMousePosition = new SimpleObjectProperty<>();
