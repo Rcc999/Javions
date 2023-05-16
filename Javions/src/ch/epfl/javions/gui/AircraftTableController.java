@@ -20,23 +20,46 @@ import java.util.function.Function;
 
 import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS;
 
+/**
+ * Visible table controller
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public final class AircraftTableController {
 
-    public static final int FRACTION_DIGITS_LAT_LON = 4;
-    public static final int WIDTH_TYPE_COLUMN = 50;
+    private static final int DOUBLE_CLICK = 2;
+    private static final int FRACTION_DIGITS_LAT_LON = 4;
+    private static final int FRACTION_DIGITS_ALT_VEL = 0;
+    private static final int WIDTH_TYPE_COLUMN = 50;
     private static final int NUMERICAL_COLUMN_WIDTH = 85;
-    public static final int FRACTION_DIGITS_ALT_VEL = 0;
-    public static final int WIDTH_OACI_COLUMN = 60;
-    public static final int WIDTH_CALL_SIGN_COLUMN = 70;
-    public static final int WIDTH_REGISTRATION_COLUMN = 90;
-    public static final int WIDTH_MODELE_COLUMN = 230;
-    public static final int WIDTH_DESCRIPTION_COLUMN = 70;
-
+    private static final int WIDTH_OACI_COLUMN = 60;
+    private static final int WIDTH_CALL_SIGN_COLUMN = 70;
+    private static final int WIDTH_REGISTRATION_COLUMN = 90;
+    private static final int WIDTH_MODELE_COLUMN = 230;
+    private static final int WIDTH_DESCRIPTION_COLUMN = 70;
+    private static final String OACI = "OACI";
+    private static final String CALL_SIGN = "Call sign";
+    private static final String REGISTRATION = "Registration";
+    private static final String MODEL = "Model";
+    private static final String TYPE = "Type";
+    private static final String DESCRIPTION = "Description";
+    private static final String LONGITUDE = "Longitude (°)";
+    private static final String LATITUDE = "Latitude (°)";
+    private static final String ALTITUDE = "Altitude (m)";
+    private static final String VELOCITY = "Velocity (km/h)";
+    private static final String EMPTY = "";
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraft;
     private final TableView<ObservableAircraftState> tableView;
     private Consumer<ObservableAircraftState> aircraftStateConsumer;
 
+    /**
+     * Construct a table that contain information and data of an aircraft
+     *
+     * @param observableAircraftStates: State of aircraft
+     * @param selectedAircraft: Chosen aircraft by clicking on one
+     */
     public AircraftTableController(ObservableSet<ObservableAircraftState> observableAircraftStates,
                                    ObjectProperty<ObservableAircraftState> selectedAircraft) {
 
@@ -51,7 +74,6 @@ public final class AircraftTableController {
         setTableStringColumn();
         setTableNumericalColumn();
         handler();
-
 
         observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
                 items -> {
@@ -74,6 +96,11 @@ public final class AircraftTableController {
                 selectedAircraft.set(newValue));
     }
 
+    /**
+     * Get the pane in which drawn the table of visible aircraft
+     *
+     * @return the pane that draws the table
+     */
     public Node pane() {
         return tableView;
     }
@@ -84,37 +111,49 @@ public final class AircraftTableController {
 
     private void handler() {
         tableView.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2 && event.getButton().equals(MouseButton.PRIMARY) && aircraftStateConsumer != null) {
+            if (event.getClickCount() == DOUBLE_CLICK && event.getButton().equals(MouseButton.PRIMARY) && aircraftStateConsumer != null) {
                 aircraftStateConsumer.accept(tableView.getSelectionModel().getSelectedItem());
             }
         });
     }
 
-    //Have to take into account cases where stuffs are null
+    /**
+     * Set string text columns to the table
+     */
     private void setTableStringColumn() {
         //Add constants too
-        setStringColumnToTable("OACI", WIDTH_OACI_COLUMN, state -> new ReadOnlyObjectWrapper<>(state.getIcaoAddress().string()));
-        setStringColumnToTable("Call Sign", WIDTH_CALL_SIGN_COLUMN, state -> state.callSignProperty().map(CallSign::string));
-        setStringColumnToTable("Registration", WIDTH_REGISTRATION_COLUMN, state -> {
+        setStringColumnToTable(OACI, WIDTH_OACI_COLUMN, state ->
+                new ReadOnlyObjectWrapper<>(state.getIcaoAddress().string()));
+        setStringColumnToTable(CALL_SIGN, WIDTH_CALL_SIGN_COLUMN, state ->
+                state.callSignProperty().map(CallSign::string));
+        setStringColumnToTable(REGISTRATION, WIDTH_REGISTRATION_COLUMN, state -> {
             AircraftData data = state.getAircraftData(); //maybe it can be optimised more
             return new ReadOnlyObjectWrapper<>(data).map(d -> d.registration().string());
         });
-        setStringColumnToTable("Model", WIDTH_MODELE_COLUMN, state -> {
+        setStringColumnToTable(MODEL, WIDTH_MODELE_COLUMN, state -> {
             AircraftData data = state.getAircraftData();
             return new ReadOnlyObjectWrapper<>(data).map(AircraftData::model);
         });
-        setStringColumnToTable("Type", WIDTH_TYPE_COLUMN, state -> {
+        setStringColumnToTable(TYPE, WIDTH_TYPE_COLUMN, state -> {
             AircraftData data = state.getAircraftData();
             return new ReadOnlyObjectWrapper<>(data).map(d -> d.typeDesignator().string());
         });
-        setStringColumnToTable("Description", WIDTH_DESCRIPTION_COLUMN, state -> {
+        setStringColumnToTable(DESCRIPTION, WIDTH_DESCRIPTION_COLUMN, state -> {
             AircraftData data = state.getAircraftData();
             return new ReadOnlyObjectWrapper<>(data).map(d -> d.description().string());
         });
     }
 
+    /**
+     * Construct a text column
+     *
+     * @param title of the column
+     * @param width of the column
+     * @param stringValue that will be put in the column
+     */
     private void setStringColumnToTable(String title, double width,
                                         Function<ObservableAircraftState, ObservableValue<String>> stringValue) {
+
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(title);
         column.setPrefWidth(width);
         column.setCellValueFactory(f -> stringValue.apply(f.getValue()));
@@ -122,23 +161,33 @@ public final class AircraftTableController {
 
     }
 
+    /**
+     * Set numerical text columns to the table
+     */
     private void setTableNumericalColumn(){
         //Haven't taken into account cases where stuffs are 0: SOLVED
         //Number behind comma doesn't work yet: SOLVED
 
-        setNumericalColumnToTable("Longitude (°)", state ->
+        setNumericalColumnToTable(LONGITUDE, state ->
                 new SimpleDoubleProperty(state.getPosition().longitude()), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
-        setNumericalColumnToTable("Latitude (°)", state ->
+        setNumericalColumnToTable(LATITUDE, state ->
                 new SimpleDoubleProperty(state.getPosition().latitude()), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
-        setNumericalColumnToTable("Altitude (m)", state ->
+        setNumericalColumnToTable(ALTITUDE, state ->
                 new SimpleDoubleProperty(state.getAltitude()), FRACTION_DIGITS_ALT_VEL, Units.Length.METER);
-        setNumericalColumnToTable("Velocity (km/h)", state ->
+        setNumericalColumnToTable(VELOCITY, state ->
                 new SimpleDoubleProperty(state.getVelocity()),FRACTION_DIGITS_ALT_VEL, Units.Speed.KILOMETER_PER_HOUR);
     }
 
+    /**
+     * Construct a numerical column
+     *
+     * @param title of the column
+     * @param numericalValue that will be put in the column
+     * @param fractionDigitsMax is number of decimal of that will be displayed on the table
+     * @param unity of the value
+     */
     private void setNumericalColumnToTable(String title, Function<ObservableAircraftState,
             DoubleExpression> numericalValue, int fractionDigitsMax, double unity) {
-
 
         TableColumn<ObservableAircraftState, String> numericalColumn = new TableColumn<>(title);
         numericalColumn.getStyleClass().add("numeric");
@@ -148,9 +197,8 @@ public final class AircraftTableController {
         nf.setMaximumFractionDigits(fractionDigitsMax);
         nf.setMinimumFractionDigits(fractionDigitsMax);
 
-
         numericalColumn.setCellValueFactory(f -> numericalValue.apply(f.getValue()).map(d -> d.doubleValue() == 0
-                ? ""
+                ? EMPTY
                 : nf.format(Units.convertTo(d.doubleValue(), unity))));
 
         numericalColumn.setComparator((s1, s2) ->{
