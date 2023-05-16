@@ -22,7 +22,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
-
+/**
+ * Visible aircraft controller
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public final class AircraftController {
 
     private final MapParameters mapParameters;
@@ -31,6 +36,16 @@ public final class AircraftController {
     private final AircraftData data;
     private final Pane pane;
 
+    /**
+     * Construction of a visible aircraft that appears on the map whose scene graph contains:
+     * Icon: color and icon of the aircraft
+     * Label: altitude and velocity
+     * Trajectory: of the aircraft
+     *
+     * @param mapParameters: contain x,y of the top left corner and zoom level
+     * @param observableAircraftStates: contains the set of states of a visible aircraft
+     * @param selectedAircraftState: an aircraft that is clicked on
+     */
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> observableAircraftStates,
                               ObjectProperty<ObservableAircraftState> selectedAircraftState) {
@@ -56,10 +71,23 @@ public final class AircraftController {
                 });
     }
 
+    /**
+     * Get the pane of the visible aircraft
+     *
+     * @return the pane of the visible aircraft
+     */
     public Pane pane() {
         return pane;
     }
 
+    /**
+     * Construct a group that contains 2 groups:
+     * Group of icon and label
+     * Group of trajectory
+     *
+     * @param aircraftState: characteristic of an aircraft
+     * @return a group that contains 2 other groups
+     */
     private Group annotatedAircraftGroup(ObservableAircraftState aircraftState) {
         Group aircraftGroup = new Group();
         aircraftGroup.setId(aircraftState.getIcaoAddress().string());
@@ -117,6 +145,12 @@ public final class AircraftController {
         return trajectoryLine;
     }
 
+    /**
+     * Construction of a group that contains icon and label of the aircraft
+     *
+     * @param aircraftState of the aircraft
+     * @return a group that contains icon and label of the aircraft
+     */
     private Group iconAndLabelGroup(ObservableAircraftState aircraftState) {
         Group iconAndLabelGroup = new Group();
 
@@ -137,6 +171,12 @@ public final class AircraftController {
         return iconAndLabelGroup;
     }
 
+    /**
+     * Construction of the icon of the aircraft
+     *
+     * @param aircraftState: State of the aircraft
+     * @return the icon of the aircraft
+     */
     private SVGPath icon(ObservableAircraftState aircraftState) {
         SVGPath svgPath = new SVGPath();
         svgPath.getStyleClass().add("aircraft");
@@ -169,6 +209,12 @@ public final class AircraftController {
         return svgPath;
     }
 
+    /**
+     * Construction of the label of the aircraft
+     *
+     * @param aircraftState: State of the aircraft
+     * @return the label of the aircraft
+     */
     private Group labelGroup(ObservableAircraftState aircraftState) {
 
         Group rectAndText = new Group();
@@ -206,6 +252,12 @@ public final class AircraftController {
         return rectAndText;
     }
 
+    /**
+     * Get different data of the aircraft depends on the availability it
+     *
+     * @param observableAircraftState: State of the aircraft
+     * @return the string of data that is not null
+     */
     private String firstLineLabel(ObservableAircraftState observableAircraftState) {
         AircraftData aircraftData = observableAircraftState.getAircraftData();
         if (aircraftData != null) {
