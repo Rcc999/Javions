@@ -57,6 +57,7 @@ public final class Main extends Application {
 
         var aircraftController = new AircraftController(mapParameters, aircraftStateManager.states(), selectedAircraft);
         var aircraftTableController = new AircraftTableController(aircraftStateManager.states(), selectedAircraft);
+        aircraftTableController.setOnDoubleClick(e -> baseMapController.centerOn(e.getPosition()));
         var statusLineController = new StatusLineController();
 
         statusLineController.aircraftCountProperty().bind(Bindings.size(aircraftStateManager.states()));
@@ -83,7 +84,6 @@ public final class Main extends Application {
 
         animationTimer(aircraftStateManager, messages);
 
-
         //TODO: one thread for file, one for System.in and animation timer (update the message, take message from queue)
         // getParam.getRaw.size > 0 --> file read else radio read
         // setDeamon with true as argument
@@ -91,28 +91,40 @@ public final class Main extends Application {
         //  haven't done the mousing
     }
 
-    private void fileRead(String fileName, Queue<Message> messages) {
-        new Thread(() -> {
+    private List<RawMessage> readAllMessages(String fileName) throws IOException {
+        List<RawMessage> messages = new ArrayList<>();
+        int bytesRead;
+        long timeStampNs;
+        byte[] bytes = new byte[RawMessage.LENGTH];
+        try (DataInputStream s = new DataInputStream(
+                new FileInputStream(fileName))) {
+            do {
+                timeStampNs = s.readLong();
+                bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                messages.add(new RawMessage(timeStampNs, new ByteString(bytes)));
+            } while (bytesRead == RawMessage.LENGTH);
+        } catch (EOFException e) { /* ignore */ }
+        return messages;
+    }
 
-            var file = getClass().getResource(fileName).getFile();
-            int bytesRead;
-            long timeStampNs;
-            byte[] bytes = new byte[RawMessage.LENGTH];
-            try (DataInputStream s = new DataInputStream(
-                    new BufferedInputStream(
-                            new FileInputStream(file)))) {
-                do {
-                    timeStampNs = s.readLong();
-                    bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                    Message message = MessageParser.parse(new RawMessage(timeStampNs, new ByteString(bytes)));
-                    if(message != null)
-                        messages.add(message);
+    private void fileRead(String fileName, Queue<Message> messagesQueue, long startTime) throws IOException {
 
-                } while (bytesRead == RawMessage.LENGTH);
-            }
-            catch (EOFException e) { /* ignore */ } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        var iterator = readAllMessages(fileName).iterator();
+
+        Thread readFile = new Thread(() -> {
+            while (iterator.hasNext()) {
+                long currentTime = System.nanoTime();
+                if (currentTime - startTime <= iterator.next().timeStampNs()) {
+                    //Thread.sleep(iterator.next().timeStampNs());
+                } else {
+                        Message message = MessageParser.parse(iterator.next());
+                        if (message != null) {
+                            messagesQueue.add(message);
+                        }
+                    }
+                }
+            //Add in queue in here
+            // <= à timeStampNs
         });
     }
 
@@ -133,12 +145,12 @@ public final class Main extends Application {
         });
     }
 
-    private void animationTimer(AircraftStateManager aircraftStateManager, Queue<Message> messages){
+    private void animationTimer(AircraftStateManager aircraftStateManager, Queue<Message> messages, StatusLineController statusLineController) {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
                 for (int i = 0; i < 10; ++i) {
-                    if(!messages.isEmpty()){
+                    while (!messages.isEmpty()) {
                         Message message = messages.poll();
                         if (message != null) {
                             try {

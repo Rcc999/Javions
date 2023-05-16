@@ -1,9 +1,6 @@
 package ch.epfl.javions.gui;
 
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.layout.Border;
+import javafx.beans.property.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -11,35 +8,35 @@ import javafx.scene.text.Text;
 public final class StatusLineController {
 
     private final BorderPane pane;
-    private final LongProperty aircraftCount;
-    private final LongProperty messageCount;
+    private final IntegerProperty aircraftCountProperty;
+    private final LongProperty messageCountProperty;
 
     public StatusLineController() {
 
-        aircraftCount = new SimpleLongProperty(0);
-        messageCount = new SimpleLongProperty(0);
+        aircraftCountProperty = new SimpleIntegerProperty(0);
+        messageCountProperty = new SimpleLongProperty(0);
 
-        Text aircraftCountText = new Text();
-        Text messageCountText = new Text();
+        Text aircraftCountPropertyText = new Text();
+        Text messageCountPropertyText = new Text();
 
-        aircraftCountText.textProperty().bind(aircraftCount.asString("Aéronefs visibles : %d"));
-        messageCountText.textProperty().bind(messageCount.asString("Messages reçus : %d"));
+        aircraftCountPropertyText.textProperty().bind(aircraftCountProperty.asString("Aéronefs visibles : %d"));
+        messageCountPropertyText.textProperty().bind(messageCountProperty.asString("Messages reçus : %d"));
 
         pane = new BorderPane();
         pane.getStylesheets().add("status.css");
-        pane.setLeft(aircraftCountText);
-        pane.setRight(messageCountText);
+        pane.setLeft(aircraftCountPropertyText);
+        pane.setRight(messageCountPropertyText);
     }
 
     public Pane pane (){
         return pane;
     }
 
-    public LongProperty aircraftCountProperty() {
-        return aircraftCount;
+    public IntegerProperty aircraftCountProperty() {
+        return aircraftCountProperty;
     }
 
     public LongProperty messageCountProperty() {
-        return messageCount;
+        return messageCountProperty;
     }
 }
