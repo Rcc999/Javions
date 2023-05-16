@@ -1,8 +1,12 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.ByteString;
+import ch.epfl.javions.adsb.AirbornePositionMessage;
 import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.adsb.MessageParser;
+import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
+import ch.epfl.javions.demodulation.AdsbDemodulator;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -15,10 +19,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -31,7 +35,6 @@ public final class Main extends Application {
     private static final int Y_COORDINATE = 23070;
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
-    private Queue<Message> messages = new ConcurrentLinkedQueue<>();
 
     public static void main(String[] args) {
         launch(args);
@@ -42,23 +45,23 @@ public final class Main extends Application {
 
         URL url = getClass().getResource("/aircraft.zip");
         assert url != null;
-        Path path = Path.of(url.toURI()); // need to check for tile-cach
+        Path path = Path.of(url.toURI()); // need to check for tile-cache
 
-        TileManager tileManager = new TileManager(path, TILE_ORG);
-        AircraftDatabase database = new AircraftDatabase(path.toString());
-        AircraftStateManager aircraftStateManager = new AircraftStateManager(database);
-        MapParameters mapParameters = new MapParameters(ZOOM_INIT, X_COORDINATE, Y_COORDINATE);
-        BaseMapController baseMapController = new BaseMapController(tileManager, mapParameters);
+        var tileManager = new TileManager(path, TILE_ORG);
+        var database = new AircraftDatabase(path.toString());
+        var aircraftStateManager = new AircraftStateManager(database);
+        var mapParameters = new MapParameters(ZOOM_INIT, X_COORDINATE, Y_COORDINATE);
+        var baseMapController = new BaseMapController(tileManager, mapParameters);
 
         ObjectProperty<ObservableAircraftState> selectedAircraft = new SimpleObjectProperty<>(null);
 
-        AircraftController aircraftController = new AircraftController(mapParameters, aircraftStateManager.states(), selectedAircraft);
-        AircraftTableController aircraftTableController = new AircraftTableController(aircraftStateManager.states(), selectedAircraft);
-        StatusLineController statusLineController = new StatusLineController();
+        var aircraftController = new AircraftController(mapParameters, aircraftStateManager.states(), selectedAircraft);
+        var aircraftTableController = new AircraftTableController(aircraftStateManager.states(), selectedAircraft);
+        var statusLineController = new StatusLineController();
 
         statusLineController.aircraftCountProperty().bind(Bindings.size(aircraftStateManager.states()));
 
-        SplitPane splitPane = new SplitPane(
+        var splitPane = new SplitPane(
                 new StackPane(baseMapController.pane(), aircraftController.pane()),
                 new BorderPane(aircraftTableController.pane(), statusLineController.pane(), null, null, null)
         );
@@ -69,24 +72,64 @@ public final class Main extends Application {
         primaryStage.setScene(new Scene(splitPane));
         primaryStage.show();
 
-        if(getParameters().getRaw().size() > 0) fileRead();
-        else radioRead();
+        Queue<Message> messages = new ConcurrentLinkedQueue<>();
+
+
+
+
+        if(getParameters().getRaw().size() > 0) fileRead( , messages);
+        else radioRead(messages);
+
+
+        animationTimer(aircraftStateManager, messages);
 
 
         //TODO: one thread for file, one for System.in and animation timer (update the message, take message from queue)
         // getParam.getRaw.size > 0 --> file read else radio read
+        // setDeamon with true as argument
+        //  check with all the methods
+        //  haven't done the mousing
     }
 
-    private void fileRead(String fileName, Queue<Message> messages){
+    private void fileRead(String fileName, Queue<Message> messages) {
         new Thread(() -> {
-            var file = getClass().getResource(fileName).getFile();
 
+            var file = getClass().getResource(fileName).getFile();
+            int bytesRead;
+            long timeStampNs;
+            byte[] bytes = new byte[RawMessage.LENGTH];
+            try (DataInputStream s = new DataInputStream(
+                    new BufferedInputStream(
+                            new FileInputStream(file)))) {
+                do {
+                    timeStampNs = s.readLong();
+                    bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                    Message message = MessageParser.parse(new RawMessage(timeStampNs, new ByteString(bytes)));
+                    if(message != null)
+                        messages.add(message);
+
+                } while (bytesRead == RawMessage.LENGTH);
+            }
+            catch (EOFException e) { /* ignore */ } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
-    private void radioRead(){
+    private void radioRead(Queue<Message> messages){
         new Thread(() -> {
+            try {
+                AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
+                RawMessage rawMessage;
+                while ((rawMessage = demodulator.nextMessage()) != null) {
+                    Message message = MessageParser.parse(rawMessage);
+                    if(message != null)
+                        messages.add(message);
+                }
 
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
@@ -94,16 +137,21 @@ public final class Main extends Application {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                try {
-                    for (int i = 0; i < 10; ++i) {
-                        Message message = MessageParser.parse(messages.next());
-                        if (message != null) aircraftStateManager.updateWithMessage(message);
+                for (int i = 0; i < 10; ++i) {
+                    if(!messages.isEmpty()){
+                        Message message = messages.poll();
+                        if (message != null) {
+                            try {
+                                aircraftStateManager.updateWithMessage(message);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                     }
-                    aircraftStateManager.purge();
+
+
                 }
-                catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
+                aircraftStateManager.purge();
             }
         }.start();
     }
