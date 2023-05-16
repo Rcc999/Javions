@@ -1,7 +1,6 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.ByteString;
-import ch.epfl.javions.adsb.AirbornePositionMessage;
 import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
@@ -22,7 +21,8 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -46,8 +46,9 @@ public final class Main extends Application {
         URL url = getClass().getResource("/aircraft.zip");
         assert url != null;
         Path path = Path.of(url.toURI()); // need to check for tile-cache
+        Path tilePath = Path.of("tile-cache");
 
-        var tileManager = new TileManager(path, TILE_ORG);
+        var tileManager = new TileManager(tilePath, TILE_ORG);
         var database = new AircraftDatabase(path.toString());
         var aircraftStateManager = new AircraftStateManager(database);
         var mapParameters = new MapParameters(ZOOM_INIT, X_COORDINATE, Y_COORDINATE);
@@ -75,20 +76,20 @@ public final class Main extends Application {
 
         Queue<Message> messages = new ConcurrentLinkedQueue<>();
 
+        long startTime = System.nanoTime();
 
-
-
-        if(getParameters().getRaw().size() > 0) fileRead( , messages);
+        if (getParameters().getRaw().size() > 0)
+            fileRead(getParameters().getRaw().get(0), messages, startTime);
         else radioRead(messages);
 
+        animationTimer(aircraftStateManager, messages, statusLineController);
 
-        animationTimer(aircraftStateManager, messages);
 
         //TODO: one thread for file, one for System.in and animation timer (update the message, take message from queue)
-        // getParam.getRaw.size > 0 --> file read else radio read
-        // setDeamon with true as argument
         //  check with all the methods
+        // check try catch of file and radio read
         //  haven't done the mousing
+        // Problem in base map
     }
 
     private List<RawMessage> readAllMessages(String fileName) throws IOException {
@@ -126,44 +127,52 @@ public final class Main extends Application {
             //Add in queue in here
             // <= à timeStampNs
         });
+        readFile.setDaemon(true);
+        readFile.start();
     }
 
-    private void radioRead(Queue<Message> messages){
-        new Thread(() -> {
+    private void radioRead(Queue<Message> messages) {
+        Thread readRadio = new Thread(() -> {
+
             try {
                 AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
-                RawMessage rawMessage;
-                while ((rawMessage = demodulator.nextMessage()) != null) {
-                    Message message = MessageParser.parse(rawMessage);
-                    if(message != null)
-                        messages.add(message);
+                while (true) {
+                    RawMessage rawMessage = demodulator.nextMessage();
+                    if (rawMessage != null) {
+                        Message message = MessageParser.parse(rawMessage);
+                        if (message != null) {
+                            messages.add(message);
+                        }
+                    }
                 }
-
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
+
+        readRadio.setDaemon(true);
+        readRadio.start();
     }
 
     private void animationTimer(AircraftStateManager aircraftStateManager, Queue<Message> messages, StatusLineController statusLineController) {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
+                long counter = 0;
                 for (int i = 0; i < 10; ++i) {
                     while (!messages.isEmpty()) {
                         Message message = messages.poll();
                         if (message != null) {
+                            statusLineController.messageCountProperty().set(++counter);
                             try {
                                 aircraftStateManager.updateWithMessage(message);
+                                aircraftStateManager.purge();
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
                         }
                     }
-
-
                 }
-                aircraftStateManager.purge();
             }
         }.start();
     }
