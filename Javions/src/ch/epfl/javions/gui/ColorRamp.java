@@ -2,28 +2,45 @@ package ch.epfl.javions.gui;
 
 import ch.epfl.javions.Preconditions;
 import javafx.scene.paint.Color;
-
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A class that represents the color of the trajectory and the aircraft given their altitude
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public final class ColorRamp {
 
+    //The maximum altitude of an aircraft in feet.
     public static final int MAX_ALTITUDE = 12000;
     private final List<Color> colors;
 
+    /**
+     * Constructs a new ColorRamp with the given colors
+     *
+     * @param colors the colors to use
+     */
     public ColorRamp(Color... colors) {
         Preconditions.checkArgument(colors.length >= 2);
         this.colors = List.copyOf(Arrays.asList(colors));
     }
 
 
-    public Color at(double value){
+    /**
+     * Returns the color corresponding to the given value
+     *
+     * @param value : the value to get the color for
+     * @return the color corresponding to the given value
+     */
+    public Color at(double value) {
 
         double floorResult = value / MAX_ALTITUDE;
         double colorFade = Math.cbrt(floorResult);
 
-        if(colorFade <= 0) return colors.get(0);
-        if(colorFade >= 1) return colors.get(colors.size() - 1);
+        if (colorFade <= 0) return colors.get(0);
+        if (colorFade >= 1) return colors.get(colors.size() - 1);
 
         double position = colorFade * (colors.size() - 1);
         int index = (int) Math.floor(position);
@@ -32,6 +49,7 @@ public final class ColorRamp {
         return colors.get(index).interpolate(colors.get(index + 1), fade);
     }
 
+    //The color ramp used to display the aircrafts
     public static final ColorRamp PLASMA = new ColorRamp(
             Color.valueOf("0x0d0887ff"), Color.valueOf("0x220690ff"),
             Color.valueOf("0x320597ff"), Color.valueOf("0x40049dff"),
