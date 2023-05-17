@@ -15,7 +15,6 @@ public final class StatusLineController {
 
     //The style sheet used to display the status line
     public static final String STYLE_SHEET_TITLE = "status.css";
-
     private final BorderPane pane;
     private final IntegerProperty aircraftCountProperty;
     private final LongProperty messageCountProperty;
