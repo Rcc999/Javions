@@ -63,8 +63,8 @@ public final class AircraftTableController {
     public AircraftTableController(ObservableSet<ObservableAircraftState> observableAircraftStates,
                                    ObjectProperty<ObservableAircraftState> selectedAircraft) {
 
-        this.observableAircraftStates = observableAircraftStates;
-        this.selectedAircraft = selectedAircraft;
+        this.observableAircraftStates = Objects.requireNonNull(observableAircraftStates);
+        this.selectedAircraft = Objects.requireNonNull(selectedAircraft);
 
         tableView = new TableView<>();
         tableView.getStylesheets().add("table.css");
@@ -74,7 +74,14 @@ public final class AircraftTableController {
         setTableStringColumn();
         setTableNumericalColumn();
         handler();
+        aircraftSetAddListener();
+        selectedAircraftAddListener();
 
+        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                selectedAircraft.set(newValue));
+    }
+
+    private void aircraftSetAddListener(){
         observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
                 items -> {
                     if (items.wasAdded()) {
@@ -84,16 +91,15 @@ public final class AircraftTableController {
                         tableView.getItems().remove(items.getElementRemoved());
                     }
                 });
+    }
 
+    private void selectedAircraftAddListener(){
         selectedAircraft.addListener((observable, oldValue, newValue) -> {
             if (!Objects.equals(tableView.getSelectionModel().getSelectedItem(), newValue)) {
                 tableView.scrollTo(newValue);
             }
             tableView.getSelectionModel().select(newValue);
         });
-
-        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                selectedAircraft.set(newValue));
     }
 
     /**
@@ -109,9 +115,13 @@ public final class AircraftTableController {
         this.aircraftStateConsumer = aircraftStateConsumer;
     }
 
+
     private void handler() {
         tableView.setOnMouseClicked(event -> {
-            if (event.getClickCount() == DOUBLE_CLICK && event.getButton().equals(MouseButton.PRIMARY) && aircraftStateConsumer != null) {
+            if (selectedAircraft.get() != null &&
+                    event.getClickCount() == DOUBLE_CLICK &&
+                    event.getButton().equals(MouseButton.PRIMARY) &&
+                    aircraftStateConsumer != null) {
                 aircraftStateConsumer.accept(tableView.getSelectionModel().getSelectedItem());
             }
         });

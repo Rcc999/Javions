@@ -57,11 +57,15 @@ public final class AircraftController {
                 ? selectedAircraftState.get().getAircraftData()
                 : null;
 
+        aircraftStateAddListener();
+
         pane = new Pane();
         pane.getStylesheets().add("aircraft.css");
         pane.setPickOnBounds(false);
+    }
 
-        this.observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
+    private void aircraftStateAddListener(){
+        observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
                 change -> {
                     if (change.wasAdded()) {
                         pane.getChildren().add(annotatedAircraftGroup(change.getElementAdded()));
