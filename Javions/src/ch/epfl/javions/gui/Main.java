@@ -21,11 +21,17 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+
+// TODO:
+//  Optimize aircraft controller (the data thing) and check the warning
+//  Check the warnings in table controller: done
+//  Check the constants in table controller: done
+//  Delete un-use method in observable aircraft state
+//  Check line 121 of table controller
+//  Finish this class: done
 public final class Main extends Application {
 
     private static final String TITLE = "Javion";
@@ -76,56 +82,42 @@ public final class Main extends Application {
 
         Queue<Message> messages = new ConcurrentLinkedQueue<>();
 
-        long startTime = System.nanoTime();
-
         if (getParameters().getRaw().size() > 0)
-            fileRead(getParameters().getRaw().get(0), messages, startTime);
+            fileRead(getParameters().getRaw().get(0), messages);
         else radioRead(messages);
 
         animationTimer(aircraftStateManager, messages, statusLineController);
 
-
-        //TODO: one thread for file, one for System.in and animation timer (update the message, take message from queue)
-        //  check with all the methods
-        // check try catch of file and radio read
-        //  haven't done the mousing
-        // Problem in base map
     }
 
-    private List<RawMessage> readAllMessages(String fileName) throws IOException {
-        List<RawMessage> messages = new ArrayList<>();
-        int bytesRead;
-        long timeStampNs;
-        byte[] bytes = new byte[RawMessage.LENGTH];
-        try (DataInputStream s = new DataInputStream(
-                new FileInputStream(fileName))) {
-            do {
-                timeStampNs = s.readLong();
-                bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                messages.add(new RawMessage(timeStampNs, new ByteString(bytes)));
-            } while (bytesRead == RawMessage.LENGTH);
-        } catch (EOFException e) { /* ignore */ }
-        return messages;
-    }
-
-    private void fileRead(String fileName, Queue<Message> messagesQueue, long startTime) throws IOException {
-
-        var iterator = readAllMessages(fileName).iterator();
+    private void fileRead(String fileName, Queue<Message> messagesQueue) {
 
         Thread readFile = new Thread(() -> {
-            while (iterator.hasNext()) {
-                long currentTime = System.nanoTime();
-                if (currentTime - startTime <= iterator.next().timeStampNs()) {
-                    //Thread.sleep(iterator.next().timeStampNs());
-                } else {
-                        Message message = MessageParser.parse(iterator.next());
-                        if (message != null) {
-                            messagesQueue.add(message);
-                        }
+            int bytesRead;
+            long currentTimeStampNs;
+            byte[] bytes = new byte[RawMessage.LENGTH];
+            long previousTime = 0L;
+            try (DataInputStream s = new DataInputStream(
+                    new FileInputStream(fileName))) {
+                do {
+                    currentTimeStampNs = s.readLong();
+                    bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                    RawMessage rawMessage = new RawMessage(currentTimeStampNs, new ByteString(bytes));
+
+                    if(currentTimeStampNs - previousTime > 0){
+                        Thread.sleep((currentTimeStampNs - previousTime) / 1000000L);
                     }
-                }
-            //Add in queue in here
-            // <= à timeStampNs
+
+                    previousTime = currentTimeStampNs;
+                    Message message = MessageParser.parse(rawMessage);
+                    if(message != null){
+                        messagesQueue.add(message);
+                    }
+
+                } while (bytesRead == RawMessage.LENGTH);
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         });
         readFile.setDaemon(true);
         readFile.start();
@@ -154,16 +146,17 @@ public final class Main extends Application {
         readRadio.start();
     }
 
-    private void animationTimer(AircraftStateManager aircraftStateManager, Queue<Message> messages, StatusLineController statusLineController) {
+    private void animationTimer(AircraftStateManager aircraftStateManager, Queue<Message> messages,
+                                StatusLineController statusLineController) {
         new AnimationTimer() {
+            long count = 0L;
             @Override
             public void handle(long now) {
-                long counter = 0;
                 for (int i = 0; i < 10; ++i) {
                     while (!messages.isEmpty()) {
                         Message message = messages.poll();
                         if (message != null) {
-                            statusLineController.messageCountProperty().set(++counter);
+                            statusLineController.messageCountProperty().set(count++);
                             try {
                                 aircraftStateManager.updateWithMessage(message);
                                 aircraftStateManager.purge();
