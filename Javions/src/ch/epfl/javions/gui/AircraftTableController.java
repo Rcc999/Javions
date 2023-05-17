@@ -118,7 +118,7 @@ public final class AircraftTableController {
 
     private void handler() {
         tableView.setOnMouseClicked(event -> {
-            if (selectedAircraft.get() != null &&
+            if (selectedAircraft.get() != null && // check
                     event.getClickCount() == DOUBLE_CLICK &&
                     event.getButton().equals(MouseButton.PRIMARY) &&
                     aircraftStateConsumer != null) {
