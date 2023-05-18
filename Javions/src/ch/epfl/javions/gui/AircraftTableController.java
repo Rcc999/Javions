@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftData;
@@ -178,14 +179,16 @@ public final class AircraftTableController {
         //Haven't taken into account cases where stuffs are 0: SOLVED
         //Number behind comma doesn't work yet: SOLVED
 
+        //setNumericalColumnToTable(LONGITUDE, state -> new SimpleDoubleProperty(state.getPosition().longitude()), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
+
         setNumericalColumnToTable(LONGITUDE, state ->
-                new SimpleDoubleProperty(state.getPosition().longitude()), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
+                state.positionProperty().map(GeoPos::longitude), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
         setNumericalColumnToTable(LATITUDE, state ->
-                new SimpleDoubleProperty(state.getPosition().latitude()), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
+                state.positionProperty().map(GeoPos::latitude), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
         setNumericalColumnToTable(ALTITUDE, state ->
-                new SimpleDoubleProperty(state.getAltitude()), FRACTION_DIGITS_ALT_VEL, Units.Length.METER);
+                state.altitudeProperty().map(Number::doubleValue), FRACTION_DIGITS_ALT_VEL, Units.Length.METER);
         setNumericalColumnToTable(VELOCITY, state ->
-                new SimpleDoubleProperty(state.getVelocity()), FRACTION_DIGITS_ALT_VEL, Units.Speed.KILOMETER_PER_HOUR);
+                state.velocityProperty().map(Number::doubleValue), FRACTION_DIGITS_ALT_VEL, Units.Speed.KILOMETER_PER_HOUR);
     }
 
     /**
@@ -197,7 +200,7 @@ public final class AircraftTableController {
      * @param unity             of the value
      */
     private void setNumericalColumnToTable(String title, Function<ObservableAircraftState,
-            DoubleExpression> numericalValue, int fractionDigitsMax, double unity) {
+            ObservableValue<Number>> numericalValue, int fractionDigitsMax, double unity) {
 
         TableColumn<ObservableAircraftState, String> numericalColumn = new TableColumn<>(title);
         numericalColumn.getStyleClass().add("numeric");
@@ -229,3 +232,4 @@ public final class AircraftTableController {
     }
 
 }
+
