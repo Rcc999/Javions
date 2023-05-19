@@ -138,7 +138,7 @@ public final class AircraftTableController {
                 state.callSignProperty().map(CallSign::string));
 
         setStringColumnToTable(REGISTRATION, WIDTH_REGISTRATION_COLUMN, state -> {
-            AircraftData data = state.getAircraftData(); //maybe it can be optimised more: Done
+            AircraftData data = state.getAircraftData();
             return new ReadOnlyObjectWrapper<>(data).map(d -> d.registration().string());
         });
         setStringColumnToTable(MODEL, WIDTH_MODELE_COLUMN, state -> {
@@ -176,10 +176,6 @@ public final class AircraftTableController {
      * Set numerical text columns to the table
      */
     private void setTableNumericalColumn() {
-        //Haven't taken into account cases where stuffs are 0: SOLVED
-        //Number behind comma doesn't work yet: SOLVED
-
-        //setNumericalColumnToTable(LONGITUDE, state -> new SimpleDoubleProperty(state.getPosition().longitude()), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
 
         setNumericalColumnToTable(LONGITUDE, state ->
                 state.positionProperty().map(GeoPos::longitude), FRACTION_DIGITS_LAT_LON, Units.Angle.DEGREE);
