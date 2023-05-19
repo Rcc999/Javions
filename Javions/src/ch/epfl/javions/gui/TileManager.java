@@ -3,7 +3,6 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.Preconditions;
 import javafx.scene.image.Image;
 
-import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -24,10 +23,10 @@ public class TileManager {
     private final static int MAX_CAPACITY = 100;
 
     // The load factor of the memory cache.
-    public static final float LOAD_FACTOR = 0.75F;
+    private static final float LOAD_FACTOR = 0.75F;
 
     // The title of the application.
-    public static final String TITLE = "Javions";
+    private static final String TITLE = "Javions";
 
     private final Path pathToDisk;
     private final String name;
@@ -108,9 +107,9 @@ public class TileManager {
         public static boolean isValid(int zoomLevel, int x, int y) {
             int max = 1 << zoomLevel;
             return x >= 0
-                    && x <= max
+                    && x < max
                     && y >= 0
-                    && y <= max;
+                    && y < max;
         }
     }
 }
