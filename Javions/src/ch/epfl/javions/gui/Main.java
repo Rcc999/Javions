@@ -26,11 +26,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 // TODO:
-//  Optimize aircraft controller (the data thing) and check the warning
+//  Optimize aircraft controller (the data thing) and check the warning: done
 //  Check the warnings in table controller: done
 //  Check the constants in table controller: done
 //  Delete un-use method in observable aircraft state
-//  Check line 121 of table controller
+//  Check line 121 of table controller: done
+//  Value seems not updating in the table: done
+//  Base map still bugging on the right
 //  Finish this class: done
 public final class Main extends Application {
 
@@ -150,20 +152,24 @@ public final class Main extends Application {
                                 StatusLineController statusLineController) {
         new AnimationTimer() {
             long count = 0L;
+            long lastPurge = 0L;
             @Override
             public void handle(long now) {
                 for (int i = 0; i < 10; ++i) {
                     while (!messages.isEmpty()) {
                         Message message = messages.poll();
                         if (message != null) {
-                            statusLineController.messageCountProperty().set(count++);
+                            statusLineController.messageCountProperty().set(++count);
                             try {
                                 aircraftStateManager.updateWithMessage(message);
-                                aircraftStateManager.purge();
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
                         }
+                    }
+                    if(now - lastPurge > 1_000_000_000){
+                        aircraftStateManager.purge();
+                        lastPurge = now;
                     }
                 }
             }
