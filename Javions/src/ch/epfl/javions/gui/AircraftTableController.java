@@ -119,7 +119,7 @@ public final class AircraftTableController {
 
     private void handler() {
         tableView.setOnMouseClicked(event -> {
-            if (selectedAircraft.get() != null && // check
+            if (selectedAircraft.get() != null &&
                     event.getClickCount() == DOUBLE_CLICK &&
                     event.getButton().equals(MouseButton.PRIMARY) &&
                     aircraftStateConsumer != null) {
@@ -137,8 +137,9 @@ public final class AircraftTableController {
                 new ReadOnlyObjectWrapper<>(state.getIcaoAddress().string()));
         setStringColumnToTable(CALL_SIGN, WIDTH_CALL_SIGN_COLUMN, state ->
                 state.callSignProperty().map(CallSign::string));
+
         setStringColumnToTable(REGISTRATION, WIDTH_REGISTRATION_COLUMN, state -> {
-            AircraftData data = state.getAircraftData(); //maybe it can be optimised more
+            AircraftData data = state.getAircraftData(); //maybe it can be optimised more: Done
             return new ReadOnlyObjectWrapper<>(data).map(d -> d.registration().string());
         });
         setStringColumnToTable(MODEL, WIDTH_MODELE_COLUMN, state -> {
