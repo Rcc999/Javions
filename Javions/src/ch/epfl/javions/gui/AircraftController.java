@@ -264,10 +264,8 @@ public final class AircraftController {
      */
     private String firstLineLabel(ObservableAircraftState observableAircraftState) {
         AircraftData aircraftData = observableAircraftState.getAircraftData();
-        if (aircraftData != null) {
-            if (aircraftData.registration() != null) return aircraftData.registration().string();
-            if(observableAircraftState.getCallSign() != null) return observableAircraftState.getCallSign().string();
-        }
+        if (aircraftData != null && aircraftData.registration() != null) return aircraftData.registration().string();
+        if(observableAircraftState.getCallSign() != null) return observableAircraftState.getCallSign().string();
         return observableAircraftState.getIcaoAddress().string();
     }
 
