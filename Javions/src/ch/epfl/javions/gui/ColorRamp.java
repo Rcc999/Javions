@@ -13,8 +13,7 @@ import java.util.List;
  */
 public final class ColorRamp {
 
-    //The maximum altitude of an aircraft in feet.
-    public static final int MAX_ALTITUDE = 12000;
+    private static final int MAX_ALTITUDE = 12000;
     private final List<Color> colors;
 
     /**
@@ -49,7 +48,9 @@ public final class ColorRamp {
         return colors.get(index).interpolate(colors.get(index + 1), fade);
     }
 
-    //The color ramp used to display the aircrafts
+    /**
+     * The color ramp used to display the aircraft
+     */
     public static final ColorRamp PLASMA = new ColorRamp(
             Color.valueOf("0x0d0887ff"), Color.valueOf("0x220690ff"),
             Color.valueOf("0x320597ff"), Color.valueOf("0x40049dff"),

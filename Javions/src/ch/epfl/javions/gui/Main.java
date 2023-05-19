@@ -26,14 +26,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 // TODO:
-//  Optimize aircraft controller (the data thing) and check the warning: done
-//  Check the warnings in table controller: done
-//  Check the constants in table controller: done
-//  Delete un-use method in observable aircraft state: done
-//  Check line 121 of table controller: done
-//  Value seems not updating in the table: done
-//  Base map still bugging on the right: done
-//
+//  Maybe Something about system.nano time for sleep
 //  Finish this class: done
 
 /**
@@ -143,7 +136,7 @@ public final class Main extends Application {
                     RawMessage rawMessage = new RawMessage(currentTimeStampNs, new ByteString(bytes));
 
                     if(currentTimeStampNs - previousTime > 0){
-                        Thread.sleep((currentTimeStampNs - previousTime) / 1000000L);
+                        Thread.sleep((currentTimeStampNs - previousTime) / 1_000_000L);
                     }
 
                     previousTime = currentTimeStampNs;
