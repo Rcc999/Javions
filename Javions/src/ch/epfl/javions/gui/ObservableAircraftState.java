@@ -79,10 +79,6 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         timeStampNsProperty.set(timeStampNs);
     }
 
-    public ReadOnlyLongProperty timeStampNsProperty() {
-        return timeStampNsProperty;
-    }
-
     /**
      * Get the time stamp of the latest message
      *
