@@ -20,9 +20,7 @@ import java.util.Map;
  */
 public final class AircraftStateManager {
 
-    //The maximum time in nanoseconds that an aircraft state can be kept in the map
-    public static final long MINUTE_AGO_PURGE = 60 * 1_000_000_000L;
-
+    private static final long MINUTE_AGO_PURGE = 60 * 1_000_000_000L;
     private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> associativeMap;
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObservableSet<ObservableAircraftState> unmodifiableObservableAircraftStates;
@@ -43,7 +41,7 @@ public final class AircraftStateManager {
 
 
     /**
-     * Purges the state of the aircrafts that have not been updated for more than a minute
+     * Purges the state of the aircraft that has not been updated for more than a minute
      */
     public void purge() {
         Iterator<AircraftStateAccumulator<ObservableAircraftState>> iterator = associativeMap.values().iterator();

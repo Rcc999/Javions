@@ -29,32 +29,62 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 //  Optimize aircraft controller (the data thing) and check the warning: done
 //  Check the warnings in table controller: done
 //  Check the constants in table controller: done
-//  Delete un-use method in observable aircraft state
+//  Delete un-use method in observable aircraft state: done
 //  Check line 121 of table controller: done
 //  Value seems not updating in the table: done
-//  Base map still bugging on the right
+//  Base map still bugging on the right: done
+//
 //  Finish this class: done
+
+/**
+ * Main program
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public final class Main extends Application {
 
+    private static final String RESOURCE_FILE = "/aircraft.zip";
     private static final String TITLE = "Javion";
     private static final String TILE_ORG = "tile.openstreetmap.org";
+    private static final String TILE_FOLDER = "tile-cache";
+    private static final long SECOND_NANO = 1_000_000_000L;
     private static final int ZOOM_INIT = 8;
     private static final int X_COORDINATE = 33530;
     private static final int Y_COORDINATE = 23070;
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
 
+    /**
+     * Entry point for a JavaFX application, launching the JavaFX runtime and starting the application's user interface
+     *
+     * @param args: command-line arguments passed to the program,
+     *              allowing you to customize its behavior or provide input from the command line.
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Initialize and configure the initial user interface of the application.
+     * <p>
+     * We have all the panes of base map, aircraft, table and status line
+     * Also a read file or read radio methods to read the messages from different ways
+     * Finally an animation timer to handle animation loop - used for continuous animation updates
+     *
+     * @param primaryStage the primary stage for this application, onto which
+     * the application scene can be set.
+     * Applications may create other stages, if needed, but they will not be
+     * primary stages.
+     * @throws Exception if received any from the program
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        URL url = getClass().getResource("/aircraft.zip");
+        URL url = getClass().getResource(RESOURCE_FILE);
         assert url != null;
-        Path path = Path.of(url.toURI()); // need to check for tile-cache
-        Path tilePath = Path.of("tile-cache");
+        Path path = Path.of(url.toURI());
+        Path tilePath = Path.of(TILE_FOLDER);
 
         var tileManager = new TileManager(tilePath, TILE_ORG);
         var database = new AircraftDatabase(path.toString());
@@ -92,6 +122,12 @@ public final class Main extends Application {
 
     }
 
+    /**
+     * Execution thread: read message from file and add the valid one to the queue passed by the parameter
+     *
+     * @param fileName: name of the file that contains the messages
+     * @param messagesQueue: queue of the valid message read
+     */
     private void fileRead(String fileName, Queue<Message> messagesQueue) {
 
         Thread readFile = new Thread(() -> {
@@ -125,6 +161,11 @@ public final class Main extends Application {
         readFile.start();
     }
 
+    /**
+     * Execution thread: demodulating the signal from the radio to extract messages and add into queue all the valid one
+     *
+     * @param messages: queue of the message
+     */
     private void radioRead(Queue<Message> messages) {
         Thread readRadio = new Thread(() -> {
 
@@ -148,6 +189,13 @@ public final class Main extends Application {
         readRadio.start();
     }
 
+    /**
+     * Animation timer to handle animation loop - for continuous animation updates
+     *
+     * @param aircraftStateManager: use messages in queue to update aircraft state
+     * @param messages: contain valid messages
+     * @param statusLineController: counting the number aircraft and number of messages
+     */
     private void animationTimer(AircraftStateManager aircraftStateManager, Queue<Message> messages,
                                 StatusLineController statusLineController) {
         new AnimationTimer() {
@@ -167,7 +215,7 @@ public final class Main extends Application {
                             }
                         }
                     }
-                    if(now - lastPurge > 1_000_000_000){
+                    if(now - lastPurge > SECOND_NANO){
                         aircraftStateManager.purge();
                         lastPurge = now;
                     }
