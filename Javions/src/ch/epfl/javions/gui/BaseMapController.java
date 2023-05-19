@@ -19,7 +19,7 @@ import java.io.IOException;
  */
 public final class BaseMapController {
 
-    public static final int PIXEL_PER_TILE = 256;
+    private static final int PIXEL_PER_TILE = 256;
     private final TileManager tileManager;
     private final MapParameters mapParameters;
     private boolean redrawNeeded;
@@ -125,7 +125,6 @@ public final class BaseMapController {
         ObjectProperty<Point2D> lastMousePosition = new SimpleObjectProperty<>();
 
         mainPane.setOnMousePressed(e -> lastMousePosition.set(new Point2D(e.getX(), e.getY())));
-
 
         mainPane.setOnMouseDragged(e -> {
             Point2D currentPosition = new Point2D(e.getX(), e.getY());
