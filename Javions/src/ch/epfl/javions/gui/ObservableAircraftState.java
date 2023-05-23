@@ -152,8 +152,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     @Override
     public void setPosition(GeoPos position) {
         positionProperty.set(position);
-        calculateTrajectory(previousTimeStamps, true);
-        previousTimeStamps = getLastMessageTimeStampNs();
+        calculateTrajectory(previousTimeStamps, true, false);
     }
 
     /**
@@ -182,8 +181,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     @Override
     public void setAltitude(double altitude) {
         altitudeProperty.set(altitude);
-        calculateTrajectory(previousTimeStamps, false);
-        previousTimeStamps = getLastMessageTimeStampNs();
+        calculateTrajectory(previousTimeStamps, false, true);
     }
 
     /**
@@ -275,14 +273,19 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param latestTimeStamps of the aircraft whose trajectory is added the latest
      * @param positionAdded    is true if a position is set, false otherwise
      */
-    private void calculateTrajectory(long latestTimeStamps, boolean positionAdded) {
+    private void calculateTrajectory(long latestTimeStamps, boolean positionAdded, boolean altitudeAdded) {
         if (getPosition() != null) {
-            if (positionAdded && getAltitude() != 0) listFirst.add(new AirbornePos(getPosition(), getAltitude()));
-            if (listFirst.isEmpty())
+            if (positionAdded && getAltitude() != 0){
                 listFirst.add(new AirbornePos(getPosition(), getAltitude()));
-
-            else if (getLastMessageTimeStampNs() == latestTimeStamps)
+                previousTimeStamps = getLastMessageTimeStampNs();
+            }
+            else if (altitudeAdded && listFirst.isEmpty()) {
+                listFirst.add(new AirbornePos(getPosition(), getAltitude()));
+                previousTimeStamps = getLastMessageTimeStampNs();
+            }
+            else if (altitudeAdded && getLastMessageTimeStampNs() == latestTimeStamps){
                 listFirst.set(listFirst.size() - 1, new AirbornePos(getPosition(), getAltitude()));
+            }
         }
     }
 
