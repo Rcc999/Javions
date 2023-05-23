@@ -4,9 +4,10 @@ import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
 import ch.epfl.javions.aircraft.*;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -33,8 +34,11 @@ public final class AircraftController {
     private final MapParameters mapParameters;
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
-    private final AircraftData data;
     private final Pane pane;
+    private final static String EMPTY = "";
+    private final static String UNKNOWN_COMPONENT = "?";
+    private final static double UNKNOWN_VALUE = 0.0 ;
+    private final static int MINIMUM_ZOOM_VISIBILITY = 11;
 
     /**
      * Construction of a visible aircraft that appears on the map whose scene graph contains:
@@ -52,10 +56,6 @@ public final class AircraftController {
         this.mapParameters = mapParameters;
         this.observableAircraftStates = observableAircraftStates;
         this.selectedAircraftState = selectedAircraftState;
-
-        data = selectedAircraftState.get() != null
-                ? selectedAircraftState.get().getAircraftData()
-                : null;
 
         aircraftStateAddListener();
 
@@ -171,7 +171,6 @@ public final class AircraftController {
             return y - mapParameters.getMinY();
         }, aircraftState.positionProperty(), mapParameters.zoomLevelProperty(), mapParameters.minYProperty()));
 
-
         return iconAndLabelGroup;
     }
 
@@ -184,28 +183,29 @@ public final class AircraftController {
     private SVGPath icon(ObservableAircraftState aircraftState) {
         SVGPath svgPath = new SVGPath();
         svgPath.getStyleClass().add("aircraft");
+        AircraftData data = aircraftState.getAircraftData();
 
         AircraftTypeDesignator typeDesignator = data == null
-                ? new AircraftTypeDesignator("") : data.typeDesignator();
+                ? new AircraftTypeDesignator(EMPTY) : data.typeDesignator();
         AircraftDescription description = data == null
-                ? new AircraftDescription("") : data.description();
+                ? new AircraftDescription(EMPTY) : data.description();
 
         AircraftIcon aircraftIcon = (data == null)
                 ? AircraftIcon.iconFor(typeDesignator, description, aircraftState.getCategory(), WakeTurbulenceCategory.UNKNOWN)
                 : AircraftIcon.iconFor(typeDesignator, description, aircraftState.getCategory(), data.wakeTurbulenceCategory());
 
-
-        var iconCategory = aircraftState.categoryProperty().map(e -> aircraftIcon);
-        svgPath.contentProperty().bind(iconCategory.map(AircraftIcon::svgPath));
-
         ObjectProperty<AircraftIcon> iconProperty = new SimpleObjectProperty<>(aircraftIcon);
 
+        //Content property
+        svgPath.contentProperty().bind(aircraftState.categoryProperty().map(e -> aircraftIcon).map(AircraftIcon::svgPath));
+
+        //Rotate property
         svgPath.rotateProperty().bind(Bindings.createDoubleBinding(() -> aircraftIcon.canRotate()
                         ? Units.convertTo(aircraftState.getTrackOrHeading(), Units.Angle.DEGREE)
-                        : 0.0,
+                        : UNKNOWN_VALUE,
                 iconProperty, aircraftState.trackOrHeadingProperty()));
 
-
+        //Fill property
         svgPath.fillProperty().bind(aircraftState.altitudeProperty().map(b -> ColorRamp.PLASMA.at(b.doubleValue())));
 
         svgPath.setOnMouseClicked(e -> selectedAircraftState.set(aircraftState));
@@ -227,22 +227,13 @@ public final class AircraftController {
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
 
+        ObservableValue<Double> velocityText = aircraftState.velocityProperty().map(e -> Units.convertTo(e.doubleValue(), Units.Speed.KILOMETER_PER_HOUR));
+        ReadOnlyDoubleProperty altitudeText = aircraftState.altitudeProperty();
 
-        var velocityText = aircraftState.velocityProperty().map(e ->
-                Units.convertTo(e.doubleValue(), Units.Speed.KILOMETER_PER_HOUR));
-
-
-        StringBinding textBinding = Bindings.createStringBinding(() -> {
-            String velocityString = velocityText.getValue() == 0
-                    ? "?"
-                    : String.format("%.0f", velocityText.getValue());
-            String altitudeString = aircraftState.altitudeProperty().getValue() == 0
-                    ? "?"
-                    : String.format("%.0f", aircraftState.altitudeProperty().getValue());
-            return String.format("%s \n%s km/h" + "\u2002" + "%s m", firstLineLabel(aircraftState), velocityString, altitudeString);
-        }, velocityText, aircraftState.altitudeProperty());
-
-        text.textProperty().bind(textBinding);
+        text.textProperty().bind(Bindings.createStringBinding(() ->
+                String.format("%s \n%s km/h" + "\u2002" + "%s m",
+                        firstLineLabel(aircraftState), velocityOrAltitudeText(velocityText.getValue()),
+                        velocityOrAltitudeText(altitudeText.getValue())), velocityText, altitudeText));
 
         rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
@@ -250,8 +241,9 @@ public final class AircraftController {
         rectAndText.getChildren().add(rectangle);
         rectAndText.getChildren().add(text);
 
-        rectAndText.visibleProperty().bind(mapParameters.zoomLevelProperty().greaterThanOrEqualTo(11).or(
-                selectedAircraftState.isEqualTo(aircraftState)));
+        //Visible property
+        rectAndText.visibleProperty().bind(mapParameters.zoomLevelProperty().
+                greaterThanOrEqualTo(MINIMUM_ZOOM_VISIBILITY).or(selectedAircraftState.isEqualTo(aircraftState)));
 
         return rectAndText;
     }
@@ -267,6 +259,17 @@ public final class AircraftController {
         if (aircraftData != null && aircraftData.registration() != null) return aircraftData.registration().string();
         if(observableAircraftState.getCallSign() != null) return observableAircraftState.getCallSign().string();
         return observableAircraftState.getIcaoAddress().string();
+    }
+
+    /**
+     * Get a string of velocity or altitude depending on their value
+     *
+     * @param value of velocity or altitude
+     * @return the string representation of it (rounded)
+     */
+    private String velocityOrAltitudeText(double value){
+        return value == UNKNOWN_VALUE ? UNKNOWN_COMPONENT
+                : String.format("%.0f", value);
     }
 
 }
