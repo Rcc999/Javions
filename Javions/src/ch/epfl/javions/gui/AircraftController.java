@@ -35,9 +35,13 @@ public final class AircraftController {
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
     private final Pane pane;
+    private final static String AIRCRAFT_STYLE_SHEET = "aircraft.css";
+    private final static String TRAJECTORY_STYLE_CLASS = "trajectory";
+    private final static String AIRCRAFT_STYLE_CLASS = "aircraft";
+    private final static String LABEL_STYLE_CLASS = "label";
     private final static String EMPTY = "";
     private final static String UNKNOWN_COMPONENT = "?";
-    private final static double UNKNOWN_VALUE = 0.0 ;
+    private final static double UNKNOWN_VALUE = 0.0;
     private final static int MINIMUM_ZOOM_VISIBILITY = 11;
 
     /**
@@ -60,11 +64,11 @@ public final class AircraftController {
         aircraftStateAddListener();
 
         pane = new Pane();
-        pane.getStylesheets().add("aircraft.css");
+        pane.getStylesheets().add(AIRCRAFT_STYLE_SHEET);
         pane.setPickOnBounds(false);
     }
 
-    private void aircraftStateAddListener(){
+    private void aircraftStateAddListener() {
         observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
                 change -> {
                     if (change.wasAdded()) {
@@ -103,7 +107,7 @@ public final class AircraftController {
 
     private Group trajectoryGroup(ObservableAircraftState aircraftState) {
         Group trajectoryGroup = new Group();
-        trajectoryGroup.getStyleClass().add("trajectory");
+        trajectoryGroup.getStyleClass().add(TRAJECTORY_STYLE_CLASS);
 
         mapParameters.zoomLevelProperty().addListener((observable, oldValue, newValue) ->
                 updateTrajectoryLine(trajectoryGroup, aircraftState.trajectory()));
@@ -182,7 +186,7 @@ public final class AircraftController {
      */
     private SVGPath icon(ObservableAircraftState aircraftState) {
         SVGPath svgPath = new SVGPath();
-        svgPath.getStyleClass().add("aircraft");
+        svgPath.getStyleClass().add(AIRCRAFT_STYLE_CLASS);
         AircraftData data = aircraftState.getAircraftData();
 
         AircraftTypeDesignator typeDesignator = data == null
@@ -222,7 +226,7 @@ public final class AircraftController {
     private Group labelGroup(ObservableAircraftState aircraftState) {
 
         Group rectAndText = new Group();
-        rectAndText.getStyleClass().add("label");
+        rectAndText.getStyleClass().add(LABEL_STYLE_CLASS);
 
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
@@ -257,7 +261,7 @@ public final class AircraftController {
     private String firstLineLabel(ObservableAircraftState observableAircraftState) {
         AircraftData aircraftData = observableAircraftState.getAircraftData();
         if (aircraftData != null && aircraftData.registration() != null) return aircraftData.registration().string();
-        if(observableAircraftState.getCallSign() != null) return observableAircraftState.getCallSign().string();
+        if (observableAircraftState.getCallSign() != null) return observableAircraftState.getCallSign().string();
         return observableAircraftState.getIcaoAddress().string();
     }
 
@@ -267,7 +271,7 @@ public final class AircraftController {
      * @param value of velocity or altitude
      * @return the string representation of it (rounded)
      */
-    private String velocityOrAltitudeText(double value){
+    private String velocityOrAltitudeText(double value) {
         return value == UNKNOWN_VALUE ? UNKNOWN_COMPONENT
                 : String.format("%.0f", value);
     }
