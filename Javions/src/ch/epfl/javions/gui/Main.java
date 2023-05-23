@@ -200,22 +200,21 @@ public final class Main extends Application {
             long lastPurge = 0L;
             @Override
             public void handle(long now) {
-                for (int i = 0; i < 10; ++i) {
-                    while (!messages.isEmpty()) {
-                        Message message = messages.poll();
-                        if (message != null) {
-                            statusLineController.messageCountProperty().set(++count);
-                            try {
-                                aircraftStateManager.updateWithMessage(message);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+
+                while (!messages.isEmpty()) {
+                    Message message = messages.poll();
+                    if (message != null) {
+                        statusLineController.messageCountProperty().set(++count);
+                        try {
+                            aircraftStateManager.updateWithMessage(message);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
                     }
-                    if(now - lastPurge > SECOND_NANO){
-                        aircraftStateManager.purge();
-                        lastPurge = now;
-                    }
+                }
+                if(now - lastPurge > SECOND_NANO){
+                    aircraftStateManager.purge();
+                    lastPurge = now;
                 }
             }
         }.start();
