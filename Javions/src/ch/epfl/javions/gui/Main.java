@@ -27,7 +27,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 // TODO:
 //  Maybe Something about system.nano time for sleep
-//  Finish this class: done
+//  Check the 1 second purge
+//  Direction of scrolling: zoom de-zoom
+//  Check trajectory stuff: OK
+//  Re-check all the classes (it is not that much)
+
 
 /**
  * Main program
