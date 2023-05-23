@@ -115,5 +115,4 @@ public final class MapParameters {
         zoomLevelProperty.set(newZoomLevel);
     }
 
-
 }
