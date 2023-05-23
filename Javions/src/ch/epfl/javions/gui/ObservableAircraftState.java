@@ -28,7 +28,12 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private final ObservableList<AirbornePos> listSecond = FXCollections.unmodifiableObservableList(listFirst);
     private long previousTimeStamps = -1;
 
-
+    /**
+     * A nested class that represents the pair position and altitude so that we can add each pair in a list
+     *
+     * @param pos:      position of the aircraft (longitude and latitude)
+     * @param altitude: altitude of the aircraft
+     */
     public record AirbornePos(GeoPos pos, double altitude) {
     }
 
@@ -269,21 +274,20 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
     /**
      * Calculate the trajectory and put it in the trajectory list that contains the position of the aircraft
+     * Depending on a new position and a new altitude
      *
      * @param latestTimeStamps of the aircraft whose trajectory is added the latest
      * @param positionAdded    is true if a position is set, false otherwise
      */
     private void calculateTrajectory(long latestTimeStamps, boolean positionAdded, boolean altitudeAdded) {
         if (getPosition() != null) {
-            if (positionAdded && getAltitude() != 0){
+            if (positionAdded && getAltitude() != 0) {
                 listFirst.add(new AirbornePos(getPosition(), getAltitude()));
                 previousTimeStamps = getLastMessageTimeStampNs();
-            }
-            else if (altitudeAdded && listFirst.isEmpty()) {
+            } else if (altitudeAdded && listFirst.isEmpty()) {
                 listFirst.add(new AirbornePos(getPosition(), getAltitude()));
                 previousTimeStamps = getLastMessageTimeStampNs();
-            }
-            else if (altitudeAdded && getLastMessageTimeStampNs() == latestTimeStamps){
+            } else if (altitudeAdded && getLastMessageTimeStampNs() == latestTimeStamps) {
                 listFirst.set(listFirst.size() - 1, new AirbornePos(getPosition(), getAltitude()));
             }
         }
