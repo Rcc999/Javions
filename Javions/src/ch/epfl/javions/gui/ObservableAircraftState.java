@@ -34,8 +34,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param pos:      position of the aircraft (longitude and latitude)
      * @param altitude: altitude of the aircraft
      */
-    public record AirbornePos(GeoPos pos, double altitude) {
-    }
+    public record AirbornePos(GeoPos pos, double altitude) { }
 
     /**
      * Construct the observable state of the aircraft that contains

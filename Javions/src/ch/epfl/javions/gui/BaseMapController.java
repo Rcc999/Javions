@@ -29,8 +29,8 @@ public final class BaseMapController {
     /**
      * Construction of the map using the tiles, coordinate x, y of top left corner and zoom level
      *
-     * @param tileManager:   managing the tiles
-     * @param mapParameters: contain x,y of the top left corner and zoom level
+     * @param tileManager   :   managing the tiles
+     * @param mapParameters : contain x,y of the top left corner and zoom level
      */
     public BaseMapController(TileManager tileManager, MapParameters mapParameters) {
         this.tileManager = tileManager;
@@ -65,22 +65,27 @@ public final class BaseMapController {
         return mainPane;
     }
 
+    /**
+     * Center the view on the selected aircraft
+     *
+     * @param geoPos : the position of the aircraft
+     */
     public void centerOn(GeoPos geoPos) {
-        // Convertir les coordonnées géographiques (longitude, latitude) en coordonnées de l'image (x, y) avec WebMercator
+
         double xImage = WebMercator.x(mapParameters.getZoomLevel(), geoPos.longitude());
         double yImage = WebMercator.y(mapParameters.getZoomLevel(), geoPos.latitude());
 
-        // Calculer les décalages nécessaires pour centrer la carte sur les coordonnées de l'image
-        double decalageX = xImage - canvas.getWidth() / 2 - mapParameters.getMinX(); //Not sure
-        double decalageY = yImage - canvas.getHeight() / 2 - mapParameters.getMinY();
+        double shiftX = xImage - canvas.getWidth() / 2 - mapParameters.getMinX();
+        double shiftY = yImage - canvas.getHeight() / 2 - mapParameters.getMinY();
 
-        // Mettre à jour les paramètres de la carte pour centrer la vue sur les coordonnées
-        mapParameters.scroll((int) decalageX, (int) decalageY);
+        mapParameters.scroll((int) shiftX, (int) shiftY);
 
         redrawOnNextPulse();
     }
 
-
+    /**
+     * Redraw the map if needed
+     */
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
@@ -107,6 +112,9 @@ public final class BaseMapController {
         }
     }
 
+    /**
+     * Redraw the map on the next pulse
+     */
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();

@@ -81,7 +81,7 @@ public final class AircraftTableController {
                 selectedAircraft.set(newValue));
     }
 
-    private void aircraftSetAddListener(){
+    private void aircraftSetAddListener() {
         observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
                 items -> {
                     if (items.wasAdded()) {
@@ -93,7 +93,8 @@ public final class AircraftTableController {
                 });
     }
 
-    private void selectedAircraftAddListener(){
+
+    private void selectedAircraftAddListener() {
         selectedAircraft.addListener((observable, oldValue, newValue) -> {
             if (!Objects.equals(tableView.getSelectionModel().getSelectedItem(), newValue)) {
                 tableView.scrollTo(newValue);

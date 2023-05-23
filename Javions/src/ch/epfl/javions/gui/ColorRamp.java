@@ -14,15 +14,17 @@ import java.util.List;
 public final class ColorRamp {
 
     private static final int MAX_ALTITUDE = 12000;
+    private static final int MINIMUM_NUMBER_OF_COLORS = 2;
     private final List<Color> colors;
 
     /**
      * Constructs a new ColorRamp with the given colors
      *
      * @param colors the colors to use
+     * @throws IllegalArgumentException if the number of colors is less than 2
      */
     public ColorRamp(Color... colors) {
-        Preconditions.checkArgument(colors.length >= 2);
+        Preconditions.checkArgument(colors.length >= MINIMUM_NUMBER_OF_COLORS);
         this.colors = List.copyOf(Arrays.asList(colors));
     }
 

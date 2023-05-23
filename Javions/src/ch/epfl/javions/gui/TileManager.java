@@ -19,24 +19,23 @@ import java.util.LinkedHashMap;
  */
 public class TileManager {
 
-    // The maximum number of tiles that can be stored in memory.
     private final static int MAX_CAPACITY = 100;
 
-    // The load factor of the memory cache.
     private static final float LOAD_FACTOR = 0.75F;
 
-    // The title of the application.
     private static final String TITLE = "Javions";
 
     private final Path pathToDisk;
+
     private final String name;
+
     private final LinkedHashMap<TileId, Image> memory;
 
     /**
      * Creates a new TileManager.
      *
      * @param pathToDisk : the path to the disk cache
-     * @param name : the name of the server
+     * @param name       : the name of the server
      */
     public TileManager(Path pathToDisk, String name) {
         this.pathToDisk = pathToDisk;
@@ -82,7 +81,7 @@ public class TileManager {
 
             try (InputStream stream = c.getInputStream(); OutputStream o = new FileOutputStream(pathToY.toFile())) {
                 byte[] imageData = stream.readAllBytes();
-                o.write(imageData); //to write the image from the stream to the cache disk
+                o.write(imageData);
                 image = new Image(new ByteArrayInputStream(imageData));
             }
         }
@@ -92,7 +91,7 @@ public class TileManager {
 
 
     /**
-     * Imbricated record class representing a tile id.
+     * Nested record class representing a tile id.
      */
     public record TileId(int zoomLevel, int x, int y) {
 
@@ -100,8 +99,8 @@ public class TileManager {
          * Returns true if the given tile id is valid.
          *
          * @param zoomLevel : the zoom level
-         * @param x : the x coordinate
-         * @param y : the y coordinate
+         * @param x         : the x coordinate
+         * @param y         : the y coordinate
          * @return true if the given tile id is valid
          */
         public static boolean isValid(int zoomLevel, int x, int y) {

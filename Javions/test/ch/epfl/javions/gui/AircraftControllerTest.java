@@ -15,12 +15,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 
 
 public final class AircraftControllerTest extends Application {
@@ -71,9 +70,7 @@ public final class AircraftControllerTest extends Application {
                 if (listenerProperty.get() != null) {
                     oldValue.positionProperty().removeListener(listenerProperty.get());
                 }
-                listenerProperty.set((observable1, oldValue1, newValue1) -> {
-                    baseMapController.centerOn(newValue1);
-                });
+                listenerProperty.set((observable1, oldValue1, newValue1) -> baseMapController.centerOn(newValue1));
                 baseMapController.centerOn(newValue.getPosition());
                 newValue.positionProperty().addListener(listenerProperty.get());
             }
@@ -83,7 +80,7 @@ public final class AircraftControllerTest extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        var file = getClass().getResource("/messages_20230318_0915.bin").getFile();
+        var file = Objects.requireNonNull(getClass().getResource("/messages_20230318_0915.bin")).getFile();
         var messages =
                 readAllMessages(file).iterator();
 

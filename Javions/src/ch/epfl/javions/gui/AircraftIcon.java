@@ -9,6 +9,12 @@ import java.util.Map;
 
 import static ch.epfl.javions.aircraft.WakeTurbulenceCategory.HEAVY;
 
+/**
+ * This enum contains the icons for the aircrafts.
+ *
+ * @author Tuan Dang Nguyen (361089)
+ * @author Rayane Charif Chefchouni (339839)
+ */
 public enum AircraftIcon {
     AIRLINER("""
             M 0.01 14.75 c -0.26 0 -0.74 -0.71 -0.86 -1.41 l -3.33 0.86 L -4.5
@@ -149,6 +155,7 @@ public enum AircraftIcon {
     private final boolean canRotate;
     private final String svgPath;
 
+
     AircraftIcon(boolean canRotate, String svgPath) {
         this.canRotate = canRotate;
         this.svgPath = svgPath;
@@ -158,6 +165,7 @@ public enum AircraftIcon {
         this(true, svgPath);
     }
 
+  
     private static Map<AircraftTypeDesignator, AircraftIcon> createTypeDesignatorTable() {
         // Note: we don't use Map.ofEntries here, as IntelliJ becomes slow if we do.
         var map = new HashMap<AircraftTypeDesignator, AircraftIcon>();
@@ -401,6 +409,7 @@ public enum AircraftIcon {
         map.put(new AircraftTypeDesignator("YURO"), HI_PERF);
         return Map.copyOf(map);
     }
+
 
     public static AircraftIcon iconFor(AircraftTypeDesignator typeDesignator,
                                        AircraftDescription typeDescription,

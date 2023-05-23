@@ -68,6 +68,9 @@ public final class AircraftController {
         pane.setPickOnBounds(false);
     }
 
+    /**
+     * Event handler of the visible aircraft
+     */
     private void aircraftStateAddListener() {
         observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
                 change -> {
@@ -105,6 +108,12 @@ public final class AircraftController {
         return aircraftGroup;
     }
 
+    /**
+     * Construct a group that contains the trajectory of an aircraft
+     *
+     * @param aircraftState : characteristic of an aircraft
+     * @return a group that contains the trajectory of an aircraft
+     */
     private Group trajectoryGroup(ObservableAircraftState aircraftState) {
         Group trajectoryGroup = new Group();
         trajectoryGroup.getStyleClass().add(TRAJECTORY_STYLE_CLASS);
@@ -124,12 +133,25 @@ public final class AircraftController {
         return new Group(trajectoryGroup);
     }
 
+    /**
+     * Update the trajectory line of an aircraft
+     *
+     * @param aircraftState : characteristic of an aircraft
+     * @return the sum of all the lines that represents the trajectory of an aircraft
+     */
     private void updateTrajectoryLine(Group trajectoryGroup, ObservableList<ObservableAircraftState.AirbornePos> aircraftState) {
         trajectoryGroup.getChildren().clear();
         for (int i = 0; i < aircraftState.size() - 1; i++)
             trajectoryGroup.getChildren().add(trajectoryLine(aircraftState.get(i), aircraftState.get(i + 1)));
     }
 
+    /**
+     * Construct the lines that represents the trajectory of an aircraft
+     *
+     * @param startPoint : the start point of the trajectory
+     * @param endPoint   : the end point of the trajectory
+     * @return a line that represents the trajectory of an aircraft
+     */
     private Line trajectoryLine(ObservableAircraftState.AirbornePos startPoint, ObservableAircraftState.AirbornePos endPoint) {
         Line trajectoryLine = new Line();
 
@@ -156,7 +178,7 @@ public final class AircraftController {
     /**
      * Construction of a group that contains icon and label of the aircraft
      *
-     * @param aircraftState of the aircraft
+     * @param aircraftState : The state of the aircraft
      * @return a group that contains icon and label of the aircraft
      */
     private Group iconAndLabelGroup(ObservableAircraftState aircraftState) {
