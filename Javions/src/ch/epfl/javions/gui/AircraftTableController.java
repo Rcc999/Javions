@@ -196,6 +196,7 @@ public final class AircraftTableController {
      * @param numericalValue    that will be put in the column
      * @param fractionDigitsMax is number of decimal of that will be displayed on the table
      * @param unity             of the value
+     * @throws RuntimeException if there is a problem with the parsing
      */
     private void setNumericalColumnToTable(String title, Function<ObservableAircraftState,
             ObservableValue<Number>> numericalValue, int fractionDigitsMax, double unity) {

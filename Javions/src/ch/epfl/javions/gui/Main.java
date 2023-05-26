@@ -26,11 +26,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 // TODO:
-//  Maybe Something about system.nano time for sleep
-//  Check the 1 second purge
-//  Direction of scrolling: zoom de-zoom
-//  Check trajectory stuff: OK
-//  Re-check all the classes (it is not that much)
+//  Check the constant file name, style sheet and style class
 
 
 /**
@@ -72,8 +68,6 @@ public final class Main extends Application {
      *
      * @param primaryStage the primary stage for this application, onto which
      *                     the application scene can be set.
-     *                     Applications may create other stages, if needed, but they will not be
-     *                     primary stages.
      * @throws Exception if received any from the program
      */
     @Override
@@ -117,7 +111,6 @@ public final class Main extends Application {
         else radioRead(messages);
 
         animationTimer(aircraftStateManager, messages, statusLineController);
-
     }
 
     /**
@@ -125,6 +118,7 @@ public final class Main extends Application {
      *
      * @param fileName:      name of the file that contains the messages
      * @param messagesQueue: queue of the valid message read
+     * @throws RuntimeException if there is a problem with the input stream
      */
     private void fileRead(String fileName, Queue<Message> messagesQueue) {
 
@@ -133,6 +127,7 @@ public final class Main extends Application {
             long currentTimeStampNs;
             byte[] bytes = new byte[RawMessage.LENGTH];
             long previousTime = 0L;
+
             try (DataInputStream s = new DataInputStream(
                     new FileInputStream(fileName))) {
                 do {
