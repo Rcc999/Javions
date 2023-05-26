@@ -137,7 +137,7 @@ public final class AircraftController {
 
     /**
      * Update the trajectory line of an aircraft
-     * Calculate the sum of all the lines that represents the trajectory of an aircraft
+     * Connects the points which constitute the trajectory of the aircraft.
      *
      * @param aircraftState : characteristic of an aircraft
      */
