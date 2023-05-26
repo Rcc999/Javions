@@ -4,8 +4,6 @@ import ch.epfl.javions.Math2;
 import ch.epfl.javions.Preconditions;
 import javafx.beans.property.*;
 
-//check scroll up scroll down
-
 /**
  * Parameters of the map in the background
  *
