@@ -24,11 +24,6 @@ import java.nio.file.Path;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-
-// TODO:
-//  Check the constant file name, style sheet and style class
-
-
 /**
  * Main program
  *

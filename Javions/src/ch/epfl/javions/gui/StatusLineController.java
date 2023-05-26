@@ -13,7 +13,6 @@ import javafx.scene.text.Text;
  */
 public final class StatusLineController {
 
-    public static final String STYLE_SHEET_TITLE = "status.css";
     private final BorderPane pane;
     private final IntegerProperty aircraftCountProperty;
     private final LongProperty messageCountProperty;
@@ -37,7 +36,7 @@ public final class StatusLineController {
         messageCountPropertyText.textProperty().bind(messageCountProperty.asString(RECEIVED_MESSAGES));
 
         pane = new BorderPane();
-        pane.getStylesheets().add(STYLE_SHEET_TITLE);
+        pane.getStylesheets().add("status.css");
         pane.setLeft(aircraftCountPropertyText);
         pane.setRight(messageCountPropertyText);
     }

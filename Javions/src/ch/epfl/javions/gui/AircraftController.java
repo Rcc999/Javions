@@ -37,10 +37,6 @@ public final class AircraftController {
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
     private final Pane pane;
-    private final static String AIRCRAFT_STYLE_SHEET = "aircraft.css";
-    private final static String TRAJECTORY_STYLE_CLASS = "trajectory";
-    private final static String AIRCRAFT_STYLE_CLASS = "aircraft";
-    private final static String LABEL_STYLE_CLASS = "label";
     private final static String EMPTY = "";
     private final static String UNKNOWN_COMPONENT = "?";
     private final static double UNKNOWN_VALUE = 0.0;
@@ -68,7 +64,7 @@ public final class AircraftController {
         aircraftStateAddListener();
 
         pane = new Pane();
-        pane.getStylesheets().add(AIRCRAFT_STYLE_SHEET);
+        pane.getStylesheets().add("aircraft.css");
         pane.setPickOnBounds(false);
     }
 
@@ -121,7 +117,7 @@ public final class AircraftController {
      */
     private Group trajectoryGroup(ObservableAircraftState aircraftState) {
         Group trajectoryGroup = new Group();
-        trajectoryGroup.getStyleClass().add(TRAJECTORY_STYLE_CLASS);
+        trajectoryGroup.getStyleClass().add("trajectory");
 
         mapParameters.zoomLevelProperty().addListener((observable, oldValue, newValue) ->
                 updateTrajectoryLine(trajectoryGroup, aircraftState.trajectory()));
@@ -213,7 +209,7 @@ public final class AircraftController {
      */
     private SVGPath icon(ObservableAircraftState aircraftState) {
         SVGPath svgPath = new SVGPath();
-        svgPath.getStyleClass().add(AIRCRAFT_STYLE_CLASS);
+        svgPath.getStyleClass().add("aircraft");
         AircraftData data = aircraftState.getAircraftData();
 
         AircraftTypeDesignator typeDesignator = data == null
@@ -253,7 +249,7 @@ public final class AircraftController {
     private Group labelGroup(ObservableAircraftState aircraftState) {
 
         Group rectAndText = new Group();
-        rectAndText.getStyleClass().add(LABEL_STYLE_CLASS);
+        rectAndText.getStyleClass().add("label");
 
         Text text = new Text();
         Rectangle rectangle = new Rectangle();
