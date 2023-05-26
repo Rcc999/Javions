@@ -137,9 +137,9 @@ public final class AircraftController {
 
     /**
      * Update the trajectory line of an aircraft
+     * Calculate the sum of all the lines that represents the trajectory of an aircraft
      *
      * @param aircraftState : characteristic of an aircraft
-     * @return the sum of all the lines that represents the trajectory of an aircraft
      */
     private void updateTrajectoryLine(Group trajectoryGroup, ObservableList<ObservableAircraftState.AirbornePos> aircraftState) {
         trajectoryGroup.getChildren().clear();
