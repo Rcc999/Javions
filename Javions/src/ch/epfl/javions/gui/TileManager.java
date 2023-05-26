@@ -20,15 +20,10 @@ import java.util.LinkedHashMap;
 public class TileManager {
 
     private final static int MAX_CAPACITY = 100;
-
     private static final float LOAD_FACTOR = 0.75F;
-
     private static final String TITLE = "Javions";
-
     private final Path pathToDisk;
-
     private final String name;
-
     private final LinkedHashMap<TileId, Image> memory;
 
     /**
