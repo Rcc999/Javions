@@ -17,20 +17,24 @@ public final class StatusLineController {
     private final BorderPane pane;
     private final IntegerProperty aircraftCountProperty;
     private final LongProperty messageCountProperty;
+    private static final int INITIAL_COUNT_INTEGER = 0;
+    private static final long INITIAL_COUNT_LONG = 0L;
+    private static final String VISIBLE_AIRCRAFT = "Aéronefs visibles : %d";
+    private static final String RECEIVED_MESSAGES = "Messages reçus : %d";
 
     /**
      * Constructs a new StatusLineController
      */
     public StatusLineController() {
 
-        aircraftCountProperty = new SimpleIntegerProperty(0);
-        messageCountProperty = new SimpleLongProperty(0);
+        aircraftCountProperty = new SimpleIntegerProperty(INITIAL_COUNT_INTEGER);
+        messageCountProperty = new SimpleLongProperty(INITIAL_COUNT_LONG);
 
         Text aircraftCountPropertyText = new Text();
         Text messageCountPropertyText = new Text();
 
-        aircraftCountPropertyText.textProperty().bind(aircraftCountProperty.asString("Aéronefs visibles : %d"));
-        messageCountPropertyText.textProperty().bind(messageCountProperty.asString("Messages reçus : %d"));
+        aircraftCountPropertyText.textProperty().bind(aircraftCountProperty.asString(VISIBLE_AIRCRAFT));
+        messageCountPropertyText.textProperty().bind(messageCountProperty.asString(RECEIVED_MESSAGES));
 
         pane = new BorderPane();
         pane.getStylesheets().add(STYLE_SHEET_TITLE);
