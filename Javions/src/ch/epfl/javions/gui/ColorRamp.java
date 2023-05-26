@@ -28,7 +28,6 @@ public final class ColorRamp {
         this.colors = List.copyOf(Arrays.asList(colors));
     }
 
-
     /**
      * Returns the color corresponding to the given value
      *
