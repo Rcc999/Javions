@@ -23,6 +23,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
+import java.util.Objects;
+
 /**
  * Visible aircraft controller
  *
@@ -53,13 +55,15 @@ public final class AircraftController {
      * @param mapParameters:            contain x,y of the top left corner and zoom level
      * @param observableAircraftStates: contains the set of states of a visible aircraft
      * @param selectedAircraftState:    an aircraft that is clicked on
+     * @throws NullPointerException:    if the set of states of the aircraft is null
+     * @throws NullPointerException:    if the selected aircraft doesn't exist
      */
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> observableAircraftStates,
                               ObjectProperty<ObservableAircraftState> selectedAircraftState) {
         this.mapParameters = mapParameters;
-        this.observableAircraftStates = observableAircraftStates;
-        this.selectedAircraftState = selectedAircraftState;
+        this.observableAircraftStates = Objects.requireNonNull(observableAircraftStates);
+        this.selectedAircraftState = Objects.requireNonNull(selectedAircraftState);
 
         aircraftStateAddListener();
 
