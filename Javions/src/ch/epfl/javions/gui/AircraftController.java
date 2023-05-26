@@ -160,7 +160,6 @@ public final class AircraftController {
         trajectoryLine.setStartY(WebMercator.y(mapParameters.getZoomLevel(), startPoint.pos().latitude()));
         trajectoryLine.setEndY(WebMercator.y(mapParameters.getZoomLevel(), endPoint.pos().latitude()));
 
-
         if (startPoint.altitude() == endPoint.altitude())
             trajectoryLine.setStroke(ColorRamp.PLASMA.at(startPoint.altitude()));
         else {
@@ -284,6 +283,7 @@ public final class AircraftController {
         AircraftData aircraftData = observableAircraftState.getAircraftData();
         if (aircraftData != null && aircraftData.registration() != null) return aircraftData.registration().string();
         if (observableAircraftState.getCallSign() != null) return observableAircraftState.getCallSign().string();
+
         return observableAircraftState.getIcaoAddress().string();
     }
 
@@ -294,8 +294,7 @@ public final class AircraftController {
      * @return the string representation of it (rounded)
      */
     private String velocityOrAltitudeText(double value) {
-        return value == UNKNOWN_VALUE ? UNKNOWN_COMPONENT
-                : String.format("%.0f", value);
+        return value == UNKNOWN_VALUE ? UNKNOWN_COMPONENT : String.format("%.0f", value);
     }
 
 }

@@ -41,11 +41,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public final class Main extends Application {
 
-    public static final long TO_MILLISECOND = 1_000_000L;
     private static final String RESOURCE_FILE = "/aircraft.zip";
     private static final String TITLE = "Javion";
     private static final String TILE_ORG = "tile.openstreetmap.org";
     private static final String TILE_FOLDER = "tile-cache";
+    private static final long TO_MILLISECOND = 1_000_000L;
     private static final long SECOND_NANO = 1_000_000_000L;
     private static final int ZOOM_INIT = 8;
     private static final int X_COORDINATE = 33530;
