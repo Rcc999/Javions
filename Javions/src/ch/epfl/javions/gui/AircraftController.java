@@ -77,13 +77,13 @@ public final class AircraftController {
      */
     private void aircraftStateAddListener() {
         observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
-            change -> {
-                if (change.wasAdded()) {
-                    pane.getChildren().add(annotatedAircraftGroup(change.getElementAdded()));
-                } else if (change.wasRemoved()) {
-                    pane.getChildren().removeIf(node -> node.getId().equals(change.getElementRemoved().getIcaoAddress().string()));
-                }
-            });
+                change -> {
+                    if (change.wasAdded()) {
+                        pane.getChildren().add(annotatedAircraftGroup(change.getElementAdded()));
+                    } else if (change.wasRemoved()) {
+                        pane.getChildren().removeIf(node -> node.getId().equals(change.getElementRemoved().getIcaoAddress().string()));
+                    }
+                });
     }
 
     /**
@@ -116,7 +116,7 @@ public final class AircraftController {
     /**
      * Construct a group that contains the trajectory of an aircraft
      *
-     * @param aircraftState : characteristic of an aircraft
+     * @param aircraftState : state of an aircraft
      * @return a group that contains the trajectory of an aircraft
      */
     private Group trajectoryGroup(ObservableAircraftState aircraftState) {

@@ -21,7 +21,7 @@ import java.util.Map;
 public final class AircraftStateManager {
 
     private static final long MINUTE_AGO_PURGE = 60 * 1_000_000_000L;
-    private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> associativeMap;
+    private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> icaoStateMap;
     private final ObservableSet<ObservableAircraftState> observableAircraftStates;
     private final ObservableSet<ObservableAircraftState> unmodifiableObservableAircraftStates;
     private final AircraftDatabase aircraftDatabase;
@@ -34,7 +34,7 @@ public final class AircraftStateManager {
      */
     public AircraftStateManager(AircraftDatabase aircraftDataBase) {
         this.aircraftDatabase = aircraftDataBase;
-        this.associativeMap = new HashMap<>();
+        this.icaoStateMap = new HashMap<>();
         this.observableAircraftStates = FXCollections.observableSet();
         this.unmodifiableObservableAircraftStates = FXCollections.unmodifiableObservableSet(observableAircraftStates);
     }
@@ -44,7 +44,7 @@ public final class AircraftStateManager {
      * Purges the state of the aircraft that has not been updated for more than a minute
      */
     public void purge() {
-        Iterator<AircraftStateAccumulator<ObservableAircraftState>> iterator = associativeMap.values().iterator();
+        Iterator<AircraftStateAccumulator<ObservableAircraftState>> iterator = icaoStateMap.values().iterator();
         while (iterator.hasNext()) {
             AircraftStateAccumulator<ObservableAircraftState> stateAccumulator = iterator.next();
             if (currentTimeStampNs - stateAccumulator.stateSetter().getLastMessageTimeStampNs() >= MINUTE_AGO_PURGE) {
@@ -62,14 +62,14 @@ public final class AircraftStateManager {
      */
     public void updateWithMessage(Message message) throws IOException {
         IcaoAddress key = message.icaoAddress();
-        if (associativeMap.get(key) == null) {
+        if (icaoStateMap.get(key) == null) {
             ObservableAircraftState newState = new ObservableAircraftState(key, aircraftDatabase.get(key));
-            associativeMap.put(key, new AircraftStateAccumulator<>(newState));
+            icaoStateMap.put(key, new AircraftStateAccumulator<>(newState));
         }
-        associativeMap.get(key).update(message);
+        icaoStateMap.get(key).update(message);
 
-        if (associativeMap.get(key).stateSetter().getPosition() != null)
-            observableAircraftStates.add(associativeMap.get(key).stateSetter());
+        if (icaoStateMap.get(key).stateSetter().getPosition() != null)
+            observableAircraftStates.add(icaoStateMap.get(key).stateSetter());
 
         currentTimeStampNs = message.timeStampNs();
     }
