@@ -85,14 +85,14 @@ public final class AircraftTableController {
 
     private void aircraftSetAddListener() {
         observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
-                items -> {
-                    if (items.wasAdded()) {
-                        tableView.getItems().add(items.getElementAdded());
-                        tableView.sort();
-                    } else if (items.wasRemoved()) {
-                        tableView.getItems().remove(items.getElementRemoved());
-                    }
-                });
+            items -> {
+                if (items.wasAdded()) {
+                    tableView.getItems().add(items.getElementAdded());
+                    tableView.sort();
+                } else if (items.wasRemoved()) {
+                    tableView.getItems().remove(items.getElementRemoved());
+                }
+            });
     }
 
 
@@ -172,7 +172,6 @@ public final class AircraftTableController {
         column.setPrefWidth(width);
         column.setCellValueFactory(f -> stringValue.apply(f.getValue()));
         tableView.getColumns().add(column);
-
     }
 
     /**
