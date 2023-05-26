@@ -73,13 +73,13 @@ public final class AircraftController {
      */
     private void aircraftStateAddListener() {
         observableAircraftStates.addListener((SetChangeListener<ObservableAircraftState>)
-                change -> {
-                    if (change.wasAdded()) {
-                        pane.getChildren().add(annotatedAircraftGroup(change.getElementAdded()));
-                    } else if (change.wasRemoved()) {
-                        pane.getChildren().removeIf(node -> node.getId().equals(change.getElementRemoved().getIcaoAddress().string()));
-                    }
-                });
+            change -> {
+                if (change.wasAdded()) {
+                    pane.getChildren().add(annotatedAircraftGroup(change.getElementAdded()));
+                } else if (change.wasRemoved()) {
+                    pane.getChildren().removeIf(node -> node.getId().equals(change.getElementRemoved().getIcaoAddress().string()));
+                }
+            });
     }
 
     /**
@@ -105,6 +105,7 @@ public final class AircraftController {
         aircraftGroup.getChildren().add(iconAndLabelGroup(aircraftState));
         aircraftGroup.getChildren().add(trajectoryGroup(aircraftState));
         aircraftGroup.viewOrderProperty().bind(aircraftState.altitudeProperty().negate());
+
         return aircraftGroup;
     }
 
@@ -130,6 +131,7 @@ public final class AircraftController {
         trajectoryGroup.visibleProperty().bind(selectedAircraftState.isEqualTo(aircraftState));
 
         updateTrajectoryLine(trajectoryGroup, aircraftState.trajectory());
+
         return new Group(trajectoryGroup);
     }
 

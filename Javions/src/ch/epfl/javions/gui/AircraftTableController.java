@@ -59,6 +59,8 @@ public final class AircraftTableController {
      *
      * @param observableAircraftStates: State of aircraft
      * @param selectedAircraft:         Chosen aircraft by clicking on one
+     * @throws NullPointerException:    when the set of states of an aircraft is null
+     * @throws NullPointerException:    when the selected aircraft doesn't exist
      */
     public AircraftTableController(ObservableSet<ObservableAircraftState> observableAircraftStates,
                                    ObjectProperty<ObservableAircraftState> selectedAircraft) {
