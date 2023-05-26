@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public final class Main extends Application {
 
+    public static final long TO_MILLISECOND = 1_000_000L;
     private static final String RESOURCE_FILE = "/aircraft.zip";
     private static final String TITLE = "Javion";
     private static final String TILE_ORG = "tile.openstreetmap.org";
@@ -70,9 +71,9 @@ public final class Main extends Application {
      * Finally an animation timer to handle animation loop - used for continuous animation updates
      *
      * @param primaryStage the primary stage for this application, onto which
-     * the application scene can be set.
-     * Applications may create other stages, if needed, but they will not be
-     * primary stages.
+     *                     the application scene can be set.
+     *                     Applications may create other stages, if needed, but they will not be
+     *                     primary stages.
      * @throws Exception if received any from the program
      */
     @Override
@@ -122,7 +123,7 @@ public final class Main extends Application {
     /**
      * Execution thread: read message from file and add the valid one to the queue passed by the parameter
      *
-     * @param fileName: name of the file that contains the messages
+     * @param fileName:      name of the file that contains the messages
      * @param messagesQueue: queue of the valid message read
      */
     private void fileRead(String fileName, Queue<Message> messagesQueue) {
@@ -139,13 +140,13 @@ public final class Main extends Application {
                     bytesRead = s.readNBytes(bytes, 0, bytes.length);
                     RawMessage rawMessage = new RawMessage(currentTimeStampNs, new ByteString(bytes));
 
-                    if(currentTimeStampNs - previousTime > 0){
-                        Thread.sleep((currentTimeStampNs - previousTime) / 1_000_000L);
+                    if (currentTimeStampNs - previousTime > 0) {
+                        Thread.sleep((currentTimeStampNs - previousTime) / TO_MILLISECOND);
                     }
 
                     previousTime = currentTimeStampNs;
                     Message message = MessageParser.parse(rawMessage);
-                    if(message != null){
+                    if (message != null) {
                         messagesQueue.add(message);
                     }
 
@@ -190,7 +191,7 @@ public final class Main extends Application {
      * Animation timer to handle animation loop - for continuous animation updates
      *
      * @param aircraftStateManager: use messages in queue to update aircraft state
-     * @param messages: contain valid messages
+     * @param messages:             contain valid messages
      * @param statusLineController: counting the number aircraft and number of messages
      */
     private void animationTimer(AircraftStateManager aircraftStateManager, Queue<Message> messages,
@@ -198,6 +199,7 @@ public final class Main extends Application {
         new AnimationTimer() {
             long count = 0L;
             long lastPurge = 0L;
+
             @Override
             public void handle(long now) {
 
@@ -212,7 +214,7 @@ public final class Main extends Application {
                         }
                     }
                 }
-                if(now - lastPurge > SECOND_NANO){
+                if (now - lastPurge > SECOND_NANO) {
                     aircraftStateManager.purge();
                     lastPurge = now;
                 }
