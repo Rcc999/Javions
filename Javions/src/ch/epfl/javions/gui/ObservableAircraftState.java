@@ -50,8 +50,8 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.categoryProperty = new SimpleIntegerProperty(0);
         this.callSignProperty = new SimpleObjectProperty<>(null);
         this.positionProperty = new SimpleObjectProperty<>(null);
-        this.altitudeProperty = new SimpleDoubleProperty(0.0);
-        this.velocityProperty = new SimpleDoubleProperty(0.0);
+        this.altitudeProperty = new SimpleDoubleProperty(Double.NaN);
+        this.velocityProperty = new SimpleDoubleProperty(Double.NaN);
         this.trackOrHeadingProperty = new SimpleDoubleProperty(0.0);
     }
 

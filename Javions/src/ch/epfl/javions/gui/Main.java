@@ -1,6 +1,5 @@
 package ch.epfl.javions.gui;
 
-import ch.epfl.javions.ByteString;
 import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
@@ -101,8 +100,9 @@ public final class Main extends Application {
 
         Queue<Message> messages = new ConcurrentLinkedQueue<>();
 
-        if (getParameters().getRaw().size() > 0)
-            fileRead(getParameters().getRaw().get(0), messages);
+        if (getParameters().getRaw().size() > 0){
+
+            fileRead(getParameters().getRaw().get(0), messages);}
         else radioRead(messages);
 
         animationTimer(aircraftStateManager, messages, statusLineController);
@@ -121,28 +121,31 @@ public final class Main extends Application {
             int bytesRead;
             long currentTimeStampNs;
             byte[] bytes = new byte[RawMessage.LENGTH];
-            long previousTime = 0L;
+            //long previousTime = 0L;
+            long startTime = System.nanoTime();
 
             try (DataInputStream s = new DataInputStream(
                     new FileInputStream(fileName))) {
                 do {
                     currentTimeStampNs = s.readLong();
                     bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                    RawMessage rawMessage = new RawMessage(currentTimeStampNs, new ByteString(bytes));
+                    RawMessage rawMessage = RawMessage.of(currentTimeStampNs, bytes);
 
-                    if (currentTimeStampNs - previousTime > 0) {
-                        Thread.sleep((currentTimeStampNs - previousTime) / TO_MILLISECOND);
+                    if (currentTimeStampNs - (System.nanoTime() - startTime) > 0) {
+                        Thread.sleep((currentTimeStampNs - (System.nanoTime() - startTime)) / TO_MILLISECOND);
                     }
 
-                    previousTime = currentTimeStampNs;
-                    Message message = MessageParser.parse(rawMessage);
-                    if (message != null) {
-                        messagesQueue.add(message);
+                    //previousTime = currentTimeStampNs;
+                    if (rawMessage != null) {
+                        Message message = MessageParser.parse(rawMessage);
+                        if (message != null) {
+                            messagesQueue.add(message);
+                        }
                     }
 
                 } while (bytesRead == RawMessage.LENGTH);
             } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
+                /* ignored */
             }
         });
         readFile.setDaemon(true);

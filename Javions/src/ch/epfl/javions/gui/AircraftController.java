@@ -296,7 +296,7 @@ public final class AircraftController {
      * @return the string representation of it (rounded)
      */
     private String velocityOrAltitudeText(double value) {
-        return value == UNKNOWN_VALUE ? UNKNOWN_COMPONENT : String.format("%.0f", value);
+        return Double.isNaN(value) ? UNKNOWN_COMPONENT : String.format("%.0f", value);
     }
 
 }
