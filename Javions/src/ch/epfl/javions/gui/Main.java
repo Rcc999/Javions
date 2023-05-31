@@ -101,12 +101,14 @@ public final class Main extends Application {
         Queue<Message> messages = new ConcurrentLinkedQueue<>();
 
         if (getParameters().getRaw().size() > 0){
-
-            fileRead(getParameters().getRaw().get(0), messages);}
+            //readAllMessages(getParameters().getRaw().get(0), messages);
+            fileRead(getParameters().getRaw().get(0), messages);
+            }
         else radioRead(messages);
 
         animationTimer(aircraftStateManager, messages, statusLineController);
     }
+
 
     /**
      * Execution thread: read message from file and add the valid one to the queue passed by the parameter
@@ -131,8 +133,9 @@ public final class Main extends Application {
                     bytesRead = s.readNBytes(bytes, 0, bytes.length);
                     RawMessage rawMessage = RawMessage.of(currentTimeStampNs, bytes);
 
-                    if (currentTimeStampNs - (System.nanoTime() - startTime) > 0) {
-                        Thread.sleep((currentTimeStampNs - (System.nanoTime() - startTime)) / TO_MILLISECOND);
+                    long time = currentTimeStampNs - (System.nanoTime() - startTime);
+                    if (time > 0) {
+                        Thread.sleep(time / TO_MILLISECOND);
                     }
 
                     //previousTime = currentTimeStampNs;
@@ -144,10 +147,10 @@ public final class Main extends Application {
                     }
 
                 } while (bytesRead == RawMessage.LENGTH);
-            } catch (IOException | InterruptedException e) {
-                /* ignored */
-            }
+            } catch (IOException | InterruptedException e) {/* ignored */}
+
         });
+
         readFile.setDaemon(true);
         readFile.start();
     }
