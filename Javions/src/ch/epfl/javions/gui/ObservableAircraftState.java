@@ -24,8 +24,8 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private final ObjectProperty<CallSign> callSignProperty;
     private final DoubleProperty altitudeProperty, velocityProperty, trackOrHeadingProperty;
     private final ObjectProperty<GeoPos> positionProperty;
-    private final ObservableList<AirbornePos> listFirst = FXCollections.observableArrayList();
-    private final ObservableList<AirbornePos> listSecond = FXCollections.unmodifiableObservableList(listFirst);
+    private final ObservableList<AirbornePos> airbornePos = FXCollections.observableArrayList();
+    private final ObservableList<AirbornePos> unmodifiableAirbornePos = FXCollections.unmodifiableObservableList(airbornePos);
     private long previousTimeStamps = -1;
 
     /**
@@ -268,7 +268,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @return an observable list of the pair position and altitude
      */
     public ObservableList<AirbornePos> trajectory() {
-        return listSecond;
+        return unmodifiableAirbornePos;
     }
 
     /**
@@ -281,13 +281,13 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private void calculateTrajectory(long latestTimeStamps, boolean positionAdded, boolean altitudeAdded) {
         if (getPosition() != null) {
             if (positionAdded && getAltitude() != 0) {
-                listFirst.add(new AirbornePos(getPosition(), getAltitude()));
+                airbornePos.add(new AirbornePos(getPosition(), getAltitude()));
                 previousTimeStamps = getLastMessageTimeStampNs();
-            } else if (altitudeAdded && listFirst.isEmpty()) {
-                listFirst.add(new AirbornePos(getPosition(), getAltitude()));
+            } else if (altitudeAdded && airbornePos.isEmpty()) {
+                airbornePos.add(new AirbornePos(getPosition(), getAltitude()));
                 previousTimeStamps = getLastMessageTimeStampNs();
             } else if (altitudeAdded && getLastMessageTimeStampNs() == latestTimeStamps) {
-                listFirst.set(listFirst.size() - 1, new AirbornePos(getPosition(), getAltitude()));
+                airbornePos.set(airbornePos.size() - 1, new AirbornePos(getPosition(), getAltitude()));
             }
         }
     }
