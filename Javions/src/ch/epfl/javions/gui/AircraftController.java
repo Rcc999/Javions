@@ -216,15 +216,19 @@ public final class AircraftController {
                 ? new AircraftTypeDesignator(EMPTY) : data.typeDesignator();
         AircraftDescription description = data == null
                 ? new AircraftDescription(EMPTY) : data.description();
+        WakeTurbulenceCategory wakeTurbulenceCategory = data == null
+                ? WakeTurbulenceCategory.UNKNOWN
+                : data.wakeTurbulenceCategory();
 
-        AircraftIcon aircraftIcon = (data == null)
-                ? AircraftIcon.iconFor(typeDesignator, description, aircraftState.getCategory(), WakeTurbulenceCategory.UNKNOWN)
-                : AircraftIcon.iconFor(typeDesignator, description, aircraftState.getCategory(), data.wakeTurbulenceCategory());
+        AircraftIcon aircraftIcon = AircraftIcon.iconFor(typeDesignator, description, aircraftState.getCategory(), wakeTurbulenceCategory);
 
         ObjectProperty<AircraftIcon> iconProperty = new SimpleObjectProperty<>(aircraftIcon);
 
+        iconProperty.bind(aircraftState.categoryProperty().map(e ->
+                AircraftIcon.iconFor(typeDesignator, description, aircraftState.getCategory(), wakeTurbulenceCategory)));
+
         //Content property
-        svgPath.contentProperty().bind(aircraftState.categoryProperty().map(e -> aircraftIcon).map(AircraftIcon::svgPath));
+        svgPath.contentProperty().bind(iconProperty.map(AircraftIcon::svgPath));
 
         //Rotate property
         svgPath.rotateProperty().bind(Bindings.createDoubleBinding(() -> aircraftIcon.canRotate()
@@ -261,6 +265,7 @@ public final class AircraftController {
                 String.format("%s \n%s km/h" + "\u2002" + "%s m",
                         firstLineLabel(aircraftState), velocityOrAltitudeText(velocityText.getValue()),
                         velocityOrAltitudeText(altitudeText.getValue())), velocityText, altitudeText));
+
 
         rectangle.widthProperty().bind(text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
         rectangle.heightProperty().bind(text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
