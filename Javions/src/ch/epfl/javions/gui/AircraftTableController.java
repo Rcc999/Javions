@@ -36,12 +36,12 @@ public final class AircraftTableController {
     private static final int WIDTH_OACI_COLUMN = 60;
     private static final int WIDTH_CALL_SIGN_COLUMN = 70;
     private static final int WIDTH_REGISTRATION_COLUMN = 90;
-    private static final int WIDTH_MODELE_COLUMN = 230;
+    private static final int WIDTH_MODEL_COLUMN = 230;
     private static final int WIDTH_DESCRIPTION_COLUMN = 70;
     private static final String OACI = "OACI";
-    private static final String CALL_SIGN = "Call sign";
-    private static final String REGISTRATION = "Registration";
-    private static final String MODEL = "Model";
+    private static final String CALL_SIGN = "Indicatif";
+    private static final String REGISTRATION = "Immatriculation";
+    private static final String MODEL = "Modèle";
     private static final String TYPE = "Type";
     private static final String DESCRIPTION = "Description";
     private static final String LONGITUDE = "Longitude (°)";
@@ -144,7 +144,7 @@ public final class AircraftTableController {
             AircraftData data = state.getAircraftData();
             return new ReadOnlyObjectWrapper<>(data).map(d -> d.registration().string());
         });
-        setStringColumnToTable(MODEL, WIDTH_MODELE_COLUMN, state -> {
+        setStringColumnToTable(MODEL, WIDTH_MODEL_COLUMN, state -> {
             AircraftData data = state.getAircraftData();
             return new ReadOnlyObjectWrapper<>(data).map(AircraftData::model);
         });
